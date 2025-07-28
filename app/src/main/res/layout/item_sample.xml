@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@color/white">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <!-- 样品名显示 -->
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center_vertical"
+                android:gravity="start|center_vertical" />
+            <!-- 样品描述显示 -->
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:includeFontPadding="false"
+                android:layout_gravity="center_vertical"
+                android:gravity="start|center_vertical"
+                android:text="@string/default_no"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:layout_marginTop="5dp"/>
+        </LinearLayout>
+        <!--样品描述图-->
+        <com.lsy.chemicaltest_new.domain.imageView.GestureImageView
+            android:id="@+id/iv_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/icon_no_image"
+            android:scaleType="centerCrop"
+            android:layout_marginStart="10dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center_vertical">
+            <!-- 编辑按钮 -->
+            <TextView
+                android:id="@+id/tv_edit"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/icon_edit"/>
+
+            <!-- 删除按钮 -->
+            <TextView
+                android:id="@+id/tv_delete"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/icon_delete_2"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/splitLine"/>
+</LinearLayout>

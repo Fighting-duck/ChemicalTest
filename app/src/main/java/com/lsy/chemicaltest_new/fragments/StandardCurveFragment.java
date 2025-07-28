@@ -1,0 +1,497 @@
+package com.lsy.chemicaltest_new.fragments;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.CombinedData;
+import com.lsy.chemicaltest_new.MyApplication;
+import com.lsy.chemicaltest_new.R;
+import com.lsy.chemicaltest_new.activitys.smpleTest.SamplesManageActivity;
+import com.lsy.chemicaltest_new.adapters.PointListAdapter;
+import com.lsy.chemicaltest_new.adapters.PointsAdapter;
+import com.lsy.chemicaltest_new.databinding.FragmentStandardCurveBinding;
+import com.lsy.chemicaltest_new.domain.CurveSetting;
+import com.lsy.chemicaltest_new.domain.Expression;
+import com.lsy.chemicaltest_new.domain.Sample;
+import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.models.StandardCurveViewModel;
+import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
+public class StandardCurveFragment extends Fragment {
+
+    private static final String TAG = "StandardCurveFragment";
+    private FragmentStandardCurveBinding mBinding;
+    private Context mContext;
+    private StandardCurveViewModel mViewModel;
+    private ArrayAdapter<String> mSpinner_TypeAdapter;
+    private ArrayAdapter<String> mSpinner_SampleAdapter;
+    private PointsAdapter mPointsAdapter;
+    private PointListAdapter mPointListAdapter;
+    private CombinedData mCombinedData;//联合图数据
+    private Boolean mIsAutoCalculate = true;
+    private CurveSetting mCurveSetting;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mBinding = FragmentStandardCurveBinding.inflate(getLayoutInflater());
+        mContext = getContext();
+        mViewModel = new ViewModelProvider(this).get(StandardCurveViewModel.class);
+        mViewModel.setContext(mContext);
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initUI();
+        initData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    public void initData() {
+        // 检查 HashMap 是否为空
+        if (!StandardCurve.TYPE.isEmpty()) {
+            Map.Entry<Integer,String > entry = StandardCurve.TYPE.entrySet().iterator().next();
+            mViewModel.setType(entry.getKey()); // 获取第一个 key
+        }
+        //获取标准曲线默认资源
+        List<CurveSetting> curveSetting = MyApplication.DATABASE_INSTANCE.getCurveSettingDao().findAll();
+        if (!curveSetting.isEmpty()){
+            mCurveSetting = curveSetting.get(0);
+            Log.d(TAG, "curveSetting is not empty:"+mCurveSetting);
+            mViewModel.set_curve_xUnit(mCurveSetting.getX_axis_unit());
+            mViewModel.set_curve_xMin(mCurveSetting.getMin_CO());
+            mViewModel.set_curve_xMax(mCurveSetting.getMax_CO());
+            mViewModel.set_curve_minCORR(mCurveSetting.getMinCorr());
+        }
+
+        // 获取字符串资源
+        Resources resources = getResources();
+        //String unitMolPerMl = resources.getString(R.string.unit_mol_per_mL);
+        String unitMa = resources.getString(R.string.unit_mA);
+        //String defaultMinCorr = resources.getString(R.string.curve_min_CORR_value);
+        //String defaultMinCo = resources.getString(R.string.default_min_CO);
+        //String defaultMaxCo = resources.getString(R.string.default_max_CO);
+
+        // 设置初始值
+       // mViewModel.set_curve_xUnit(unitMolPerMl);
+        mViewModel.set_curve_yUnit(unitMa);
+
+       /* try {
+            Float minCorr = Float.valueOf(defaultMinCorr);
+            mViewModel.set_curve_minCORR(minCorr);
+            Float xMin = Float.valueOf(defaultMinCo);
+            mViewModel.set_curve_xMin(xMin);
+            Float xMax = Float.valueOf(defaultMaxCo);
+            mViewModel.set_curve_xMax(xMax);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Error parsing float values", e);
+            // 设置默认值
+            mViewModel.set_curve_minCORR(0.95f);
+            mViewModel.set_curve_xMin(0.0f);
+            mViewModel.set_curve_xMax(10.0f);
+        }*/
+
+        // 更新样本列表
+        mViewModel.updateSampleList();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void initUI() {
+        /**mSpinner_TypeAdapter**/
+        String[] typeList = getResources().getStringArray(R.array.standardCurve_type);
+        mSpinner_TypeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item,typeList);
+        mSpinner_TypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mBinding.spTypeList.setAdapter(mSpinner_TypeAdapter);
+        /***mSpinner_SampleAdapter***/
+        List<String> sampleList = new ArrayList<>();
+        mSpinner_SampleAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item,sampleList);
+        mSpinner_SampleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mBinding.spSampleList.setAdapter(mSpinner_SampleAdapter);
+        /**CombinedChart**/
+        CombinedChartUtils.setChart(mBinding.ccChart);
+        mCombinedData = new CombinedData();// 初始化 CombinedData 对象
+        // 设置联合图表数据到 CombinedChart
+        mBinding.ccChart.setData(mCombinedData);
+
+        /**ViewModel**/
+        mViewModel.getLiveData_toast().observe(getViewLifecycleOwner(), toast -> {
+            if (toast != null){
+                Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+                mViewModel.setToast(null);
+            }
+        });
+        //注册观察者,注意这个必须得注册，否则ViewModel中的MediatorLiveData就不处于onActive()状态。
+        mViewModel.getMediatorLiveData_Curve().observe(getViewLifecycleOwner(), standardCurve -> {
+            if (standardCurve == null) return;
+            Log.d(TAG, "current standardCurve:"+standardCurve.toString());
+        });
+        mViewModel.getLiveData_sampleList().observe(getViewLifecycleOwner(), samples -> {
+            if (samples == null) return;
+            // 获取样本名称列表并更新 Spinner 列表
+            List<String> sampleNameList = new ArrayList<>();
+            for (Sample sample : samples) {
+                sampleNameList.add(sample.getName());
+            }
+            mSpinner_SampleAdapter.clear(); // 清空旧数据
+            mSpinner_SampleAdapter.addAll(sampleNameList); // 添加新数据
+            mSpinner_SampleAdapter.notifyDataSetChanged(); // 通知适配器数据已更新
+        });
+        mViewModel.getLiveData_sample().observe(getViewLifecycleOwner(), samplePosition -> {
+            if (samplePosition == null) return;
+            int selection = Math.max(0, samplePosition); // 确保 selection 不会小于 0
+            mBinding.spSampleList.setSelection(selection);
+        });
+        mViewModel.getLiveData_curveType().observe(this, curveType -> {
+            if(curveType == null) return;
+            int selection = Math.max(0, curveType - 1); // 确保 selection 不会小于 0
+            mBinding.spTypeList.setSelection(selection);
+        });
+        mViewModel.getLiveData_curveName().observe(getViewLifecycleOwner(), curveName ->{
+            if (curveName == null || curveName.isEmpty()) {
+                mViewModel.setToast(getString(R.string.toast_curve_nameEmpty));
+                mViewModel.restoreCurveName();
+                return;
+            }
+            mBinding.edtName.setText(curveName);
+        });
+        mViewModel.getLiveData_xUnit().observe(getViewLifecycleOwner(), xUnit -> {
+            if (xUnit == null || xUnit.isEmpty()) {
+                mViewModel.setToast(getString(R.string.toast_curve_notEmpty));
+                mViewModel.restoreXUnit();
+                return;
+            }
+            mBinding.edtXUnit.setText(xUnit);
+            /**描述**/
+            Description description = mBinding.ccChart.getDescription();
+            description.setEnabled(true);//是否可用
+            description.setText(getString(R.string.unit_lg_c) + xUnit);
+            description.setTextColor(Color.BLACK);//字体颜色
+            description.setTextSize(12f);//字体大小
+            mBinding.ccChart.notifyDataSetChanged();
+            mBinding.ccChart.invalidate();// 刷新图表
+        });
+        //设置y轴标签
+        mViewModel.getLiveData_yUnit().observe(getViewLifecycleOwner(), yUnit -> {
+            if (yUnit == null || yUnit.isEmpty()) {
+                mViewModel.setToast(getString(R.string.toast_curve_notEmpty));
+                mViewModel.restoreYUnit();
+                return;
+            }
+            mBinding.edtYUnit.setText(yUnit);
+        });
+        mViewModel.getLiveData_xMin().observe(getViewLifecycleOwner(), xMin -> {
+            if(xMin == null) {
+                mViewModel.setToast("");
+                mViewModel.restoreXMin();
+                return;
+            }
+            mBinding.edtMinX.setText(String.valueOf(xMin));
+        });
+        mViewModel.getLiveData_xMax().observe(getViewLifecycleOwner(), xMax -> {
+            if(xMax == null) {
+                mViewModel.setToast(getString(R.string.toast_curve_notEmpty));
+                mViewModel.restoreXMax();
+                return;
+            }
+            mBinding.edtMaxX.setText(String.valueOf(xMax));
+        });
+        mViewModel.getLiveData_minCORR().observe(getViewLifecycleOwner(), CORR -> {
+            if(CORR == null) {
+                mViewModel.setToast(getString(R.string.toast_curve_notEmpty));
+                mViewModel.restoreMinCORR();
+                return;
+            }
+            mViewModel.noticeCorr();
+            mBinding.edtMinCORR.setText(String.valueOf(CORR));
+        });
+        mViewModel.getLiveData_Expression().observe(getViewLifecycleOwner(), expression ->{
+            if (expression == null)
+                mBinding.tvExpression.setText("");
+            else
+                mBinding.tvExpression.setText(expression.toString());//显示曲线方程
+        });
+        mViewModel.getLiveData_CORR().observe(getViewLifecycleOwner(), corr ->{
+            if(corr == null)
+                mBinding.tvCorr.setText("");
+           else {
+                mBinding.tvCorr.setText(corr+" %");//显示相关系数
+                mViewModel.noticeCorr();
+            }
+        });
+        mViewModel.getLiveData_pointList().observe(getViewLifecycleOwner(), pointList -> {
+            String x_unit = getString(R.string.unit_lg_c) + mViewModel.getLiveData_xUnit().getValue();
+            List<Float> k_b_corr = CombinedChartUtils.buildChart(mContext, mBinding.ccChart,pointList, mViewModel.getCurveType(), x_unit);
+            Log.d(TAG, "k_b_corr:"+k_b_corr.toString());
+            if (pointList.size()>=2 && mIsAutoCalculate){
+                mViewModel.set_curve_CORR(k_b_corr.get(2)*100);
+                mViewModel.setExpression(new Expression(k_b_corr.get(0),k_b_corr.get(1)));
+            }
+            mPointListAdapter.update(pointList);
+        });
+        mViewModel.getLiveData_entry().observe(getViewLifecycleOwner(), point -> {
+            if (point == null) return;
+            mBinding.tvXAverage.setText(String.valueOf(point.getX_value()));
+            mBinding.tvYAverage.setText(String.valueOf(point.getY_value()));
+        });
+        mViewModel.getLiveData_description().observe(getViewLifecycleOwner(), description -> {
+            if (description == null) return;
+            //通过判断新值与当前 EditText 文本是否相同来避免循环
+            String currentText = mBinding.edtDescription.getText().toString();
+            if (!currentText.equals(description)) {
+                mBinding.edtDescription.setText(description);
+            }
+        });
+        mViewModel.getLiveData_CO_noticeCorr().observe(getViewLifecycleOwner(), noticeCorr -> {
+            if (noticeCorr != null){
+                mBinding.ivNoticeCorr.setVisibility(View.VISIBLE);
+                if (noticeCorr.equals(getString(R.string.toast_normal))){
+                    mBinding.ivNoticeCorr.setImageResource(R.drawable.icon_notice_normal);
+                }
+                else {
+                    mBinding.ivNoticeCorr.setImageResource(R.drawable.icon_notice_abnormal);
+                }
+            }
+        });
+
+        //RecycleView
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext,2,GridLayoutManager.HORIZONTAL, false);
+        mPointsAdapter = new PointsAdapter(mContext, mViewModel,2);
+        mBinding.rvPoints.setLayoutManager(gridLayoutManager);
+        mBinding.rvPoints.setAdapter(mPointsAdapter);
+
+        GridLayoutManager gridLayoutManager_2 = new GridLayoutManager(mContext,1,GridLayoutManager.HORIZONTAL, false);
+        mPointListAdapter = new PointListAdapter(mContext, mViewModel);
+        mBinding.rvPointList.setLayoutManager(gridLayoutManager_2);
+        mBinding.rvPointList.setAdapter(mPointListAdapter);
+        DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
+        mBinding.rvPointList.addItemDecoration(decoration);
+
+        //Listener
+        mBinding.edtYNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String str_yNumber = s.toString();
+                if (!str_yNumber.isEmpty()) {
+                    mPointsAdapter.alter_YNum(Integer.parseInt(str_yNumber));
+                }
+            }
+        });
+        mBinding.edtDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String description = s.toString();
+                mViewModel.setDescription(description);
+            }
+        });
+        mBinding.edtName.setOnFocusChangeListener(focusListener);
+        mBinding.edtYNumber.setOnFocusChangeListener(focusListener);
+        mBinding.edtXUnit.setOnFocusChangeListener(focusListener);
+        mBinding.edtYUnit.setOnFocusChangeListener(focusListener);
+        mBinding.edtMinX.setOnFocusChangeListener(focusListener);
+        mBinding.edtMaxX.setOnFocusChangeListener(focusListener);
+        mBinding.edtMinCORR.setOnFocusChangeListener(focusListener);
+        mBinding.btnPointAdd.setOnClickListener(this::onClick);
+        mBinding.btnSampleAdd.setOnClickListener(this::onClick);
+        mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
+        mBinding.edtX.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String str_x = s.toString();
+                if (!str_x.isEmpty()) {
+                    Float result = mViewModel.calculate(Float.parseFloat(str_x));
+                    Log.d(TAG, "x:"+str_x+" y:"+result);
+                    if (result != null)
+                        mBinding.edtY.setText(String.valueOf(result));
+                    else
+                        mBinding.edtY.setText("");
+                }else mBinding.edtY.setText("");
+            }
+        });
+        mBinding.spTypeList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //String selectedItem = (String) parent.getItemAtPosition(position);
+                // 处理用户选择的选项
+                mViewModel.setType(position+1);
+                if (position == 0)
+                    mBinding.edtYUnit.setText(getString(R.string.unit_mA));
+                else if (position == 1)
+                    mBinding.edtYUnit.setText(getString(R.string.unit_blue));
+                else if (position == 2)
+                    mBinding.edtYUnit.setText(getString(R.string.unit_degree));
+                Log.d(TAG, "sample type: " + position+1);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        mBinding.spSampleList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = (String) parent.getItemAtPosition(position);
+                // 处理用户选择的选项
+                mViewModel.setCurveSample(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // 用户未选择任何选项时的处理
+            }
+        });
+    }
+
+    View.OnFocusChangeListener focusListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (hasFocus) {
+                // 处理获得焦点的逻辑
+            } else {
+                // 处理失去焦点的逻辑
+                // v 是一个 EditText
+                if (view instanceof EditText){
+                    String str_text = ((EditText) view).getText().toString();
+                    if (view.getId() == mBinding.edtName.getId()){
+                        mViewModel.set_curve_name(str_text);
+                    }
+                    if (view.getId() == mBinding.edtXUnit.getId()){
+                        mViewModel.set_curve_xUnit(str_text);
+                    }
+                    else if(view.getId() == mBinding.edtYUnit.getId()){
+                        mViewModel.set_curve_yUnit(str_text);
+                    }
+                    else if(view.getId() == mBinding.edtMinX.getId()){
+                        if (!str_text.isEmpty()){
+                            Float xMin = Float.valueOf(str_text);
+                            Float value = mViewModel.set_curve_xMin(xMin);
+                            if (!value.equals(xMin)){//不相等表示设置失败
+                                mViewModel.setToast(getString(R.string.toast_curve_cant_greaterMax));
+                                ((EditText) view).setText(String.valueOf(value)); //还原值
+                            }
+                        }
+                        else mViewModel.set_curve_xMin(null);
+
+                    }
+                    else if(view.getId() == mBinding.edtMaxX.getId()){
+                       if (!str_text.isEmpty()){
+                           Float xMax = Float.valueOf(str_text);
+                           Float value = mViewModel.set_curve_xMax(xMax);
+                           if (!value.equals(xMax)){//不相等表示设置失败
+                               mViewModel.setToast(getString(R.string.toast_curve_cant_lessMin));
+                               ((EditText) view).setText(String.valueOf(value));//还原值
+                           }
+                       }
+                       else mViewModel.set_curve_xMax(null);
+                    }
+                    else if(view.getId() == mBinding.edtMinCORR.getId()){
+                        if (!str_text.isEmpty())
+                            mViewModel.set_curve_minCORR( Float.valueOf(str_text));
+                        else mViewModel.set_curve_minCORR(null);
+                    }
+                    else if(view.getId() == mBinding.edtYNumber.getId()){
+                        if (str_text.isEmpty())
+                            ((EditText) view).setText(getString(R.string.default_point_number));
+                        else {
+                            float yNum = Float.parseFloat(str_text);
+                            if (yNum < 1){
+                                mViewModel.setToast(getString(R.string.toast_curve_cant_lessOne));
+                                ((EditText) view).setText(getString(R.string.default_point_number));
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    };
+    private void onClick(View view){
+        if (view.getId() == mBinding.btnPointAdd.getId()){
+            mViewModel.addPoint();
+            //收起键盘
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);// 隐藏键盘
+        }
+        else if (view.getId() == mBinding.btnSampleAdd.getId()){
+            Intent intent = new Intent(mContext, SamplesManageActivity.class);
+            startActivity(intent);
+        }
+        else if (view.getId() ==mBinding.ivNoticeCorr.getId()){
+            String noticeCorr = mViewModel.getNoticeCorr();
+            if (noticeCorr != null){
+                mViewModel.setToast(noticeCorr);
+            }
+        }
+    }
+
+   public void fillCurve(StandardCurve curve , Boolean isAutoCalculate){
+        mIsAutoCalculate = isAutoCalculate;
+        Log.d(TAG, "fillCurve: "+ curve);
+        mViewModel.setCurve(curve);
+        /*mBinding.edtName.setText(curve.getName());
+        mBinding.edtXUnit.setText(curve.getX_axis_unit());
+        mBinding.edtYUnit.setText(curve.getY_axis_unit());
+        mBinding.edtMinX.setText(String.valueOf(curve.getMin_CO()));
+        mBinding.edtMaxX.setText(String.valueOf(curve.getMax_CO()));
+        mBinding.edtMinCORR.setText(String.valueOf(curve.getMinCorr()));
+        mBinding.edtDescription.setText(curve.getDescription());*/
+        mIsAutoCalculate = true;
+   }
+
+   public StandardCurve getCurve(){
+       return mViewModel.getCurve();
+   }
+}

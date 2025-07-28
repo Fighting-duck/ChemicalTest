@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="NoUnderlineEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+    </style>
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="text_topBarTitle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="text_firstTitle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="text_secondTitle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="text_thirdTitle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
+        <!-- 基础属性 -->
+        <item name="android:textColor">@color/text_color_light</item>          <!-- 文本颜色 -->
+        <item name="android:textSize">14sp</item>                  <!-- 文本大小 -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:minWidth">80dp</item>                  <!-- 最小宽度 -->
+        <item name="android:minHeight">30dp</item>                 <!-- 最小高度 -->
+        <item name="android:gravity">center</item>                  <!-- 文本对齐方式 -->
+        <!-- 背景与边框（需引用 selector 或 shape） -->
+        <item name="android:background">@drawable/button_selector</item>
+    </style>
+
+    <style name="SwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textOff">@string/switch_off</item>
+        <item name="android:textOn">@string/switch_on</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="TextViewStyle_area" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+</resources>

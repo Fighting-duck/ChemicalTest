@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/spinner_selected_item.xml -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:textSize="16sp"
+    android:textColor="#333333"
+    android:gravity="center"
+    android:background="@drawable/spinner_selected_background"
+    android:singleLine="true"
+    />

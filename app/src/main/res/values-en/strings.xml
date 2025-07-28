@@ -1,0 +1,376 @@
+<resources>
+    <string name="app_name">化学检测</string>
+    <!--
+    concentration 简称conc.
+    electrical简称elec.
+    Temperature简称Temp.
+    photothermal简称PT
+    Management简称Mgt
+     -->
+    <!-- 底部导航栏-->
+    <string name="title_sampleTest">SampleTest</string>
+    <string name="title_history">History</string>
+    <string name="title_useGuide">UserGuide</string>
+    <string name="title_mine">Mine</string>
+    <!--全局-->
+    <string name="text_detection_concentration">Conc.:</string>
+    <string name="text_Corrected_RGB_color">Corrected RGB Color:</string>
+    <string name="text_Corrected_HSV_color">Corrected HSV Data:</string>
+    <string name="text_center_temperature">Center Temp.:</string>
+    <string name="text_disease_analysis">Disease Analysis:</string>
+    <string name="text_disease_analysis_2">Disease Analysis</string>
+    <string name="text_selectCurve">Select Curve</string>
+    <string name="elec">Elec. Test</string>
+    <string name="colo">Colo. Test</string>
+    <string name="thermal">PT. Test</string>
+    <string name="enter">enter</string>
+    <!-- 样品测试 -->
+    <string name="test_select_standard_curve">Select Standard Curve</string>
+    <string name="test_manageCurve">Curve Mgt</string>
+    <string name="test_manageSample">Sample Mgt</string>
+    <string name="test_electrical_signal_detection">Elec. Test</string>
+    <string name="test_colorimetric_image_analysis">Colo. Test</string>
+    <string name="test_photo_thermal_image_analysis">PT. Test</string>
+    <string name="test_test_results">EXP Record</string>
+    <string name="test_saveAll">Save All</string>
+    <string name="test_clearAll">Clear All</string>
+    <string name="test_credibility_analysis">Credibility Analysis</string>
+    <string name="test_description">Notes</string>
+    <string name="test_description_hint">Notes (Optional)</string>
+    <!--电信号检测-->
+    <string name="title_electrical">Electrical Detection</string>
+    <string name="electrical_selectElecCurve">Elec. Curve</string>
+    <string name="electrical_selectDegreeCurve">Temp. Curve</string>
+    <string name="electrical_useCurve">Elec. Curve:</string>
+    <string name="electrical_useElecCurve">Elec. Curve:</string>
+    <string name="electrical_useDegreeCurve">Temp. Curve:</string>
+    <string name="text_connection_situation">Multimeter Connection:</string>
+    <string name="text_test_connection">Scan Device</string>
+    <string name="text_connection_true">Yes</string>
+    <string name="text_connection_false">No</string>
+    <string name="text_returnResults">Return Data</string>
+    <string name="text_prompt">Select "DC Current" (DCmA/DCuA) or Temp. (℃)</string>
+    <string name="text_current_gear">Current Gear:</string>
+    <string name="text_mileage">Range:</string>
+    <string name="text_gear_0">gear</string>
+    <string name="text_mileage_0">mileage</string>
+    <string name="text_RealTime_value">Real-Time Value:</string>
+    <string name="text_StartTest_elec">Start Current Test</string>
+    <string name="text_StartTest_temperature">Start Temp Test</string>
+    <string name="text_StartTest">Start Test</string>
+    <string name="electrical_startTime">Start Time:</string>
+    <string name="electrical_endTime">End Time:</string>
+    <string name="text_MaxValue_4">Max Current:</string>
+    <string name="text_temperature">Constant Temp:</string>
+    <string name="text_StartAnal">Start Analysis</string>
+    <string name="history_sure">Confirm</string>
+    <!--testValue item-->
+    <string name="testValue_No">Sequence:</string>
+    <string name="testValue_testValue">Value:</string>
+    <string name="testValue_testTime">Time:</string>
+    <!--导入标准曲线-->
+    <string name="title_add_standard_curve">Import Standard Curve</string>
+    <string name="curve_import">Import</string>
+    <string name="curve_type">Type:</string>
+    <string name="curve_type_prompt">Select Curve Type</string>
+    <string name="curve_sample">Sample:</string>
+    <string name="curve_sample_prompt">Select Sample</string>
+    <string name="curve_add_sample">Add Sample</string>
+    <string name="curve_name">Curve Name:</string>
+    <string name="curve_x_unit">X-Axis Unit (Conc.):</string>
+    <string name="curve_y_unit">Y-Axis Unit:</string>
+    <string name="curve_min_x">Min Conc.:</string>
+    <string name="curve_max_x">Max Conc.:</string>
+    <string name="curve_min_CORR">Min Correlation:</string>
+    <string name="curve_input_point">Enter Data Points (At least 2)</string>
+    <string name="curve_y_number">Y-Values Count:</string>
+    <string name="curve_point_add">Add</string>
+    <string name="curve_CORR">Correlation Coefficient:</string>
+    <string name="curve_expression">Formula:</string>
+    <string name="curve_description">Notes:</string>
+    <string name="curve_calculate">Calculate</string>
+    <string name="curve_x">lg X:</string>
+    <string name="curve_y">avg Y:</string>
+    <!--修改标准曲线-->
+    <string name="title_alter_standard_curve">Edit Standard Curve</string>
+    <string name="curve_delete">Delete</string>
+    <string name="curve_export">Export</string>
+    <!--添加样品-->
+    <string name="title_add_sample">Add Sample</string>
+    <string name="addSample_name_hint">Enter Sample Name</string>
+    <string name="addSample_description_hint">Enter Sample Description</string>
+    <!--样品管理-->
+    <string name="title_sample_manage">Sample Management</string>
+    <string name="sample_name">Sample Name:</string>
+    <string name="sample_inputName">Sample Name(Required)</string>
+    <string name="sample_inputDescription">Description(Optional)</string>
+    <string name="sample_backAdd">Back to Add</string>
+    <string name="sample_add">Add</string>
+    <string name="sample_adding">Adding...</string>
+    <string name="sample_edit">Edit</string>
+    <string name="sample_editing">Editing...</string>
+    <string name="sample_totalNum">Total Samples:</string>
+    <!---标准曲线管理-->
+    <string name="title_standardCurve">Standard Curves</string>
+    <string name="curveManage_noText">No Curves Available</string>
+    <string name="curveManage_totalNum">Total:</string>
+    <string name="curveManage_searchBox">Search by Name/Sample/Type</string>
+    <!--item_curve-->
+    <string name="curveManage_type">Type:</string>
+    <string name="curveManage_sample">Sample:</string>
+    <string name="curveManage_formula">Formula:</string>
+    <string name="curveManage_corr">Coefficient:</string>
+
+    <!--比色图像分析-->
+    <string name="title_colorimetric_image_analysis">Colorimetric Analysis</string>
+    <string name="colorimetric_useCurve">Standard Curve:</string>
+    <string name="colorimetric_getPhoto">Gallery</string>
+    <string name="colorimetric_alterCropPhoto">Adjust Crop Area</string>
+    <string name="colorimetric_Original_image">Original Image:</string>
+    <string name="colorimetric_isSave">Save Original Image?</string>
+    <string name="switch_on">Yes</string>
+    <string name="switch_off">No</string>
+    <string name="colorimetric_Test_results">Test Results:</string>
+    <string name="colorimetric_Select_area">Selected Area:</string>
+    <string name="colorimetric_Corrected_RGB_color">Corrected RGB:</string>
+    <string name="colorimetric_crop">Crop</string>
+    <string name="colorimetric_Red">R:</string>
+    <string name="colorimetric_Green">G:</string>
+    <string name="colorimetric_Blue">B:</string>
+    <string name="colorimetric_Hue">H:</string>
+    <string name="colorimetric_Saturation">S:</string>
+    <string name="colorimetric_Value">V:</string>
+    <!--光热图像分析-->
+    <string name="title_thermal_image_analysis">Photothermal Analysis</string>
+    <string name="thermal_Connect_thermal_device">Thermal Imager Connected?</string>
+    <string name="thermal_Receive_images">Receive Image</string>
+    <!--光热图像取照-->
+    <string name="title_thermal_image_take">Capture PT Image</string>
+    <string name="thermal_performTuning">Adjust</string>
+    <string name="thermal_transform">Switch View</string>
+    <string name="thermal_txtTuning">Adjusting...</string>
+    <string name="thermal_disconnect">Please Connect Device!</string>
+    <!-- 历史记录 -->
+    <string name="history_searchBox">Search by Sample/Time</string>
+    <string name="history_credibility_true">Reliable</string>
+    <string name="history_credibility_false">Abnormal</string>
+    <string name="history_noText">No History Available</string>
+    <string name="history_totalNUm">Total Records:</string>
+    <string name="history_unlimitedSamples">All samples</string>
+    <string name="history_unlimitedTime">All time</string>
+    <!--历史记录 item-->
+    <string name="history_electrical_concentration">Elec. Conc.:</string>
+    <string name="history_colorimetric_concentration">Colo. Conc.:</string>
+    <string name="history_thermal_concentration">PT. Conc.:</string>
+    <string name="history_credibility">Credibility:</string>
+    <!--历史预览-->
+    <string name="title_historyPreview">History Preview</string>
+    <string name="historyPreview_delete">Delete</string>
+    <string name="historyPreview_standardCurve">Standard Curve</string>
+    <string name="historyPreview_standardCurve_elec">Electrical:</string>
+    <string name="historyPreview_standardCurve_colo">Colorimetric:</string>
+    <string name="historyPreview_standardCurve_thermal">Photothermal:</string>
+    <string name="historyPreview_result">Test Result</string>
+    <string name="historyPreview_14_records">14 Measurements:</string>
+    <string name="historyPreview_sequenceNumber">No.</string>
+    <string name="historyPreview_value">Value</string>
+    <string name="historyPreview_unit">Unit</string>
+    <string name="historyPreview_time">Test Time:</string>
+    <string name="historyPreview_deviceInfo">Device Info:</string>
+    <string name="historyPreview_dataTime">Test Time:</string>
+    <string name="historyPreview_CORR">Correlation:</string>
+    <string name="historyPreview_function">Fitting Function:</string>
+    <string name="historyPreview_results_electrical">Elec. Test Result</string>
+    <string name="historyPreview_results_colorimetric_image">Colo. Test Result</string>
+    <string name="historyPreview_results_thermal_image">PT. Test Result</string>
+
+    <!-- 我的 -->
+    <string name="mine_experimenter">Experimenter:</string>
+    <string name="mine_phone">Phone:</string>
+    <string name="mine_image">Avatar:</string>
+    <string name="mine_setting">Set Default Curve Settings</string>
+    <string name="mine_useGuide">User Guide</string>
+    <string name="mine_useLanguage">Language</string>
+    <string name="mine_update_success">Update Successful</string>
+    <string name="mine_update_fail">Update Failed</string>
+
+    <!--设置直线默认属性-->
+    <string name="mine_setCurve_defaultProperties">Default Curve Settings</string>
+    <string name="curveDefault_x_AxisUnit">Conc. Unit:</string>
+    <string name="curveDefault_min_CO">Min Conc.:</string>
+    <string name="curveDefault_max_CO">Max Conc.:</string>
+    <string name="curveDefault_minCorr">Min Correlation:</string>
+    <!-- 语言选项 -->
+    <string name="title_useLanguage">Language</string>
+    <string name="language_ch">中文(简体)</string>
+    <string name="language_en">English</string>
+
+    <!--    关于万用表相关-->
+    <string name="multimeter_Celsius">Temp. (Celsius)</string>
+    <string name="multimeter_Celsius_mileage_1">-40–300 ℃</string>
+    <string name="multimeter_Celsius_mileage_2">200–1000 ℃</string>
+    <string name="multimeter_DcuA">DC Microamp (DCuA)</string>
+    <string name="multimeter_DcuA_mileage_1">0–600 uA</string>
+    <string name="multimeter_DcuA_mileage_2">0–6000 uA</string>
+    <string name="multimeter_DcmA">DC Milliamp (DCmA)</string>
+    <string name="multimeter_DcmA_mileage_1">0–60 mA</string>
+    <string name="multimeter_DcmA_mileage_2">0–600 mA</string>
+
+    <!-- 图表-->
+    <string name="chart_electric">I</string>
+    <string name="chart_xTabel_time">Time/s</string>
+
+    <!--基础配置-->
+    <integer name="colorimetric_readTime">4</integer><!--测量时间 s-->
+    <integer name="colorimetric_readNum">14</integer><!--在测量时间内的测量次数-->
+
+    <!-- 默认值 -->
+    <string name="default_no_text">no text</string>
+    <string name="default_number">0</string>
+    <string name="default_no">---</string>
+    <string name="default_color">#---</string>
+    <string name="default_point_number">1</string>
+    <string name="default_float_number_0">0</string>
+    <string name="default_float_number_1">0</string>
+    <string name="default_min_CO">0.0</string>
+    <string name="default_max_CO">10.0</string>
+    <string name="default_min_CORR">90.0</string>
+    <!-- 单位 -->
+    <string name="unit_blue">blue</string>
+    <string name="unit_v">V</string>
+    <string name="unit_A">A</string>
+    <string name="unit_uA">uA</string>
+    <string name="unit_mg_per_liter">mg/L</string>
+    <string name="unit_degree">℃</string>
+    <string name="unit_mol_per_mL">mol/mL</string>
+    <string name="unit_lg_c">lg c/</string>
+    <string name="unit_mA">mA</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mol">M</string>
+
+    <!--字符串数组-->
+    <string-array name="standardCurve_type">
+        <item>@string/elec</item>
+        <item>@string/colo</item>
+        <item>@string/thermal</item>
+    </string-array>
+    <string-array name="standardCurve_array">
+        <item>All</item>
+        <item>Electrical</item>
+        <item>Colorimetric</item>
+        <item>PhotoThermal</item>
+    </string-array>
+    <!--文件提供者-->
+    <string name="file_provider_authority">com.lsy.chemicaltest_new.file.provider</string>
+
+    <!--弹框-->
+    <string name="dialog_positive">Confirm</string>
+    <string name="dialog_negative">Cancel</string>
+    <!-- 历史纪录 -->
+    <string name="historyPreview_dialog_title">Delete Record</string>
+    <string name="historyPreview_dialog_message">Are you sure delete this record?</string>
+
+    <!--权限弹框-->
+    <string name="permission_dialog_title">Permission Settings</string>
+    <string name="permission_dialog_title_needPermission">Permission Required</string>
+    <string name="permission_dialog_rational_writeStorage">Storage permission is required to export data. Please enable it manually.</string>
+    <string name="permission_dialog_needBleAndLocation">Bluetooth permission is required to scan and connect devices. Location permission is required to discover nearby Bluetooth devices.</string>
+    <string name="permission_dialog_needLocation">Location permission is required to get your current position.</string>
+    <string name="permission_dialog_toSetting">You have permanently denied necessary permissions. Please enable them in Settings.</string>
+    <string name="permission_dialog_positive_continue">Continue</string>
+    <string name="permission_dialog_positive">Go to Settings</string>
+    <string name="permission_dialog_negative">Cancel</string>
+        <!-- 删除直线 -->
+    <string name="dialog_deleteCurve_title">Delete Curve</string>
+    <string name="dialog_deleteCurve_message">Are you sure delete this curve?</string>
+        <!-- 保存实验 -->
+    <string name="dialog_save_title">Prompt</string>
+    <string name="dialog_save_message">Confirm saving?</string>
+        <!-- 删除样品 -->
+    <string name="dialog_deleteSample_title">Delete Sample</string>
+    <string name="dialog_deleteSample_message">Are you sure delete this sample?</string>
+    <!-- 重启应用 -->
+    <string name="dialog_restart_title">App Restart</string>
+    <string name="dialog_restart_message">Language change requires app restart to take effect. Restart now?</string>
+    <string name="dialog_restart_positive">Restart</string>
+    <string name="dialog_restart_negative">Restart Later</string>
+    <!-- 通知 -->
+    <string name="toast_add_success">Added successfully</string>
+    <string name="toast_add_fail">Failed to add</string>
+    <string name="toast_save_success">Saved successfully</string>
+    <string name="toast_save_fail">Failed to save</string>
+    <string name="toast_save_fail_tryAgain">Save failed. Please try again.</string>
+    <string name="toast_save_fail_exception">Save failed. An exception occurred.</string>
+    <string name="toast_tempSave_success">Temporarily saved</string>
+    <string name="toast_tempSave_fail">Failed to save temporarily</string>
+    <string name="toast_tempSave_fail_exception">Temporary save failed: System error</string>
+    <string name="toast_delete_success">Deleted successfully</string>
+    <string name="toast_delete_fail">Failed to delete</string>
+    <string name="toast_delete_fail_exception">Delete failed. An exception occurred.</string>
+    <string name="toast_delete_fail_image">Delete failed. Image deletion failed.</string>
+    <string name="toast_update_success">Updated successfully</string>
+    <string name="toast_update_fail">Failed to update</string>
+    <string name="toast_update_fail_exception">Update failed. An exception occurred.</string>
+    <string name="toast_refresh_success">Refreshed successfully</string>
+    <string name="toast_refresh_fail">Failed to refresh</string>
+    <string name="toast_insufficientSspace">Insufficient storage space</string>
+    <string name="toast_fillComplete">Please fill in all required fields</string>
+    <string name="toast_normal">Normal</string>
+    <string name="toast_abnormal">Abnormal</string>
+    <string name="toast_abnormal_CoGreaterThanNormalValue">Concentration exceeds normal range</string>
+    <string name="toast_abnormal_CoLessThanNormalValue">Concentration below normal range</string>
+    <string name="toast_abnormal_LessThanMin">Below minimum value</string>
+    <string name="toast_updateCO">Concentration updated</string>
+    <string name="toast_pleaseSelectCurve">Please select a standard curve first</string>
+    <string name="toast_no_image">No image</string>
+    <string name="toast_test_all_empty">At least one test result is required</string>
+    <string name="toast_test_clear_success">Cleared successfully</string>
+    <string name="toast_curve_loadData_fail">Failed to load curve data</string>
+    <string name="toast_curve_valueConflict">Minimum concentration cannot exceed maximum</string>
+    <string name="toast_curve_limitMin">Minimum correlation cannot be less than 0</string>
+    <string name="toast_curve_limitMax">Maximum correlation cannot exceed 1</string>
+    <string name="toast_curve_saving">Saving...</string>
+    <string name="toast_curve_accessFile_deny">File access denied</string>
+    <string name="toast_curve_fileFormat_error">Invalid file format</string>
+    <string name="toast_curve_empty">Curve is empty</string>
+    <string name="toast_curve_selectSample">Please select a sample</string>
+    <string name="toast_curve_inputCurveName">Please enter a curve name</string>
+    <string name="toast_curve_inputCurveName_tooLong">Curve name is too long</string>
+    <string name="toast_curve_NameRepeat">Curve name already exists</string>
+    <string name="toast_curve_atLeastTwoPoints">At least two data points are required</string>
+    <string name="toast_curve_inputEmpty">Input cannot be empty</string>
+    <string name="toast_curve_nameEmpty">Curve name cannot be empty</string>
+    <string name="toast_curve_notEmpty">Cannot be empty</string>
+    <string name="toast_curve_cant_greaterMax">Cannot exceed maximum value</string>
+    <string name="toast_curve_cant_lessMin">Cannot be less than minimum value</string>
+    <string name="toast_curve_updatePoint">Point updated</string>
+    <string name="toast_curve_addPoint">Point added</string>
+    <string name="toast_curve_XValue_invalid">invalid logX</string>
+    <string name="toast_elec_closeBLE">Bluetooth is disabled. Please enable it and try again.</string>
+    <string name="toast_elec_openDevice">Bluetooth enabled</string>
+    <string name="toast_elec_testOver">Test completed</string>
+    <string name="toast_elec_testing">Testing in progress...</string>
+    <string name="toast_elec_timeOut">Connection timed out. Please try again.</string>
+    <string name="toast_sample_getSamples_fail">Failed to retrieve sample information</string>
+    <string name="toast_sample_name_empty">Sample name cannot be empty</string>
+    <string name="toast_sample_refresh_fail">Failed to update sample</string>
+    <string name="toast_sample_nameRepeat">Sample name already exists</string>
+    <string name="toast_sample_refreshFail_sampleList">Failed to refresh sample list</string>
+    <string name="toast_sample_deleteFail_existCurve">Cannot delete sample with existing curves</string>
+    <string name="toast_thermal_getCrop_fail">Failed to capture image</string>
+    <string name="toast_history_get_fail">Failed to retrieve history records</string>
+    <string name="toast_takePhoto_cropFail">Crop failed</string>
+    <string name="toast_takePhoto_startCropFail">Failed to start crop</string>
+    <string name="toast_takePhoto_canceleOperation">Operation canceled or failed</string>
+    <string name="toast_takePhoto_pictureOutDate">Image has expired</string>
+    <string name="toast_takePhoto_pictureOversize">Image is too large</string>
+    <string name="toast_takePhoto_loadFail">Failed to load image</string>
+    <string name="toast_takePhoto_fail">Failed to take photo</string>
+    <string name="toast_takePhoto_noSelectImage">No image selected</string>
+    <!--权限-->
+    <string name="toast_permission_write_storage">Storage permission is required to export data</string>
+    <string name="toast_permission_write_storage_deny">Permission denied. Cannot export data.</string>
+    <string name="toast_permission_deny">Permission denied. Functionality may be limited.</string>
+    <string name="toast_permission_usb">USB permission is required for this operation</string>
+    <string name="toast_permission_denyPermissions">The following permissions are denied. Functionality may be limited: </string>
+</resources>

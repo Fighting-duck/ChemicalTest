@@ -1,0 +1,129 @@
+plugins {
+    alias(libs.plugins.android.application)
+    // 应用 Hilt 插件
+    //id 'dagger.hilt.android.plugin'
+}
+//构建时间
+def generateTime() {
+    return new Date().format("yyyy_MM_dd_HH_mm_ss")
+}
+
+android {
+    namespace 'com.lsy.chemicaltest_new'
+    compileSdk 35
+    ndkVersion '25.2.9519653'
+
+    defaultConfig {
+        applicationId "com.lsy.chemicaltest_new"
+        minSdk 26
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 35
+        versionCode 2
+        versionName "2.2"
+        //不能删
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // 自定义打包名称
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            //打包名称+打包类型+版本号+打包日期
+            outputFileName = "MyApplication_${buildType.name}_v${versionName}_${generateTime()}.apk"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true       // 是否启用代码混淆
+            //debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    dataBinding {
+        enabled = true
+    }
+    ndkVersion '25.2.9519653'
+}
+
+dependencies {
+    // ================== USB需要的依赖 ==================
+    implementation project(':flironesdk')
+
+    // ================== AndroidX 官方库 ==================
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.constraintlayout
+
+    // ================== Jetpack 组件 ==================
+    // Lifecycle
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
+    // Navigation
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.activity
+    implementation libs.legacy.support.v4
+    implementation libs.lifecycle.viewmodel.android
+
+    // ================== 测试依赖 ==================
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    // ================== 蓝牙 BLE 相关 ==================
+    // FastBle: https://github.com/Jasonchenlijian/FastBle
+    implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
+
+    // ================== 工具类库 ==================
+    // AndroidUtilCode: https://github.com/Blankj/AndroidUtilCode
+    implementation 'com.blankj:utilcodex:1.31.1'
+
+    // ================== UI 组件 ==================
+    // RecyclerView 增强适配器: https://github.com/CymChad/BaseRecyclerViewAdapterHelper
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    // 图表绘制: https://github.com/PhilJay/MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    // 调色板: https://developer.android.com/jetpack/androidx/releases/palette
+    implementation 'androidx.palette:palette:1.0.0'
+
+    // ================== 图片处理 ==================
+    // 图片裁剪: https://github.com/theartofdev/Android-Image-Cropper
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    // 添加 Glide 的依赖  异步加载图片
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
+    // ================== 数据库 ==================
+    // Room 数据库: https://developer.android.com/jetpack/androidx/releases/room
+    def room_version = '2.5.1'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // ================== 数据库数据导出 ==================
+    implementation 'com.ajts.androidmads.SQLite2Excel:library:1.0.4'//SQLite2Excel
+    implementation 'org.apache.poi:poi:5.4.1'// Apache POI 的依赖
+    implementation 'org.apache.poi:poi-ooxml:5.4.1'
+
+    // ================== 权限管理工具 ==================
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
+    // ================== 添加 Hilt 依赖 ===============
+    //implementation 'com.google.dagger:hilt-android:2.44'
+    //annotationProcessor 'com.google.dagger:hilt-android-compiler:2.44'
+    // Hilt 与 ViewModel 集成
+    //implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03'
+    //annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0'
+
+    // ================== 其他 ==================
+    implementation 'com.google.android.material:material:1.10.0' // 底部弹框
+}

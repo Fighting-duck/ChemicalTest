@@ -1,0 +1,106 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activitys.smpleTest.TakeThermalPhotoActivity"
+    android:keepScreenOn="true"
+    >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/top_nav_background" />
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_back"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"/>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_thermal_image_take"
+            style="@style/text_topBarTitle"/>
+    </FrameLayout>
+    <FrameLayout
+        android:background="@android:color/background_dark"
+        android:touchscreenBlocksFocus="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:id="@+id/fullscreen_content">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView"
+            android:layout_gravity="center_horizontal|top"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:scaleType="fitCenter" />
+        <FrameLayout
+            android:id="@+id/fullscreen_content_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black"
+            tools:ignore="UselessParent"
+            android:columnCount="3"
+            android:rowCount="2"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_marginBottom="80dp">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/thermal_performTuning"
+                android:id="@+id/btn_adjust"
+                android:layout_gravity="center_vertical|left"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_takePhoto"
+                android:layout_weight="0.33"
+                android:src="@android:drawable/ic_menu_camera"
+                android:layout_gravity="center_horizontal|bottom" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/thermal_transform"
+                android:id="@+id/btn_transform"
+                android:layout_gravity="center_vertical|right"/>
+        </FrameLayout>
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_tuning"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/thermal_txtTuning"
+            android:id="@+id/tv_tuning"
+            android:labelFor="@id/pb_tuning"
+            android:layout_gravity="center"
+            android:layout_marginTop="36dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/thermal_disconnect"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:id="@+id/tv_disconnect"
+            android:layout_gravity="center" />
+    </FrameLayout>
+</LinearLayout>

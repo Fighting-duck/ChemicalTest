@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_sampleTest">
+
+    <fragment
+        android:id="@+id/navigation_sampleTest"
+        android:name="com.lsy.chemicaltest.fragments.SampleTestFragment"
+        android:label="@string/title_sampleTest"
+        tools:layout="@layout/fragment_samples_test" />
+
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.lsy.chemicaltest.fragments.HistoryFragment"
+        android:label="@string/title_history"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/navigation_useGuide"
+        android:name="com.lsy.chemicaltest.fragments.UseGuideFragment"
+        android:label="@string/title_useGuide"
+        tools:layout="@layout/fragment_mine" />
+</navigation>

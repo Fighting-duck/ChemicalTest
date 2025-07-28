@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ChemicalTest_new" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- 确保状态栏可见性 -->
+        <item name="android:windowFullscreen">false</item>
+
+        <!-- 状态栏显式控制 -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- 针对不同安卓版本的兼容设置 -->
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>  <!-- 处理刘海屏 -->
+
+        <!-- Primary brand color. -->
+        <!--工具栏和状态栏-->
+        <item name="colorPrimary">@color/bottom_nav_dark</item>
+        <!--状态栏在亮色主题中的颜色-->
+        <item name="colorPrimaryVariant">@color/black</item>
+        <!--主要颜色上的文本颜色-->
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <!--悬浮按钮和浮动操作按钮-->
+        <item name="colorSecondary">@color/bottom_nav_light</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <!--状态栏的颜色-->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>

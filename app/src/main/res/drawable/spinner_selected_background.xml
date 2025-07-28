@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/spinner_selected_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- 圆角 -->
+    <corners
+        android:radius="5dp" />
+    <!-- 填充 -->
+    <solid android:color="@color/color_spinner_background"/>
+    <!-- 描边 -->
+    <stroke
+        android:width="0dp"
+        android:color="@color/white"
+        android:dashWidth="20dp"
+        android:dashGap="0dp"/><!--设置虚线的间隔宽度-->
+</shape>

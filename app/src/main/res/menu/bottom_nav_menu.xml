@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_sampleTest"
+        android:icon="@drawable/samples_test_icon"
+        android:title="@string/title_sampleTest"
+        android:checked="true"/>
+
+    <item
+        android:id="@+id/navigation_history"
+        android:icon="@drawable/history_icon"
+        android:title="@string/title_history"
+        android:checked="false"/>
+
+    <item
+        android:id="@+id/navigation_useGuide"
+        android:icon="@drawable/icon_mine"
+        android:title="@string/title_mine"
+        android:checked="false"/>
+
+</menu>

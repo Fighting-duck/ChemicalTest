@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context="com.lsy.chemicaltest_new.fragments.MineFragment">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:clipChildren="false">
+
+        <!-- 背景图在最下层 -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_headBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
+
+        <!-- 头像居中 -->
+        <com.lsy.chemicaltest_new.domain.imageView.GestureImageView
+            android:id="@+id/iv_headPicture"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:background="@drawable/icon_error" />
+
+        <!-- 用户名在头像下方 -->
+        <TextView
+            android:id="@+id/tv_experimenterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- 分割线在最上层 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/splitLine"
+            android:layout_gravity="bottom"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+        <FrameLayout
+            android:id="@+id/fl_setting"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/border_radius_10"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_setting"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/mine_setting"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mine_setting"
+                android:textSize="18sp"
+                android:layout_marginStart="50dp"
+                android:layout_gravity="center_vertical"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_enter"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/enter"
+                tools:ignore="RtlHardcoded" />
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/fl_useLanguage"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/border_radius_10"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_language"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/mine_useLanguage"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mine_useLanguage"
+                android:textSize="18sp"
+                android:layout_marginStart="50dp"
+                android:layout_gravity="center_vertical"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_enter"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/enter"
+                tools:ignore="RtlHardcoded" />
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/fl_useGuide"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/border_radius_10"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_use_guide"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/mine_useGuide"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mine_useGuide"
+                android:textSize="18sp"
+                android:layout_marginStart="50dp"
+                android:layout_gravity="center_vertical"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_enter"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/enter"
+                tools:ignore="RtlHardcoded" />
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

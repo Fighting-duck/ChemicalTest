@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/room_status_cell_width"
+    android:layout_height="@dimen/room_status_cell_height">
+    <TextView
+        android:id="@+id/tv_top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@drawable/border_all_1_white"/>
+    <EditText
+        android:id="@+id/edt_value"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/default_point_number"
+        android:background="@drawable/border_all_1_white"
+        android:singleLine="true"
+        android:inputType="numberDecimal"
+        android:textSize="16sp"
+        android:gravity="center" />
+</LinearLayout>

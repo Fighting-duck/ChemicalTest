@@ -1,0 +1,76 @@
+package com.lsy.chemicaltest_new.domain.dialog;
+
+import static com.blankj.utilcode.util.SnackbarUtils.dismiss;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CombinedData;
+import com.lsy.chemicaltest_new.MyApplication;
+import com.lsy.chemicaltest_new.R;
+import com.lsy.chemicaltest_new.domain.Point;
+import com.lsy.chemicaltest_new.domain.Sample;
+import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
+
+import java.util.List;
+
+public class CurveDetailDialog extends Dialog {
+    private CombinedData mCombinedData = new CombinedData();//联合图数据
+
+    public CurveDetailDialog(Context context, StandardCurve standardCurve) {
+        super(context);
+        setContentView(R.layout.curve_details_dialog_layout);
+
+        // 获取布局中的控件
+        TextView tv_type = findViewById(R.id.tv_type);
+        TextView tv_sample = findViewById(R.id.tv_sample);
+        TextView tv_name = findViewById(R.id.tv_name);
+        TextView tv_x_unit = findViewById(R.id.tv_x_unit);
+        TextView tv_y_unit = findViewById(R.id.tv_y_unit);
+        TextView tv_min_x = findViewById(R.id.tv_min_x);
+        TextView tv_max_x = findViewById(R.id.tv_max_x);
+        TextView tv_min_CORR = findViewById(R.id.tv_min_CORR);
+        TextView tv_corr = findViewById(R.id.tv_corr);
+        TextView tv_expression = findViewById(R.id.tv_expression);
+        TextView tv_description = findViewById(R.id.tv_description);
+        CombinedChart chart = findViewById(R.id.cc_chart);
+        chart.setData(mCombinedData);
+        if (standardCurve != null){
+            tv_type.setText(StandardCurve.getCurveType(standardCurve.getType()));
+            tv_sample.setText(standardCurve.getSample().getName());
+            tv_name.setText(standardCurve.getName());
+            tv_x_unit.setText(standardCurve.getX_axis_unit());
+            tv_y_unit.setText(standardCurve.getY_axis_unit());
+            tv_min_x.setText(String.valueOf(standardCurve.getMin_CO()));
+            tv_max_x.setText(String.valueOf(standardCurve.getMax_CO()));
+            tv_min_CORR.setText(String.valueOf(standardCurve.getMinCorr()));
+            tv_corr.setText(String.valueOf(standardCurve.getCORR()));
+            tv_expression.setText(standardCurve.getFormula().toString());
+            tv_description.setText(standardCurve.getDescription());
+            CombinedChartUtils.setChart(chart);
+            List<Float> k_b_corr = CombinedChartUtils.buildChart(context,chart,standardCurve.getPointList(),standardCurve.getType(),standardCurve.getX_axis_unit());
+            /*//更新其Y轴与X轴
+            List<Point> pointList = standardCurve.getPointList();
+            if (k_b_corr != null && !k_b_corr.isEmpty()){
+                float finalYMax = k_b_corr.get(0)>0 ? pointList.get(pointList.size()-1).getY_value() : pointList.get(0).getY_value();
+                float finalYMax1 = finalYMax +  0.1F*finalYMax;
+                YAxis yAxis = chart.getAxisLeft();
+                yAxis.setAxisMaximum(finalYMax1);
+                XAxis xAxis = chart.getXAxis();
+                xAxis.setAxisMinimum(pointList.get(0).getX_value()- 0.1f*pointList.get(0).getX_value());
+                xAxis.setAxisMaximum(pointList.get(pointList.size() - 1).getX_value()+0.1f*pointList.get(pointList.size() - 1).getX_value());
+                // 刷新图表
+                chart.notifyDataSetChanged(); // 通知数据变化
+                chart.invalidate();
+            }*/
+        }
+
+    }
+}
