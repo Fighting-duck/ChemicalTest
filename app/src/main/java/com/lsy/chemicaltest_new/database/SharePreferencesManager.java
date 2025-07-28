@@ -44,5 +44,15 @@ public class SharePreferencesManager {
     public String getAvatarPath() {
         return sharedPreferences.getString("avatarPath", null);
     }
+
+    // 是否首次启动
+    public void setFirstLaunch(Boolean isFirstLaunch) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isFirstLaunch", isFirstLaunch);
+        editor.apply();
+    }
+    public Boolean isFirstLaunch() {
+        return sharedPreferences.getBoolean("isFirstLaunch", true);
+    }
 }
 

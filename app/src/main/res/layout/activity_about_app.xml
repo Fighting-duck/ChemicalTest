@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".activitys.mine.AboutAppActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/top_nav_background" />
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_back"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"/>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mine_aboutAPP"
+            style="@style/text_topBarTitle"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#D3D3D6"
+            android:layout_gravity="bottom"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_version"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/border_radius_10"
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/icon_version"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/currentVersion"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/currentVersion"
+            android:textSize="18sp"
+            android:layout_marginStart="50dp"
+            android:layout_gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/tv_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_enter"
+            android:layout_gravity="right|center_vertical"
+            tools:ignore="RtlHardcoded" />
+    </FrameLayout>
+
+</LinearLayout>

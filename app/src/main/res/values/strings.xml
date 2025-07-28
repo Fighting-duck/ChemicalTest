@@ -64,7 +64,7 @@
     <string name="text_temperature">衡定温度值:</string>
     <string name="text_StartAnal">开始分析</string>
     <string name="history_sure">确定</string>
-        <!--testValue item-->
+    <!--testValue item-->
     <string name="testValue_No">序号:</string>
     <string name="testValue_testValue">测量值:</string>
     <string name="testValue_testTime">测量时间:</string>
@@ -191,6 +191,7 @@
     <string name="mine_image">头像:</string>
     <string name="mine_setting">设置标准曲线默认属性</string>
     <string name="mine_useGuide">使用指南</string>
+    <string name="mine_aboutAPP">关于APP</string>
     <string name="mine_useLanguage">语言选项</string>
     <string name="mine_update_success">更新成功</string>
     <string name="mine_update_fail">更新失败</string>
@@ -204,6 +205,9 @@
     <string name="title_useLanguage">语言选项</string>
     <string name="language_ch">中文(简体)</string>
     <string name="language_en">English</string>
+    <!--关于APP-->
+    <string name="title_aboutAPP">应用详情</string>
+    <string name="currentVersion">当前版本</string>
 
     <!--    关于万用表相关-->
     <string name="multimeter_Celsius">温度档(Celsius)</string>
@@ -258,18 +262,18 @@
         <item>比色</item>
         <item>光热</item>
     </string-array>
-    
+
     <!--文件提供者-->
     <string name="file_provider_authority">com.lsy.chemicaltest_new.file.provider</string>
-    
+
     <!--弹框-->
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
-        <!-- 历史纪录 -->
+    <!-- 历史纪录 -->
     <string name="historyPreview_dialog_title">删除历史记录</string>
     <string name="historyPreview_dialog_message">是否删除该历史记录?</string>
 
-        <!--权限弹框-->
+    <!--权限弹框-->
     <string name="permission_dialog_title">权限设置</string>
     <string name="permission_dialog_title_needPermission">需要权限</string>
     <string name="permission_dialog_rational_writeStorage">需要存储权限才能正常导出数据，请手动开启权限</string>
@@ -279,16 +283,16 @@
     <string name="permission_dialog_positive_continue">继续</string>
     <string name="permission_dialog_positive">去设置</string>
     <string name="permission_dialog_negative">取消</string>
-        <!-- 删除直线 -->
+    <!-- 删除直线 -->
     <string name="dialog_deleteCurve_title">删除直线</string>
     <string name="dialog_deleteCurve_message">是否删除该直线?</string>
-        <!-- 保存实验 -->
+    <!-- 保存实验 -->
     <string name="dialog_save_title">提示</string>
     <string name="dialog_save_message">确认保存吗?</string>
-        <!-- 删除样品 -->
+    <!-- 删除样品 -->
     <string name="dialog_deleteSample_title">删除样品</string>
     <string name="dialog_deleteSample_message">是否删除该样品?</string>
-        <!-- 重启应用 -->
+    <!-- 重启应用 -->
     <string name="dialog_restart_title">应用重启</string>
     <string name="dialog_restart_message">切换语言需要重启应用生效，是否立即重启?</string>
     <string name="dialog_restart_positive">重启</string>
@@ -367,13 +371,12 @@
     <string name="toast_takePhoto_loadFail">图片加载失败</string>
     <string name="toast_takePhoto_fail">拍照失败</string>
     <string name="toast_takePhoto_noSelectImage">未选择图片</string>
-        <!--权限-->
+    <!--权限-->
     <string name="toast_permission_write_storage">需要存储权限来导出数据</string>
     <string name="toast_permission_write_storage_deny">权限被拒绝，无法导出数据</string>
     <string name="toast_permission_deny">权限被拒绝，功能可能受限</string>
     <string name="toast_permission_usb">需要USB权限来进行相关操作</string>
     <string name="toast_permission_denyPermissions">以下权限被拒绝，功能可能受限: </string>
-
 
 
 </resources>

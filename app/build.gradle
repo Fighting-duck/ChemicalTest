@@ -19,12 +19,13 @@ android {
         //noinspection ExpiredTargetSdkVersion
         targetSdk 35
         versionCode 2
-        versionName "2.2"
+        versionName "2.3"
         //不能删
         ndk {
             abiFilters 'armeabi-v7a'
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
     }
 
     // 自定义打包名称
@@ -48,6 +49,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     dataBinding {
         enabled = true

@@ -190,6 +190,7 @@
     <string name="mine_image">Avatar:</string>
     <string name="mine_setting">Set Default Curve Settings</string>
     <string name="mine_useGuide">User Guide</string>
+    <string name="mine_aboutAPP">About APP</string>
     <string name="mine_useLanguage">Language</string>
     <string name="mine_update_success">Update Successful</string>
     <string name="mine_update_fail">Update Failed</string>
@@ -204,6 +205,9 @@
     <string name="title_useLanguage">Language</string>
     <string name="language_ch">中文(简体)</string>
     <string name="language_en">English</string>
+    <!--关于APP-->
+    <string name="title_aboutAPP">About App</string>
+    <string name="currentVersion">Current Version</string>
 
     <!--    关于万用表相关-->
     <string name="multimeter_Celsius">Temp. (Celsius)</string>
@@ -346,6 +350,7 @@
     <string name="toast_curve_updatePoint">Point updated</string>
     <string name="toast_curve_addPoint">Point added</string>
     <string name="toast_curve_XValue_invalid">invalid logX</string>
+    <string name="toast_curve_cant_lessOne">The number of Y values cannot be less than 1</string>
     <string name="toast_elec_closeBLE">Bluetooth is disabled. Please enable it and try again.</string>
     <string name="toast_elec_openDevice">Bluetooth enabled</string>
     <string name="toast_elec_testOver">Test completed</string>

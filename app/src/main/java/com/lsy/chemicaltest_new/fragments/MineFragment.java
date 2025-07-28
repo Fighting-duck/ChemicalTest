@@ -26,6 +26,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BottomNavigationActivity;
+import com.lsy.chemicaltest_new.activitys.mine.AboutAppActivity;
 import com.lsy.chemicaltest_new.activitys.mine.CurveSettingActivity;
 import com.lsy.chemicaltest_new.activitys.mine.UseLanguageActivity;
 import com.lsy.chemicaltest_new.database.SharePreferencesManager;
@@ -90,6 +91,7 @@ public class MineFragment extends Fragment {
         mBinding.flSetting.setOnClickListener(this::onClick);
         mBinding.tvExperimenterName.setOnClickListener(this::onClick);
         mBinding.flUseLanguage.setOnClickListener(this::onClick);
+        mBinding.flAppDetails.setOnClickListener(this::onClick);
         mBinding.ivHeadPicture.setOnGestureListener(new GestureImageView.OnGestureListener() {
             @Override
             public void onSingleTap(View v) {
@@ -207,6 +209,10 @@ public class MineFragment extends Fragment {
         }
         else if (id == mBinding.flUseLanguage.getId()) {
             Intent intent = new Intent(mContext, UseLanguageActivity.class);
+            mContext.startActivity(intent);
+        }
+        else if (id == mBinding.flAppDetails.getId()) {
+            Intent intent = new Intent(mContext, AboutAppActivity.class);
             mContext.startActivity(intent);
         }
 

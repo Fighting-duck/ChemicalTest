@@ -382,22 +382,5 @@ public class CombinedChartUtils {
         return lineDataSet;
     }
 
-    /***
-     * 随机生成一个曲线的点集
-     * @return
-     */
-    private List<Entry> createEntries(int k ,int b){
-        //随机生成点数据集，以y = kx + b 作为例子,生成随机点
-        List<Entry> entries = new ArrayList<Entry>();
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            float x = i;
-            // 生成一个0到10之间的随机数，然后除以5得到0到2之间的随机数
-            float noise = random.nextFloat() * 10;
-            float y = k * x + b + noise/5; // 线性关系
-            entries.add(new Entry(x, y));
-        }
 
-        return entries;
-    }
 }
