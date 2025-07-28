@@ -51,5 +51,6 @@
     <!--按钮-->
     <color name="btn_press_true">#8EE5E7</color>
     <color name="btn_press_false">#C3E5E6</color>
+    <color name="btn_disabled">#BDBDBD</color>
     <color name="btn_ripple">#A84040</color>
 </resources>

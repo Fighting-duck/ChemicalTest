@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 按下状态 -->
+    <!-- 1. 按下状态（优先级最高） -->
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/btn_press_true"/>
@@ -8,7 +8,15 @@
         </shape>
     </item>
 
-    <!-- 默认状态 -->
+    <!-- 2. 禁用状态（其次） -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/btn_disabled"/>
+            <corners android:radius="100dp"/>
+        </shape>
+    </item>
+
+    <!-- 3. 默认状态（最后） -->
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@color/btn_press_false"/>
