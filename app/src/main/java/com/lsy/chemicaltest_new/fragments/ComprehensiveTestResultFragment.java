@@ -201,6 +201,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
     }
     // ============恢复默认状态==============
     public void restoreElecSection(){
+        mBinding.llResultsElec.setVisibility(View.GONE);
         String defaultText = getString(R.string.default_no);
         String defaultText2 = getString(R.string.default_no_text);
         //电信号检测
@@ -216,6 +217,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
         mBinding.tvDiseaseAnalysisElectrical.setText(defaultText2);
     }
     public void restoreColoSection(){
+        mBinding.llResultsColo.setVisibility(View.GONE);
         String defaultText = getString(R.string.default_no);
         String defaultText2 = getString(R.string.default_no_text);
         //比色图像分析
@@ -237,6 +239,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
         mBinding.tvDiseaseAnalysisColorimetric.setText(defaultText2);
     }
     public void restoreThermalSection(){
+        mBinding.llResultsThermal.setVisibility(View.GONE);
         String defaultText = getString(R.string.default_no);
         String defaultText2 = getString(R.string.default_no_text);
         //热成像分析
@@ -270,6 +273,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
     private void setElecResult(ElecTestResult elecTestResult){
         Log.d(TAG, "setElecResult:"+elecTestResult);
         if (elecTestResult!=null){
+            mBinding.llResultsElec.setVisibility(View.VISIBLE);
             Float co = elecTestResult.getDetectionCo();
             StandardCurve standardCurve = elecTestResult.getStandardCurve();
             if (standardCurve!=null){
@@ -304,6 +308,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
     private void setColoResult(ColoTestResult coloTestResult) {
         Log.d(TAG, "setColoResult:"+coloTestResult);
         if (coloTestResult!=null){
+            mBinding.llResultsColo.setVisibility(View.VISIBLE);
             Float co = coloTestResult.getDetectionCo();
             StandardCurve standardCurve = coloTestResult.getStandardCurve();
             if (standardCurve!=null){
@@ -360,6 +365,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
         Float co = null;
         StandardCurve standardCurve = null;
         if (thermalTestResult!=null) {
+            mBinding.llResultsThermal.setVisibility(View.VISIBLE);
             mBinding.llDeviceInfoDegree.setVisibility(View.GONE);
             mBinding.rlImageThermal.setVisibility(View.VISIBLE);
             co = thermalTestResult.getDetectionCo();
@@ -382,6 +388,7 @@ public class ComprehensiveTestResultFragment extends Fragment {
                 mBinding.tvDiseaseAnalysisThermal.setText(thermalTestResult.getDiseaseAnal());
         }
         else if (temperature_elec!=null){
+            mBinding.llResultsThermal.setVisibility(View.VISIBLE);
             mBinding.rlImageThermal.setVisibility(View.GONE);
             mBinding.llDeviceInfoDegree.setVisibility(View.VISIBLE);
             co = temperature_elec.getDetectionCo();

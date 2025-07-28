@@ -111,9 +111,11 @@
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/ll_results_elec"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:background="@color/background_border_2"
                 android:padding="10dp">
                 <LinearLayout
@@ -292,9 +294,11 @@
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/ll_results_colo"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:background="@color/background_border_2"
                 android:padding="10dp">
                 <LinearLayout
@@ -539,9 +543,11 @@
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/ll_results_thermal"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
                 <RelativeLayout
                     android:id="@+id/rl_image_thermal"
                     android:orientation="vertical"
