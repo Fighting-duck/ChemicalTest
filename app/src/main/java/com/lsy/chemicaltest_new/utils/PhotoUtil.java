@@ -256,7 +256,7 @@ public class PhotoUtil {
         return Color.rgb(averageRed, averageGreen, averageBlue);
     }
     /***
-     * 提取以矩形图片中心点为中心、边长为 sideLength 像素正方形区域的平均 HSV 值
+     * 提取以矩形图片中心点为中心、边长为 sideLength 像素正方形区域的平均 HSV 值(保留两位小数)
      * @param bitmap 图片
      * @param sideLength 正方形边长
      * @return HSV数组，如果提取失败返回 null
@@ -284,7 +284,9 @@ public class PhotoUtil {
 
         List<Float> hsvList = new ArrayList<>();
         for (float value : hsv) {
-            hsvList.add(value);
+            // 先乘 100 取整，再除以 100.0f 得到两位小数
+            float roundedValue = (float) Math.round (value * 100) / 100.0f;
+            hsvList.add (roundedValue);
         }
 
         return hsvList;
