@@ -50,7 +50,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="10dp">
         <FrameLayout
             android:id="@+id/fl_setting"
@@ -172,5 +173,14 @@
                 tools:ignore="RtlHardcoded" />
         </FrameLayout>
     </LinearLayout>
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/text_color_light"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="10dp"/>
 
 </LinearLayout>

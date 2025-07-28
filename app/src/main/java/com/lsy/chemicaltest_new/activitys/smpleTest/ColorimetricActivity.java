@@ -313,7 +313,7 @@ public class ColorimetricActivity extends BaseActivity {
 
     @NonNull
     private SelectCurveFragment getSelectCurveFragment() {
-        SelectCurveFragment dialogFragment = new SelectCurveFragment();
+        SelectCurveFragment dialogFragment = new SelectCurveFragment(2);
         dialogFragment.setOnSelectCurveListener(new SelectCurveFragment.OnFragmentChangeListener() {
             @Override
             public void onSelectCurve(StandardCurve selectCurve) {

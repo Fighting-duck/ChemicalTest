@@ -40,6 +40,8 @@ public class SelectCurveFragment extends DialogFragment {
     private ArrayAdapter<String> mCurveTypeAdapter;
     private OnFragmentChangeListener listener;
 
+    private Integer mCurveType =  0;// 0:所有曲线  1:电信号曲线  2:比色曲线  3:光热曲线
+
     // 定义接口
     public interface OnFragmentChangeListener {
         void onSelectCurve(StandardCurve selectCurve);
@@ -48,6 +50,12 @@ public class SelectCurveFragment extends DialogFragment {
     // 设置监听器 监听曲线选择变化
     public void setOnSelectCurveListener(OnFragmentChangeListener listener) {
         this.listener = listener;
+    }
+
+    public SelectCurveFragment(){}
+
+    public SelectCurveFragment(Integer curveType) {
+        mCurveType = curveType;
     }
 
     public static SelectCurveFragment newInstance(Integer curveId) {
@@ -104,6 +112,7 @@ public class SelectCurveFragment extends DialogFragment {
         mCurveTypeAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_selected_item, curveTypes);
         mCurveTypeAdapter.setDropDownViewResource(R.layout.spinner_item);
         mBinding.spCurveType.setAdapter(mCurveTypeAdapter);
+        mBinding.spCurveType.setSelection(mCurveType);
         //设置联合图表参数
         CombinedChartUtils.setChart(mBinding.ccChart);
 

@@ -478,7 +478,7 @@ public class ElectricalTestActivity extends BaseActivity implements EasyPermissi
         FragmentManager fragmentManager = getSupportFragmentManager();
         SelectCurveFragment existingFragment = (SelectCurveFragment) fragmentManager.findFragmentByTag(tag);
         if (existingFragment == null) {
-            SelectCurveFragment dialogFragment = getSelectCurveFragment();
+            SelectCurveFragment dialogFragment = getSelectCurveFragment(tag);
             dialogFragment.show(fragmentManager, tag);
         }else {
             if (!existingFragment.isVisible()) {
@@ -488,8 +488,12 @@ public class ElectricalTestActivity extends BaseActivity implements EasyPermissi
     }
     // 获取选择曲线对话框
     @NonNull
-    private SelectCurveFragment getSelectCurveFragment() {
-        SelectCurveFragment dialogFragment = new SelectCurveFragment();
+    private SelectCurveFragment getSelectCurveFragment(String tag) {
+        SelectCurveFragment dialogFragment;
+        if(Objects.equals(tag, "select_curve_electrical"))
+            dialogFragment = new SelectCurveFragment(1);
+        else
+            dialogFragment = new SelectCurveFragment(3);
         dialogFragment.setOnSelectCurveListener(new SelectCurveFragment.OnFragmentChangeListener() {
             @Override
             public void onSelectCurve(StandardCurve selectCurve) {

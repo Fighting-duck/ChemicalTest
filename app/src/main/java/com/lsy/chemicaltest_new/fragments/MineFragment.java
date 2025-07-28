@@ -1,6 +1,7 @@
 package com.lsy.chemicaltest_new.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -23,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.lsy.chemicaltest_new.BuildConfig;
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BottomNavigationActivity;
@@ -87,7 +89,10 @@ public class MineFragment extends Fragment {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void initUI() {
+        String appName = getString(R.string.app_name);
+        mBinding.tvVersion.setText(appName+ " V" + BuildConfig.VERSION_NAME);
         mBinding.flSetting.setOnClickListener(this::onClick);
         mBinding.tvExperimenterName.setOnClickListener(this::onClick);
         mBinding.flUseLanguage.setOnClickListener(this::onClick);
@@ -163,6 +168,7 @@ public class MineFragment extends Fragment {
                 mAvatarHelper.loadAvatar(experimenter.getImage()); //  加载模糊头像背景
             }
         });
+
     }
 
     public void setImage(Bitmap bitmap) {
