@@ -70,9 +70,9 @@
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="text"
-            android:singleLine="true"
             android:gravity="center_vertical"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            style="@style/EditTextStyle_fixed"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -91,12 +91,10 @@
             android:layout_marginStart="10dp"/>
         <EditText
             android:id="@+id/edt_x_unit"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/unit_mol"
             android:background="@color/white"
             android:inputType="text"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -108,13 +106,11 @@
             style="@style/text_thirdTitle"/>
         <EditText
             android:id="@+id/edt_y_unit"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/unit_mA"
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="text"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -132,13 +128,11 @@
             style="@style/text_thirdTitle"/>
         <EditText
             android:id="@+id/edt_min_x"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/default_min_CO"
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="numberSigned"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -150,13 +144,11 @@
             style="@style/text_thirdTitle"/>
         <EditText
             android:id="@+id/edt_max_x"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/default_max_CO"
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="numberDecimal"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -174,13 +166,11 @@
             style="@style/text_thirdTitle"/>
         <EditText
             android:id="@+id/edt_min_CORR"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/default_min_CORR"
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="numberDecimal"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -203,13 +193,11 @@
             style="@style/text_thirdTitle"/>
         <EditText
             android:id="@+id/edt_y_number"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
             android:text="@string/default_point_number"
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="number"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -234,7 +222,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/curve_x"
+            android:text="@string/curve_lgX"
             style="@style/text_thirdTitle"/>
         <TextView
             android:id="@+id/tv_x_average"
@@ -246,7 +234,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/curve_y"
+            android:text="@string/curve_avgY"
             android:layout_marginStart="10dp"
             style="@style/text_thirdTitle"/>
         <TextView
@@ -341,7 +329,7 @@
             android:background="@color/white"
             android:layout_marginStart="10dp"
             android:inputType="text"
-            android:singleLine="true"/>
+            style="@style/EditTextStyle_fixed"/>
     </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
@@ -357,25 +345,30 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/curve_x"/>
+            android:text="@string/curve_avgY" />
         <EditText
-            android:id="@+id/edt_x"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
+            android:id="@+id/edt_y"
             android:background="@color/white"
-            android:layout_marginStart="10dp"
-            android:singleLine="true"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="70dp"
+            android:maxWidth="120dp"
+            style="@style/EditTextStyle_fixed"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/curve_y"
+            android:text="@string/curve_X"
             android:layout_marginStart="20dp"/>
         <TextView
-            android:id="@+id/edt_y"
+            android:id="@+id/tv_x"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:minWidth="70dp"
-            android:layout_height="wrap_content"
+            android:maxWidth="120dp"
+            android:textSize="18sp"
             android:background="@color/white"
             android:layout_marginStart="10dp" />
     </LinearLayout>
