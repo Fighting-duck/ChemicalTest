@@ -332,6 +332,7 @@
     <string name="toast_pleaseSelectCurve">请先选择标准曲线</string>
     <string name="toast_no_image">无图</string>
     <string name="toast_test_all_empty">三个实验结果不能都为空</string>
+    <string name="toast_credibilityAnalysis_false">需三个实验所得的浓度</string>
     <string name="toast_test_clear_success">清空成功</string>
     <string name="toast_curve_loadData_fail">加载数据时出错</string>
     <string name="toast_curve_valueConflict">最小CO值不能大于最大CO值</string>

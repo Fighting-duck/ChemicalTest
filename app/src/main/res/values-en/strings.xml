@@ -333,6 +333,7 @@
     <string name="toast_pleaseSelectCurve">Please select a standard curve first</string>
     <string name="toast_no_image">No image</string>
     <string name="toast_test_all_empty">At least one test result is required</string>
+    <string name="toast_credibilityAnalysis_false">Need three test concentrations</string>
     <string name="toast_test_clear_success">Cleared successfully</string>
     <string name="toast_curve_loadData_fail">Failed to load curve data</string>
     <string name="toast_curve_valueConflict">Minimum concentration cannot exceed maximum</string>

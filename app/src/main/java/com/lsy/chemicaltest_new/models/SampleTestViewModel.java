@@ -116,12 +116,48 @@ public class SampleTestViewModel extends ViewModel {
 
     /***
      * 可信度分析
+     * 根据三个实验浓度相差值进行判断，返回一个Float类型的可信度
      * @return 可信度
      */
     public Float analyzeCredibility() {
-        Float credibility = 90.0f;
+        if (mLiveData_history.getValue() == null)
+            return null;
+        if (mLiveData_history.getValue().getElecTestResult() == null ||
+                mLiveData_history.getValue().getColoTestResult() == null ||
+                mLiveData_history.getValue().getTemperature_elec() == null)
+            return null;
+
+        // 获取三种检测方法的浓度值
+        Float co_elec = mLiveData_history.getValue().getElecTestResult().getDetectionCo();
+        Float co_colo = mLiveData_history.getValue().getColoTestResult().getDetectionCo();
+        Float co_temperature = mLiveData_history.getValue().getTemperature_elec().getDetectionCo();
+
+        // 检查是否有无效值（例如NaN或null）
+        if (co_elec == null || co_colo == null || co_temperature == null) {
+            return null;
+        }
+
+        // 为不同检测方法分配权重（根据方法可靠性确定）
+        float weight_elec = 0.5f;   // 电化学方法权重
+        float weight_colo = 0.3f;   // 比色法权重
+        float weight_temp = 0.2f;   // 温度法权重
+
+        // 计算加权平均值
+        float weightedAvg = co_elec * weight_elec + co_colo * weight_colo + co_temperature * weight_temp;
+
+        // 计算每种方法与加权平均值的偏差
+        float deviation1 = Math.abs(co_elec - weightedAvg) / weightedAvg * 100;
+        float deviation2 = Math.abs(co_colo - weightedAvg) / weightedAvg * 100;
+        float deviation3 = Math.abs(co_temperature - weightedAvg) / weightedAvg * 100;
+
+        // 计算加权可信度（权重高的方法对最终可信度影响更大）
+        float credibility = 100 - (deviation1 * weight_elec + deviation2 * weight_colo + deviation3 * weight_temp) * 2;
+
+        // 确保可信度在合理范围内
+        credibility = Math.max(0, Math.min(100, credibility));
+
         mLiveData_credibility.setValue(credibility);
-        return 90.0f;
+        return credibility;
     }
 
     public void setCredibility(Float credibility){

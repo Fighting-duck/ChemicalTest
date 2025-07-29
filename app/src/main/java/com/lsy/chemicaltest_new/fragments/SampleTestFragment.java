@@ -208,7 +208,9 @@ public class SampleTestFragment extends Fragment {
             mContext.startActivity(intent);
         }
         else if (view.getId() == mBinding.btnCredibilityAnalysis.getId()){
-            mViewModel.analyzeCredibility();
+            if (mViewModel.analyzeCredibility()==null){
+                mViewModel.setToast(getString(R.string.toast_credibilityAnalysis_false));
+            }
         }
         else if (view.getId() == mBinding.btnSaveAll.getId()) {
             if (elecTestResult == null && temperatureElec == null && coloTestResult == null && thermalTestResult == null){
