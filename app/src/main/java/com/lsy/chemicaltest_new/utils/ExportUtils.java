@@ -308,8 +308,10 @@ public class ExportUtils {
         HSSFRow row_title1 = sheet.createRow(2);
         row_title1.createCell(0).setCellValue(history_multiple.getSaveTime());
         row_title1.createCell(1).setCellValue(history_multiple.getSampleName());
-        row_title1.createCell(2).setCellValue(history_multiple.getCredibility());
-        row_title1.createCell(3).setCellValue(history_multiple.getRemarks());
+        if (history_multiple.getCredibility()!=null)
+            row_title1.createCell(2).setCellValue(history_multiple.getCredibility());
+        if (history_multiple.getRemarks() != null)
+            row_title1.createCell(3).setCellValue(history_multiple.getRemarks());
 
         if (elec_result != null){
             HSSFRow row = sheet.createRow(6);

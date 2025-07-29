@@ -298,13 +298,13 @@ public class HistoryFragment extends Fragment {
             mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
                 @Override
                 public void onUpdateCompleted() {
-                    mViewModel.setToast(getString(R.string.toast_update_success));
+                    //mViewModel.setToast(getString(R.string.toast_update_success));
                 }
 
                 @Override
                 public void onUpdateFailed(Exception e) {
                     e.printStackTrace();
-                    mViewModel.setToast(getString(R.string.toast_update_fail));
+                    //mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
             });
         });
@@ -313,13 +313,13 @@ public class HistoryFragment extends Fragment {
             mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
                 @Override
                 public void onUpdateCompleted() {
-                    mViewModel.setToast(getString(R.string.toast_update_success));
+                    //mViewModel.setToast(getString(R.string.toast_update_success));
                 }
 
                 @Override
                 public void onUpdateFailed(Exception e) {
                     e.printStackTrace();
-                    mViewModel.setToast(getString(R.string.toast_update_fail));
+                    //mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
             });
         });
