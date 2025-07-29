@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">化学检测</string>
+    <string name="app_name">SampleAbnormalDetection</string>
     <!--
     concentration 简称conc.
     electrical简称elec.
@@ -282,6 +282,7 @@
     <string name="permission_dialog_title">Permission Settings</string>
     <string name="permission_dialog_title_needPermission">Permission Required</string>
     <string name="permission_dialog_rational_writeStorage">Storage permission is required to export data. Please enable it manually.</string>
+    <string name="permission_dialog_rational_storage">Applications require storage permissions to access files</string>
     <string name="permission_dialog_needBleAndLocation">Bluetooth permission is required to scan and connect devices. Location permission is required to discover nearby Bluetooth devices.</string>
     <string name="permission_dialog_needLocation">Location permission is required to get your current position.</string>
     <string name="permission_dialog_toSetting">You have permanently denied necessary permissions. Please enable them in Settings.</string>
@@ -382,4 +383,5 @@
     <string name="toast_permission_deny">Permission denied. Functionality may be limited.</string>
     <string name="toast_permission_usb">USB permission is required for this operation</string>
     <string name="toast_permission_denyPermissions">The following permissions are denied. Functionality may be limited: </string>
+    <string name="toast_permission_grantPermissions">Permissions have been granted</string>
 </resources>

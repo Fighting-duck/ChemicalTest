@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">化学检测</string>
+    <string name="app_name">样品异常检测</string>
     <!--
     concentration 简称conc.
     electrical简称elec.
@@ -281,6 +281,7 @@
     <string name="permission_dialog_title">权限设置</string>
     <string name="permission_dialog_title_needPermission">需要权限</string>
     <string name="permission_dialog_rational_writeStorage">需要存储权限才能正常导出数据，请手动开启权限</string>
+    <string name="permission_dialog_rational_storage">应用需要存储权限来访问文件</string>
     <string name="permission_dialog_needBleAndLocation">需要蓝牙权限以扫描和连接设备，以及定位权限用于发现附近的蓝牙设备</string>
     <string name="permission_dialog_needLocation">需要定位权限以获取当前位置</string>
     <string name="permission_dialog_toSetting">您已永久拒绝必要权限，请手动到设置中开启</string>
@@ -381,6 +382,7 @@
     <string name="toast_permission_deny">权限被拒绝，功能可能受限</string>
     <string name="toast_permission_usb">需要USB权限来进行相关操作</string>
     <string name="toast_permission_denyPermissions">以下权限被拒绝，功能可能受限: </string>
+    <string name="toast_permission_grantPermissions">权限已授予</string>
 
 
 </resources>

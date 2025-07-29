@@ -3,6 +3,7 @@ package com.lsy.chemicaltest_new.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -49,6 +50,7 @@ public class FileViewerUtils {
             }
         } catch (Exception e) {
             Toast.makeText(context, "打开文件失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("FileViewerUtils", "Error: " + e.getMessage());
         }
     }
     private static boolean isSupportedType(String fileExt) {
