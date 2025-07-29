@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
@@ -210,17 +211,18 @@ public class CombinedChartUtils {
         // 设置联合图表数据到 CombinedChart
         combinedChart.setData(combinedData);
         List<Float> k_b_corr = null;
-        int color = ContextCompat.getColor(context, StandardCurve.getCurveColor(type));
+        int sc_color = ContextCompat.getColor(context, StandardCurve.getCurveColor(type));
+        int lc_color = ContextCompat.getColor(context, R.color.purple_200);
         //pointList转EntryList
         List<Entry> entryList = Point.pointList_to_entryList(pointList);
         if (!entryList.isEmpty()) {
-            update_SC_Chart(scatterData, entryList, color);//创建散点图
+            update_SC_Chart(scatterData, entryList, sc_color);//创建散点图
             float minX = entryList.get(0).getX();
             float maxX = entryList.get(entryList.size() - 1).getX();
             k_b_corr= build_FitLine(entryList);
             if (k_b_corr.isEmpty()) return null;
             List<Entry> entryList_two = build_EntryList(k_b_corr.get(0),k_b_corr.get(1),minX,maxX);
-            update_LC_Chart(lineData, entryList_two, color);
+            update_LC_Chart(lineData, entryList_two, lc_color);
         }
 
         //添加描述

@@ -55,6 +55,13 @@ android {
         enabled = true
     }
     ndkVersion '25.2.9519653'
+    sourceSets {
+        main {
+            assets {
+                srcDirs 'src\\main\\assets'
+            }
+        }
+    }
 }
 
 dependencies {

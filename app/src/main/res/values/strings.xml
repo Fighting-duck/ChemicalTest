@@ -190,7 +190,6 @@
     <string name="mine_phone">手机号:</string>
     <string name="mine_image">头像:</string>
     <string name="mine_setting">设置标准曲线默认属性</string>
-    <string name="mine_useGuide">使用指南</string>
     <string name="mine_aboutAPP">关于APP</string>
     <string name="mine_useLanguage">语言选项</string>
     <string name="mine_update_success">更新成功</string>
@@ -208,6 +207,11 @@
     <!--关于APP-->
     <string name="title_aboutAPP">应用详情</string>
     <string name="currentVersion">当前版本</string>
+    <string name="userGuide_userGuide">用户指南.pdf</string>
+    <string name="userGuide_curveImportExample">曲线导入样例.excel</string>
+    <string name="userGuide_word">word</string>
+    <string name="userGuide_pdf">pdf</string>
+    <string name="userGuide_excel">excel</string>
 
     <!--    关于万用表相关-->
     <string name="multimeter_Celsius">温度档(Celsius)</string>

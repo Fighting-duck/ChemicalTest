@@ -163,6 +163,7 @@
     <string name="history_colorimetric_concentration">Colo. Conc.:</string>
     <string name="history_thermal_concentration">PT. Conc.:</string>
     <string name="history_credibility">Credibility:</string>
+
     <!--历史预览-->
     <string name="title_historyPreview">History Preview</string>
     <string name="historyPreview_delete">Delete</string>
@@ -189,12 +190,10 @@
     <string name="mine_phone">Phone:</string>
     <string name="mine_image">Avatar:</string>
     <string name="mine_setting">Set Default Curve Settings</string>
-    <string name="mine_useGuide">User Guide</string>
     <string name="mine_aboutAPP">About APP</string>
     <string name="mine_useLanguage">Language</string>
     <string name="mine_update_success">Update Successful</string>
     <string name="mine_update_fail">Update Failed</string>
-
     <!--设置直线默认属性-->
     <string name="mine_setCurve_defaultProperties">Default Curve Settings</string>
     <string name="curveDefault_x_AxisUnit">Conc. Unit:</string>
@@ -208,6 +207,11 @@
     <!--关于APP-->
     <string name="title_aboutAPP">About App</string>
     <string name="currentVersion">Current Version</string>
+    <string name="userGuide_userGuide">UserGuide.pdf</string>
+    <string name="userGuide_curveImportExample">CurveImportExample.excel</string>
+    <string name="userGuide_word">word</string>
+    <string name="userGuide_pdf">pdf</string>
+    <string name="userGuide_excel">excel</string>
 
     <!--    关于万用表相关-->
     <string name="multimeter_Celsius">Temp. (Celsius)</string>

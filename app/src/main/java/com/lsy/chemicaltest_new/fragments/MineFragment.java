@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.lsy.chemicaltest_new.BuildConfig;
-import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BottomNavigationActivity;
 import com.lsy.chemicaltest_new.activitys.mine.AboutAppActivity;
@@ -40,8 +39,6 @@ import com.lsy.chemicaltest_new.models.MineViewModel;
 import com.lsy.chemicaltest_new.utils.AvatarWithBlurBackground;
 import com.lsy.chemicaltest_new.utils.ImageProcessor;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
-
-import java.util.List;
 
 
 public class MineFragment extends Fragment {
