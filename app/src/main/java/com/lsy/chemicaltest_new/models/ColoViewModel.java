@@ -234,7 +234,7 @@ public class ColoViewModel extends AndroidViewModel {
     public Float calculateCO(int blue){
         StandardCurve curve = mLiveData_curve.getValue();
         if (curve != null) {
-            Float CO = curve.calculate((float) blue);
+            Float CO = curve.calculateX_toY((float) blue);
             mLiveData_CO.setValue(CO);
             return CO;
         }

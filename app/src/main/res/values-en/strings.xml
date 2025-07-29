@@ -89,8 +89,9 @@
     <string name="curve_expression">Formula:</string>
     <string name="curve_description">Notes:</string>
     <string name="curve_calculate">Calculate</string>
-    <string name="curve_x">lg X:</string>
-    <string name="curve_y">avg Y:</string>
+    <string name="curve_lgX">lg X:</string>
+    <string name="curve_avgY">avg Y:</string>
+    <string name="curve_X">X:</string>
     <!--修改标准曲线-->
     <string name="title_alter_standard_curve">Edit Standard Curve</string>
     <string name="curve_delete">Delete</string>

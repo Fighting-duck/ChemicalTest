@@ -341,7 +341,7 @@ public class StandardCurveFragment extends Fragment {
         mBinding.btnPointAdd.setOnClickListener(this::onClick);
         mBinding.btnSampleAdd.setOnClickListener(this::onClick);
         mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
-        mBinding.edtX.addTextChangedListener(new TextWatcher() {
+        mBinding.edtY.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -350,15 +350,15 @@ public class StandardCurveFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                String str_x = s.toString();
-                if (!str_x.isEmpty()) {
-                    Float result = mViewModel.calculate(Float.parseFloat(str_x));
-                    Log.d(TAG, "x:"+str_x+" y:"+result);
+                String str_y = s.toString();
+                if (!str_y.isEmpty()) {
+                    Float result = mViewModel.calculateCo_toY(Float.parseFloat(str_y));
+                    Log.d(TAG, "y:"+str_y+" x:"+result);
                     if (result != null)
-                        mBinding.edtY.setText(String.valueOf(result));
+                        mBinding.tvX.setText(String.valueOf(result));
                     else
-                        mBinding.edtY.setText("");
-                }else mBinding.edtY.setText("");
+                        mBinding.tvX.setText("");
+                }else mBinding.tvX.setText("");
             }
         });
         mBinding.spTypeList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

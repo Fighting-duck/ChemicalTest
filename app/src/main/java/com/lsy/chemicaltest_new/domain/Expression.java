@@ -31,6 +31,15 @@ public class Expression implements Parcelable {
     public Float calculate(Float x) {
         return k * x + b;
     }
+    /**
+     * 通过y计算x值（浓度）
+     * @param y 电流值、blue值、温度值
+     * @return x值（浓度）
+     */
+    public Float calculateX_toY(Float y) {
+        return (float) Math.pow(10,(y - b) / k);
+    }
+
     public Float getK() {
         return k;
     }
@@ -45,7 +54,7 @@ public class Expression implements Parcelable {
     }
     @Override
     public String toString() {
-        return "y = " + k + " x + "+ b + " b";
+        return "y = " + k + " x + "+ b;
     }
 
     // 数据保存与恢复

@@ -449,9 +449,9 @@ public class ElecViewModel extends ViewModel {
      */
     public void calculate_ElecCO(){
         StandardCurve curve = mStandardCurve_Elec.getValue();
-        TestValue x = mMaxValue.getValue(); // 获取当前测试值
-        if (curve != null && x!=null){
-            Float CO = curve.calculate(x.getValue());
+        TestValue current = mMaxValue.getValue(); // 获取当前测试值 y
+        if (curve != null && current!=null){
+            Float CO = curve.calculateX_toY(current.getValue());
             mCOElec.setValue(CO);
             noticeCO(CO,curve,0);
         }
@@ -462,9 +462,9 @@ public class ElecViewModel extends ViewModel {
      */
     public void calculate_DegreeCO(){
         StandardCurve curve = mStandardCurve_Degree.getValue();
-        Float x = mDegree.getValue(); // 获取当前测试值
-        if (curve != null && x!=null){
-            Float CO = curve.calculate(x);
+        Float temperature = mDegree.getValue(); // 获取当前测试值
+        if (curve != null && temperature!=null){
+            Float CO = curve.calculateX_toY(temperature);
             mCOTemperature.setValue(CO);
             noticeCO(CO,curve,1);
         }

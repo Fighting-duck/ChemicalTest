@@ -561,18 +561,18 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     }
     /***
      * 通过x值计算y值
-     * @param x x值
+     * @param y x值
      * @return y值
      */
-    public Float calculate(Float x){
-        Log.d(TAG, "计算y值："+x);
+    public Float calculateCo_toY(Float y){
+        Log.d(TAG, "计算y值："+y);
         Expression expression = mLiveData_Expression.getValue();
         if (expression == null){
             return null;
         }
         else {
             Log.d(TAG, "表达式："+expression.toString());
-            return expression.calculate(x);
+            return expression.calculateX_toY(y);
         }
     }
     /***

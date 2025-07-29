@@ -149,6 +149,32 @@ public class StandardCurve implements Cloneable, Parcelable {
         }
     }
 
+    /**
+     * 通过 y 值计算 x 值
+     * @param y y 值 (电流、blue、温度)
+     * @return x 值 (浓度)
+     */
+    public Float calculateX_toY(Float y) {
+        if (formula != null) {
+            return formula.calculateX_toY(y);
+        }
+        else if (expression != null && !expression.isEmpty()) {
+            try {
+                String[] kb = expression.split(",");
+                if (kb.length != 2) {
+                    throw new IllegalArgumentException("表达式格式错误：必须包含两个由逗号分隔的值。");
+                }
+                float k = Float.parseFloat(kb[0]);
+                float b = Float.parseFloat(kb[1]);
+                return new Expression(k, b).calculateX_toY(y);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("表达式格式错误：请输入两个有效的浮点数，中间用逗号分隔。", e);
+            }
+        } else {
+            throw new IllegalStateException("未提供有效的公式或表达式。");
+        }
+    }
+
     /***
      * 判断此类型是否是曲线类型之一
      * @param type
