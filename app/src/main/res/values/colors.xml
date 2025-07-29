@@ -47,6 +47,7 @@
     <!--字体颜色-->
     <color name="text_color_black">#000000</color>
     <color name="text_color_light">#787878</color>
+    <color name="text_color_morelLight">#ABA7A7</color>
 
     <!--按钮-->
     <color name="btn_press_true">#8EE5E7</color>
