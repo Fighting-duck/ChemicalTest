@@ -27,6 +27,7 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityColorimetricBinding;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.HSV;
+import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.dialog.CurveDetailDialog;
 import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;
@@ -34,6 +35,7 @@ import com.lsy.chemicaltest_new.models.ColoViewModel;
 import com.lsy.chemicaltest_new.utils.ImageProcessor;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -77,6 +79,7 @@ public class ColorimetricActivity extends BaseActivity {
             mViewModel.setCo(testResult.getDetectionCo());
             mBinding.tvDiseaseAnalysis.setText(testResult.getDiseaseAnal());
         }
+
     }
 
     @Override
@@ -148,17 +151,35 @@ public class ColorimetricActivity extends BaseActivity {
             MyApplication.DB_EXECUTOR.execute(() -> {
                 // 执行耗时操作（如网络请求、文件读写、图像处理）
                 //获取RGB值
-                Integer color = PhotoUtil.getAverageRGB(bitmap,20);
-                //获取HSV值
-                List<Float> hsv = PhotoUtil.getAverageHSV(bitmap,20);
+                //Integer color = PhotoUtil.getAverageRGB(bitmap,20);
 
+                List<Integer> colors = PhotoUtil.getDistinctColors(
+                        bitmap,
+                        5,           // 最多返回5种颜色
+                        10f,       // 色相差<10°视为相似色
+                        0.1f,        // 最小饱和度=0.1
+                        0f         // 最小亮度=0
+                );
+                if (!colors.isEmpty() && colors.size()>1){
+                    mViewModel.setToast("框选区域杂色偏多，会影响颜色精度！");
+                }
+                if (!colors.isEmpty()){
+                    float[] hsv = new float[3];
+                    Color.colorToHSV(colors.get(0), hsv);
+                    runOnUiThread(() -> {
+                            mViewModel.setColor(colors.get(0));
+                            mViewModel.setHSV(new HSV(hsv[0],hsv[1],hsv[2]));
+                    });
+                }
+                //获取HSV值
+                //List<Float> hsv = PhotoUtil.getAverageHSV(bitmap,20);
                 // 需要更新 UI 时，切回主线程
-                runOnUiThread(() -> {
+               /* runOnUiThread(() -> {
                     if (color != null)
                         mViewModel.setColor(color);
                     if (hsv != null)
                         mViewModel.setHSV(new HSV(hsv.get(0),hsv.get(1),hsv.get(2)));
-                });
+                });*/
             });
         });
         //mViewModel.setColor(color);

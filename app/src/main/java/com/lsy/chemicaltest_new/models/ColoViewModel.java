@@ -23,6 +23,7 @@ import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ColoViewModel extends AndroidViewModel {
@@ -212,6 +213,7 @@ public class ColoViewModel extends AndroidViewModel {
         calculateCO(rgb.getBlue());
         Log.d(TAG, "setColor: " + color +",  setRGB:"+rgb.toRGBString());
     }
+
     public void setRGB(RGB rgb){
         Log.d(TAG, "setRGB: " + rgb.toRGBString());
         mLiveData_rgb.setValue(rgb);

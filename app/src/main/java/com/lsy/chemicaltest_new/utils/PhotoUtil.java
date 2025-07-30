@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.palette.graphics.Palette;
+
 import com.lsy.chemicaltest_new.R;
 
 import java.io.File;
@@ -31,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -349,4 +352,83 @@ public class PhotoUtil {
         new Canvas(result).drawBitmap(source, 0, 0, null);
         return result;
     }
+
+    // 获取Palette内置的6种推荐颜色
+    public static int[] getDefaultColors(Bitmap bitmap) {
+        Palette palette = Palette.from(bitmap).generate();
+
+        return new int[]{
+                palette.getDominantColor(Color.TRANSPARENT),
+                palette.getVibrantColor(Color.TRANSPARENT),
+                palette.getLightVibrantColor(Color.TRANSPARENT),
+                palette.getDarkVibrantColor(Color.TRANSPARENT),
+                palette.getMutedColor(Color.TRANSPARENT),
+                palette.getDarkMutedColor(Color.TRANSPARENT)
+        };
+    }
+
+    /**
+     * 提取图片中占比最高的几种非相似颜色
+     * @param bitmap 输入图片
+     * @param maxColors 最大返回颜色数量
+     * @param hueTolerance 色相差值容差（0~360），越小越严格
+     * @param minSaturation 最小饱和度（0~1）
+     * @param minValue 最小亮度（0~1）
+     * @return 去重后的主要颜色列表（按占比降序）
+     */
+    public static List<Integer> getDistinctColors(
+            Bitmap bitmap,
+            int maxColors,
+            float hueTolerance,
+            float minSaturation,
+            float minValue
+    ) {
+        // 1. 生成Palette
+        Palette palette = Palette.from(bitmap)
+                .resizeBitmapArea(250000)  // 限制计算面积以优化性能
+                .maximumColorCount(12)     // 初始提取较多颜色，避免遗漏
+                .generate();
+
+        // 2. 获取所有Swatch并按占比（Population）降序排序
+        List<Palette.Swatch> swatches = new ArrayList<>(palette.getSwatches());
+        swatches.sort((a, b) -> Integer.compare(b.getPopulation(), a.getPopulation()));
+
+        // 3. 去重：在相似色相区间内，只保留占比最高的颜色
+        List<Integer> distinctColors = new ArrayList<>();
+        float[][] existingHues = new float[maxColors][3]; // 存储已选颜色的HSV值
+
+        for (Palette.Swatch swatch : swatches) {
+            if (distinctColors.size() >= maxColors) break;
+
+            int rgb = swatch.getRgb();
+            float[] hsv = new float[3];
+            Color.colorToHSV(rgb, hsv);
+
+            // 检查饱和度、亮度是否满足条件
+            if (hsv[1] >= minSaturation && hsv[2] >= minValue) {
+                boolean isSimilarToExisting = false;
+
+                // 遍历已选颜色，检查色相是否相似
+                for (int i = 0; i < distinctColors.size(); i++) {
+                    float hueDiff = Math.abs(existingHues[i][0] - hsv[0]);
+                    // 考虑色相的环形特性（如359°和1°相差2°，但绝对差是358°）
+                    hueDiff = Math.min(hueDiff, 360 - hueDiff);
+
+                    if (hueDiff < hueTolerance) {
+                        isSimilarToExisting = true;
+                        break; // 如果相似，跳过
+                    }
+                }
+
+                // 不相似则加入结果
+                if (!isSimilarToExisting) {
+                    distinctColors.add(rgb);
+                    System.arraycopy(hsv, 0, existingHues[distinctColors.size() - 1], 0, 3);
+                }
+            }
+        }
+
+        return distinctColors;
+    }
+
 }
