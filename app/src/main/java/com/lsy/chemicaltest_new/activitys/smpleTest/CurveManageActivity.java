@@ -171,6 +171,7 @@ public class CurveManageActivity extends BaseActivity {
         });
         mBinding.ivBack.setOnClickListener(view -> finish());
         mBinding.ivAdd.setOnClickListener(v -> {
+            DataRepository.getInstance().setStandardCurve(null);//清楚数据仓库中的曲线
             Intent intent = new Intent(mContext, AddCurveActivity.class);
             mContext.startActivity(intent);
         });

@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.clj.fastble.data.BleDevice;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.lsy.chemicaltest_new.R;
@@ -94,7 +95,7 @@ public class ElectricalTestActivity extends BaseActivity implements EasyPermissi
         mViewModel = new ViewModelProvider(this).get(ElecViewModel.class);
         mViewModel.setContext(this);
         mBleUtil = new BleUtil(ElectricalTestActivity.this,mViewModel);
-        mDeviceAdapter = new DeviceAdapter(mBleUtil);
+        mDeviceAdapter = new DeviceAdapter();
         mBinding.rvDevices.setAdapter(mDeviceAdapter);
         initUI();
     }
@@ -197,6 +198,12 @@ public class ElectricalTestActivity extends BaseActivity implements EasyPermissi
         mBinding.tvDegreeCurve.setOnClickListener(this::onCLick);
         mBinding.ivNoticeElec.setOnClickListener(this::onCLick);
         mBinding.ivNoticeDegree.setOnClickListener(this::onCLick);
+        mDeviceAdapter.setOnDeviceClickListener(new DeviceAdapter.OnDeviceClickListener() {
+            @Override
+            public void onDeviceClick(BleDevice device) {
+                mBleUtil.connectBle(device);
+            }
+        });
 
         //设置观察者
         mViewModel.getLiveData_toast().observe(this, toast -> {

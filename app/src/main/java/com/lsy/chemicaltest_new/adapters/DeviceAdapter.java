@@ -17,7 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder> {
     private List<BleDevice> mBleDeviceList;
-    private BleUtil mBleUtil;
+    private OnDeviceClickListener mDeviceClickListener;
+
+    public void setOnDeviceClickListener(OnDeviceClickListener listener) {
+        this.mDeviceClickListener = listener;
+    }
+    public interface OnDeviceClickListener {
+        void onDeviceClick(BleDevice device);
+    }
 
     //创建内部ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -37,9 +44,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
         }
     }
 
-    public DeviceAdapter(BleUtil bleUtil){
+    public DeviceAdapter(){
         mBleDeviceList  = new ArrayList<BleDevice>();
-        this.mBleUtil = bleUtil;
     }
 
     @NonNull
@@ -57,7 +63,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
         holder.view.setOnClickListener(view1 -> {
             BleDevice device = (BleDevice) view1.getTag(R.id.my_tag);
             //连接设备
-            mBleUtil.connectBle(device);
+            mDeviceClickListener.onDeviceClick(device);
         });
 
         return holder;

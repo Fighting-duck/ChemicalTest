@@ -25,7 +25,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     private static final String TAG = "StandardCurveViewModel";
     MutableLiveData<List<Sample>> mLiveData_sampleList = new MutableLiveData<>();
     MutableLiveData<Integer> mLiveData_samplePosition = new MutableLiveData<>();//在sampleList中的位置
-    MutableLiveData<Integer> mLiveData_curveType = new MutableLiveData<>();
+    MutableLiveData<Integer> mLiveData_curveType = new MutableLiveData<>();//曲线类型 1:elec 2:color 3:thermal
     MutableLiveData<String> mLiveData_curveName = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_xUnit = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_yUnit = new MutableLiveData<>();
@@ -295,7 +295,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         }
         if (curve.getDescription()!=null)
             mLiveData_description.setValue(curve.getDescription());
-        if (curve.getPointList()!=null)
+        if (curve.getPointList()!=null && !curve.getPointList().isEmpty())
             mLiveData_PointList.setValue(curve.getPointList());
     }
     private Integer getSamplePositionById(Integer id){

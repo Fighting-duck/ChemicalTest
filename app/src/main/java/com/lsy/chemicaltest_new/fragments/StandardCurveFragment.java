@@ -1,5 +1,7 @@
 package com.lsy.chemicaltest_new.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +9,12 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -30,14 +35,17 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.CombinedData;
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
+import com.lsy.chemicaltest_new.activitys.smpleTest.MeasureValueByMultimeterActivity;
 import com.lsy.chemicaltest_new.activitys.smpleTest.SamplesManageActivity;
 import com.lsy.chemicaltest_new.adapters.PointListAdapter;
 import com.lsy.chemicaltest_new.adapters.PointsAdapter;
+import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentStandardCurveBinding;
 import com.lsy.chemicaltest_new.domain.CurveSetting;
 import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.models.StandardCurveViewModel;
 import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 
@@ -59,10 +67,30 @@ public class StandardCurveFragment extends Fragment {
     private CombinedData mCombinedData;//联合图数据
     private Boolean mIsAutoCalculate = true;
     private CurveSetting mCurveSetting;
+    private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**ActivityLauncher**/
+        mMeasureValueActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    // 3. 处理返回结果：result是SecondActivity关闭后返回的数据
+                    if (result.getResultCode() == RESULT_OK) { // 确保结果正常返回
+                        Intent data = result.getData();
+                        if (data != null) {
+                            // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
+                            float floatResult = data.getFloatExtra("result_float", 0.0f);
+                            //mViewModel.set_point_y((double)floatResult);
+                            mPointsAdapter.alter_YValue(3,(double)floatResult);
+                            mBinding.tvYAverage.setTextColor(Color.RED);
+                            mViewModel.setToast("从标样获取值："+floatResult);
+                        }
+                    }
+                }
+        );
     }
 
     @Nullable
@@ -185,6 +213,19 @@ public class StandardCurveFragment extends Fragment {
             if(curveType == null) return;
             int selection = Math.max(0, curveType - 1); // 确保 selection 不会小于 0
             mBinding.spTypeList.setSelection(selection);
+            Log.d(TAG, "current curveType:"+curveType);
+            //设置获取标样数据按钮的文字
+            switch (curveType){
+                case 1:
+                    mBinding.btnVerifyStandardSample.setText(getString(R.string.curve_GetCurrent));
+                    break;
+                case 2:
+                    mBinding.btnVerifyStandardSample.setText(getString(R.string.curve_GetB));
+                    break;
+                case 3:
+                    mBinding.btnVerifyStandardSample.setText(getString(R.string.curve_GetTemperature));
+                    break;
+            }
         });
         mViewModel.getLiveData_curveName().observe(getViewLifecycleOwner(), curveName ->{
             if (curveName == null || curveName.isEmpty()) {
@@ -340,6 +381,7 @@ public class StandardCurveFragment extends Fragment {
         mBinding.edtMinCORR.setOnFocusChangeListener(focusListener);
         mBinding.btnPointAdd.setOnClickListener(this::onClick);
         mBinding.btnSampleAdd.setOnClickListener(this::onClick);
+        mBinding.btnVerifyStandardSample.setOnClickListener(this::onClick);
         mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
         mBinding.edtY.addTextChangedListener(new TextWatcher() {
             @Override
@@ -367,12 +409,6 @@ public class StandardCurveFragment extends Fragment {
                 //String selectedItem = (String) parent.getItemAtPosition(position);
                 // 处理用户选择的选项
                 mViewModel.setType(position+1);
-                if (position == 0)
-                    mBinding.edtYUnit.setText(getString(R.string.unit_mA));
-                else if (position == 1)
-                    mBinding.edtYUnit.setText(getString(R.string.unit_blue));
-                else if (position == 2)
-                    mBinding.edtYUnit.setText(getString(R.string.unit_degree));
                 Log.d(TAG, "sample type: " + position+1);
             }
 
@@ -474,6 +510,40 @@ public class StandardCurveFragment extends Fragment {
             if (noticeCorr != null){
                 mViewModel.setToast(noticeCorr);
             }
+        }
+        else if (view.getId() == mBinding.btnVerifyStandardSample.getId()){
+            /* 验证标准样品 */
+            if (mViewModel.getCurveType() == null) return;
+            // 将y值数量设为1
+            mBinding.edtYNumber.setText("1");
+            if (mViewModel.getCurveType() == 1){
+                //保存当前直线信息
+                StandardCurve standardCurve = mViewModel.getCurve();
+                DataRepository.getInstance().setStandardCurve(standardCurve);
+                // 通过 电信号检测 获取标准样品电流值
+                Intent intent = new Intent(mContext, MeasureValueByMultimeterActivity.class);
+                intent.putExtra("showModel", ConnectMultimeterFragment.ShowModel.ELEC);
+                mMeasureValueActivityLauncher.launch(intent);
+            }
+            else if (mViewModel.getCurveType() == 2){
+                //保存当前直线信息
+                StandardCurve standardCurve = mViewModel.getCurve();
+                DataRepository.getInstance().setStandardCurve(standardCurve);
+                // 通过 比色图像分析 获取标准样品B值
+            }
+            else if (mViewModel.getCurveType() == 3){
+                //保存当前直线信息
+                StandardCurve standardCurve = mViewModel.getCurve();
+                DataRepository.getInstance().setStandardCurve(standardCurve);
+                // 通过 光热图像分析 获取标准样品温度值
+                Intent intent = new Intent(mContext, MeasureValueByMultimeterActivity.class);
+                intent.putExtra("showModel", ConnectMultimeterFragment.ShowModel.TEMPERATURE);
+                mMeasureValueActivityLauncher.launch(intent);
+
+
+            }
+            else return;
+
         }
     }
 

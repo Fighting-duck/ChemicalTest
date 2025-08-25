@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.blankj.utilcode.util.Utils;
+import com.clj.fastble.data.BleDevice;
 import com.github.mikephil.charting.data.Entry;
 import com.lsy.chemicaltest_new.database.AppDatabase;
 import com.lsy.chemicaltest_new.domain.CurveSetting;

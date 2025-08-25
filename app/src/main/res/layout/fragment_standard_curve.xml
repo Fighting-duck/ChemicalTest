@@ -183,6 +183,7 @@
         style="@style/text_secondTitle"
         android:layout_marginTop="10dp"/>
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
@@ -198,6 +199,17 @@
             android:layout_marginStart="10dp"
             android:inputType="number"
             style="@style/EditTextStyle_fixed"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <android.widget.Button
+            android:id="@+id/btn_VerifyStandardSample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/curve_GetCurrent"
+            style="@style/ButtonStyle.Primary"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"

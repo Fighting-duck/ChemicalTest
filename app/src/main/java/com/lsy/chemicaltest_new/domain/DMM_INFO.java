@@ -153,7 +153,6 @@ public class DMM_INFO {
         } else {
             resultValue = Float.parseFloat(value_str);//测量值 Float
         }
-
         BleDeviceInfo bleDeviceInfo = new BleDeviceInfo(gear,mileage,unit);
         TestValue result = new TestValue(resultValue,unit);
         return new DMM_ReturnResult(bleDeviceInfo,result);

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.clj.fastble.data.BleDevice;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
 import com.lsy.chemicaltest_new.domain.History_multiple;
@@ -32,6 +33,7 @@ public class DataRepository {
     private volatile ThermalTestResult mThermalTestResult;
     private volatile StandardCurve mStandardCurve;
     private volatile History_multiple mHistory_multiple;
+    private volatile BleDevice mCurrentConnectDevice;// 当前连接的蓝牙设备
 
     // Bitmap缓存（使用软引用防止内存泄漏）
     private final SparseArray<SoftReference<Bitmap>> cache = new SparseArray<>();
@@ -201,6 +203,31 @@ public class DataRepository {
                 this.mHistory_multiple = history_multiple != null ?
                         new History_multiple(history_multiple) : null;
                 Log.d(TAG,"setStandardCurve:"+mHistory_multiple);
+            }
+        }
+    }
+
+    public BleDevice getBleDevice() {
+        synchronized (lock) {
+            BleDevice result = mCurrentConnectDevice != null ?
+                    new BleDevice(mCurrentConnectDevice.getDevice(),
+                            mCurrentConnectDevice.getRssi(),
+                            mCurrentConnectDevice.getScanRecord(),
+                            mCurrentConnectDevice.getTimestampNanos()) : null;
+            Log.d(TAG, "getBleDevice: "+result);
+            return result;
+        }
+    }
+
+    public void setBleDevice(BleDevice bleDevice) {
+        synchronized (lock) {
+            if (!Objects.equals(this.mCurrentConnectDevice, bleDevice)) {
+                this.mCurrentConnectDevice = bleDevice != null ?
+                        new BleDevice(bleDevice.getDevice(),
+                                bleDevice.getRssi(),
+                                bleDevice.getScanRecord(),
+                                bleDevice.getTimestampNanos()) : null;
+                Log.d(TAG,"setBleDevice:"+mCurrentConnectDevice);
             }
         }
     }

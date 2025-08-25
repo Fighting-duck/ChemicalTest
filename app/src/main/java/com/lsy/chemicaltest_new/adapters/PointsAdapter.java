@@ -159,4 +159,9 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         }
 
     }
+
+    public void alter_YValue(Integer position, Double value){
+        mValueList.set(position,value);
+        notifyDataSetChanged();
+    }
 }

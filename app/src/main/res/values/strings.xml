@@ -39,6 +39,7 @@
     <string name="test_description_hint">备注(可填)</string>
     <!--电信号检测-->
     <string name="title_electrical">电信号检测</string>
+    <string name="title_measureValue">万用表测量</string>
     <string name="electrical_selectElecCurve">选择电信号标准曲线</string>
     <string name="electrical_selectDegreeCurve">选择温度标准曲线</string>
     <string name="electrical_useCurve">电信号标准曲线:</string>
@@ -46,6 +47,7 @@
     <string name="electrical_useDegreeCurve">温度标准曲线:</string>
     <string name="text_connection_situation">万能表连接情况:</string>
     <string name="text_test_connection">扫描设备</string>
+    <string name="text_disconnect">断开连接</string>
     <string name="text_connection_true">是</string>
     <string name="text_connection_false">否</string>
     <string name="text_returnResults">返回数据</string>
@@ -58,6 +60,7 @@
     <string name="text_StartTest_elec">开始测量电流</string>
     <string name="text_StartTest_temperature">开始测量温度</string>
     <string name="text_StartTest">开始测量</string>
+    <string name="text_promptEnable">测量信号与万用表档位不匹配，请更换万用表档位</string>
     <string name="electrical_startTime">开始测量时间:</string>
     <string name="electrical_endTime">结束测量时间:</string>
     <string name="text_MaxValue_4">电流最大值:</string>
@@ -84,6 +87,9 @@
     <string name="curve_min_CORR">最小相关系数:</string>
     <string name="curve_input_point">输入散点(至少两个)</string>
     <string name="curve_y_number">y值数量:</string>
+    <string name="curve_GetCurrent">从标样获取电流</string>
+    <string name="curve_GetTemperature">从标样获取温度</string>
+    <string name="curve_GetB">从标样获取B值</string>
     <string name="curve_point_add">添加</string>
     <string name="curve_CORR">相关系数:</string>
     <string name="curve_expression">表达式:</string>
@@ -385,6 +391,8 @@
     <string name="toast_permission_usb">需要USB权限来进行相关操作</string>
     <string name="toast_permission_denyPermissions">以下权限被拒绝，功能可能受限: </string>
     <string name="toast_permission_grantPermissions">权限已授予</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

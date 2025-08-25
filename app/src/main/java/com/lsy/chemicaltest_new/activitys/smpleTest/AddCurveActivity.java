@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
+import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityAddCurveBinding;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.fragments.StandardCurveFragment;
@@ -41,6 +43,7 @@ public class AddCurveActivity extends BaseActivity {
     private AddCurveViewModel mViewModel;
     private StandardCurveFragment mFragment;
     private ActivityResultLauncher<Intent> mFromAlumn;
+    private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,12 @@ public class AddCurveActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
+        StandardCurve curve = DataRepository.getInstance().getStandardCurve();
+        if (curve != null){
+            mFragment.fillCurve(curve,false);// 填充曲线
+        }
+        else Log.d(TAG, "onResume: curve is null");
     }
 
     @Override
@@ -98,6 +107,7 @@ public class AddCurveActivity extends BaseActivity {
                     break;
             }
         });
+
         //选择文件
         mFromAlumn = registerForActivityResult( new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
