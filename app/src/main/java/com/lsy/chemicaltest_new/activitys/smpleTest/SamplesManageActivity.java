@@ -54,12 +54,12 @@ public class SamplesManageActivity extends BaseActivity {
         mBinding = ActivitySamplesManageBinding.inflate(getLayoutInflater());
         mViewModel = new ViewModelProvider(this).get(SampleManageViewModel.class);
         mViewModel.setContext(this);
+        mImageProcessor = new ImageProcessor(this);
         // 初始化Activity结果监听 处理图片裁剪返回结果
         bitmapResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> mImageProcessor.handleActivityResult(result.getResultCode(), result.getData())
         );
-        mImageProcessor = new ImageProcessor(this);
         setContentView(mBinding.getRoot());
         initUI();
     }

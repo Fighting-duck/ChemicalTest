@@ -2,10 +2,13 @@ package com.lsy.chemicaltest_new.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static com.blankj.utilcode.util.ViewUtils.runOnUiThread;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -43,11 +46,16 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentStandardCurveBinding;
 import com.lsy.chemicaltest_new.domain.CurveSetting;
 import com.lsy.chemicaltest_new.domain.Expression;
+import com.lsy.chemicaltest_new.domain.HSV;
+import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.TestValue;
+import com.lsy.chemicaltest_new.domain.dialog.PhotoPickerBottomSheet;
 import com.lsy.chemicaltest_new.models.StandardCurveViewModel;
 import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
+import com.lsy.chemicaltest_new.utils.ImageProcessor;
+import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +75,15 @@ public class StandardCurveFragment extends Fragment {
     private CombinedData mCombinedData;//联合图数据
     private Boolean mIsAutoCalculate = true;
     private CurveSetting mCurveSetting;
+    private ImageProcessor mImageProcessor;
     private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
+    private ActivityResultLauncher<Intent> bitmapResultLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mImageProcessor = new ImageProcessor(getActivity());
         /**ActivityLauncher**/
         mMeasureValueActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -84,13 +95,25 @@ public class StandardCurveFragment extends Fragment {
                             // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
                             float floatResult = data.getFloatExtra("result_float", 0.0f);
                             //mViewModel.set_point_y((double)floatResult);
-                            mPointsAdapter.alter_YValue(3,(double)floatResult);
-                            mBinding.tvYAverage.setTextColor(Color.RED);
-                            mViewModel.setToast("从标样获取值："+floatResult);
+                            controlResultFromActivity(floatResult);
                         }
                     }
                 }
         );
+        // 初始化Activity结果监听 处理图片裁剪返回结果
+        bitmapResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> mImageProcessor.handleActivityResult(result.getResultCode(), result.getData())
+        );
+    }
+    /**
+     * 对万用表测量值 界面 或 拍照/图库 截取图片界面 传过来的电流、温度、b值进行处理
+     * @param floatResult 测量值
+     */
+    public void controlResultFromActivity(float floatResult){
+        mPointsAdapter.alter_YValue(3,(double)floatResult);
+        mBinding.tvYAverage.setTextColor(Color.RED);
+        mViewModel.setToast("从标样获取值："+floatResult);
     }
 
     @Nullable
@@ -516,7 +539,7 @@ public class StandardCurveFragment extends Fragment {
             if (mViewModel.getCurveType() == null) return;
             // 将y值数量设为1
             mBinding.edtYNumber.setText("1");
-            if (mViewModel.getCurveType() == 1){
+            if (mViewModel.getCurveType() == 1){ //从标样中获取电流
                 //保存当前直线信息
                 StandardCurve standardCurve = mViewModel.getCurve();
                 DataRepository.getInstance().setStandardCurve(standardCurve);
@@ -525,13 +548,72 @@ public class StandardCurveFragment extends Fragment {
                 intent.putExtra("showModel", ConnectMultimeterFragment.ShowModel.ELEC);
                 mMeasureValueActivityLauncher.launch(intent);
             }
-            else if (mViewModel.getCurveType() == 2){
+            else if (mViewModel.getCurveType() == 2){//从标样中获取B值
                 //保存当前直线信息
                 StandardCurve standardCurve = mViewModel.getCurve();
                 DataRepository.getInstance().setStandardCurve(standardCurve);
                 // 通过 比色图像分析 获取标准样品B值
+                // 打开图库或是拍照 选择图片,裁剪图片，获取B值
+                PhotoPickerBottomSheet.show(mContext, new PhotoPickerBottomSheet.OnPhotoPickerListener() {
+                    @Override
+                    public void onCameraSelected() {
+                        //拍照
+                        mImageProcessor.takePhoto(new ImageProcessor.ImageProcessingCallback() {
+                            @Override
+                            public void onImageSelected(Bitmap bitmap) {
+                                mImageProcessor.startCrop(bitmap, bitmapResultLauncher, new ImageProcessor.ImageProcessingCallback() {
+                                    @Override
+                                    public void onImageSelected(Bitmap bitmap) {
+                                        controlBitmap(bitmap);
+                                    }
+
+                                    @Override
+                                    public void onError(String message) {
+                                        Log.e(TAG, "crop photo onImageSelected: " + message);
+                                        mViewModel.setToast("裁剪图片时出错啦");
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                Log.e(TAG, "take photo onImageSelected: " + message);
+                                mViewModel.setToast("拍照时出错啦");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onGallerySelected() {
+                        // 处理相册逻辑
+                        mImageProcessor.pickFromGallery(new ImageProcessor.ImageProcessingCallback() {
+                            @Override
+                            public void onImageSelected(Bitmap bitmap) {
+                                mImageProcessor.startCrop(bitmap, bitmapResultLauncher, new ImageProcessor.ImageProcessingCallback() {
+                                    @Override
+                                    public void onImageSelected(Bitmap bitmap) {
+                                        controlBitmap(bitmap);
+                                    }
+
+                                    @Override
+                                    public void onError(String message) {
+                                        Log.e(TAG, "crop photo onImageSelected: " + message);
+                                        mViewModel.setToast("裁剪图片时出错啦");
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                Log.e(TAG, "crop photo onImageSelected: " + message);
+                                mViewModel.setToast("选取图片时出错啦");
+                            }
+                        });
+                    }
+                });
+
             }
-            else if (mViewModel.getCurveType() == 3){
+            else if (mViewModel.getCurveType() == 3){//从标样中获取温度
                 //保存当前直线信息
                 StandardCurve standardCurve = mViewModel.getCurve();
                 DataRepository.getInstance().setStandardCurve(standardCurve);
@@ -543,7 +625,29 @@ public class StandardCurveFragment extends Fragment {
 
             }
             else return;
-
+        }
+    }
+    /**
+     * 对用户从拍照/图库取得的图片进行处理，即获取标准样品B值
+     * @param bitmap  图片
+     */
+    public void controlBitmap(Bitmap bitmap){
+        //获取标准样品B值
+        List<Integer> colors = PhotoUtil.getDistinctColors(
+                bitmap,
+                5,           // 最多返回5种颜色
+                10f,       // 色相差<10°视为相似色
+                0.1f,        // 最小饱和度=0.1
+                0f         // 最小亮度=0
+        );
+        if (!colors.isEmpty() && colors.size()>1){
+            mViewModel.setToast("框选区域杂色偏多，会影响颜色精度！");
+            return;
+        }
+        if (!colors.isEmpty()){
+            Integer color = colors.get(0);//获取主要颜色
+            RGB rgb = RGB.fromColor( color);
+            controlResultFromActivity(rgb.getBlue());
         }
     }
 
