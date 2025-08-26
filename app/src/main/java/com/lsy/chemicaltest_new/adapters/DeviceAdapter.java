@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.clj.fastble.data.BleDevice;
 import com.lsy.chemicaltest_new.R;
-import com.lsy.chemicaltest_new.utils.BleUtil;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -40,11 +40,12 @@
     <!--电信号检测-->
     <string name="title_electrical">电信号检测</string>
     <string name="title_measureValue">万用表测量</string>
-    <string name="electrical_selectElecCurve">选择电信号标准曲线</string>
+    <string name="electrical_selectElecCurve">选择标准曲线</string>
     <string name="electrical_selectDegreeCurve">选择温度标准曲线</string>
     <string name="electrical_useCurve">电信号标准曲线:</string>
     <string name="electrical_useElecCurve">电信号标准曲线:</string>
     <string name="electrical_useDegreeCurve">温度标准曲线:</string>
+    <string name="electrical_getCurrentFormMultimeter">万用表测电流值</string>
     <string name="text_connection_situation">万能表连接情况:</string>
     <string name="text_test_connection">扫描设备</string>
     <string name="text_disconnect">断开连接</string>
@@ -87,9 +88,9 @@
     <string name="curve_min_CORR">最小相关系数:</string>
     <string name="curve_input_point">输入散点(至少两个)</string>
     <string name="curve_y_number">y值数量:</string>
-    <string name="curve_GetCurrent">从标样获取电流</string>
-    <string name="curve_GetTemperature">从标样获取温度</string>
-    <string name="curve_GetB">从标样获取B值</string>
+    <string name="curve_GetCurrent">从标样获取电流值</string>
+    <string name="curve_GetTemperature">从标样获取温度值</string>
+    <string name="curve_GetB">从标样获取Blue值</string>
     <string name="curve_point_add">添加</string>
     <string name="curve_CORR">相关系数:</string>
     <string name="curve_expression">表达式:</string>
@@ -150,7 +151,9 @@
     <!--光热图像分析-->
     <string name="title_thermal_image_analysis">光热图像分析</string>
     <string name="thermal_Connect_thermal_device">是否连接热成像仪:</string>
+    <string name="electrical_getTemperatureFormMultimeter">万用表测温度值</string>
     <string name="thermal_Receive_images">接收图像:</string>
+    <string name="thermal_infraredCamera">红外摄像仪测温</string>
     <!--光热图像取照-->
     <string name="title_thermal_image_take">光热图像取照</string>
     <string name="thermal_performTuning">调整</string>
@@ -360,13 +363,15 @@
     <string name="toast_curve_cant_greaterMax">不能大于最大值</string>
     <string name="toast_curve_cant_lessMin">不能小于最小值</string>
     <string name="toast_curve_updatePoint">已更新点</string>
+    <string name="toast_curve_maxPoint">已达最大点数50个</string>
     <string name="toast_curve_addPoint">已添加点</string>
     <string name="toast_curve_XValue_invalid">log X值无效</string>
+    <string name="toast_curve_YValue_invalid">avg Y值无效</string>
     <string name="toast_curve_cant_lessOne">Y值数量不能小于1</string>
     <string name="toast_elec_closeBLE">蓝牙已关闭，请开启后重试</string>
     <string name="toast_elec_openDevice">蓝牙已开启</string>
-    <string name="toast_elec_testOver">测试结束</string>
-    <string name="toast_elec_testing">正在测试中...</string>
+    <string name="toast_elec_testOver">测量结束</string>
+    <string name="toast_elec_testing">正在测量中…</string>
     <string name="toast_elec_timeOut">连接超时，请重试</string>
     <string name="toast_sample_getSamples_fail">获取样品信息失败</string>
     <string name="toast_sample_name_empty">样品名不能为空</string>
@@ -391,8 +396,4 @@
     <string name="toast_permission_usb">需要USB权限来进行相关操作</string>
     <string name="toast_permission_denyPermissions">以下权限被拒绝，功能可能受限: </string>
     <string name="toast_permission_grantPermissions">权限已授予</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
 </resources>

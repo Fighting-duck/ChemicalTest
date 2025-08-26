@@ -50,10 +50,10 @@
         <!-- 基础属性 -->
         <item name="android:textColor">@color/text_color_light</item>          <!-- 文本颜色 -->
         <item name="android:textSize">14sp</item>                  <!-- 文本大小 -->
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:paddingStart">5dp</item>
-        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
         <item name="android:minWidth">80dp</item>                  <!-- 最小宽度 -->
         <item name="android:minHeight">30dp</item>                 <!-- 最小高度 -->
         <item name="android:gravity">center</item>                  <!-- 文本对齐方式 -->

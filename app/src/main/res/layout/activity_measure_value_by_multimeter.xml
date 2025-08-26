@@ -100,8 +100,7 @@
                 android:id="@+id/ll_elec"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -171,52 +170,27 @@
                         android:layout_height="wrap_content"
                         android:scrollbars="horizontal" />
                 </LinearLayout>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_MaxValue_4"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_MaxValue_4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-                </LinearLayout>
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/ll_degree"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tv_resultValuePrompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_temperature"
+                    android:text="@string/text_MaxValue_4"
                     style="@style/text_thirdTitle"/>
                 <TextView
-                    android:id="@+id/tv_centigrade"
+                    android:id="@+id/tv_resultValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/default_no"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/unit_degree"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 

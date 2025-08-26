@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".activitys.smpleTest.ElectricalTestActivity">
     <FrameLayout
         android:layout_width="match_parent"
@@ -47,28 +48,21 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background"
             android:padding="10dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <android.widget.Button
-                    android:id="@+id/btn_selectElecCurve"
-                    android:layout_width="150dp"
-                    android:layout_height="35dp"
-                    android:text="@string/electrical_selectElecCurve"
+                    android:id="@+id/btn_selectCurve"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_selectCurve"
                     style="@style/ButtonStyle.Primary"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
-                <android.widget.Button
-                    android:id="@+id/btn_selectDegreeCurve"
-                    android:layout_width="150dp"
-                    android:layout_height="35dp"
-                    android:text="@string/electrical_selectDegreeCurve"
-                    style="@style/ButtonStyle.Primary"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -85,7 +79,7 @@
                     android:text="@string/electrical_useElecCurve"
                     style="@style/text_thirdTitle"/>
                 <TextView
-                    android:id="@+id/tv_ElecCurve"
+                    android:id="@+id/tvCurve"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold|italic"
@@ -93,173 +87,52 @@
                     android:text="@string/default_no"
                     android:gravity="center_vertical"/>
             </LinearLayout>
+            <android.widget.Button
+                android:id="@+id/btn_getCurrentFormMultimeter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/electrical_getCurrentFormMultimeter"
+                android:layout_marginTop="20dp"
+                style="@style/ButtonStyle.Primary"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="@dimen/dp_10">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/electrical_useDegreeCurve"
+                    android:text="@string/text_current_gear"
                     style="@style/text_thirdTitle"/>
                 <TextView
-                    android:id="@+id/tv_DegreeCurve"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tv_currentGear"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold|italic"
-                    android:textColor="@color/line_thermal"
-                    android:text="@string/default_no"
-                    android:gravity="center_vertical"/>
+                    android:text="@string/default_no"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_mileage"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_mileage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_connection_situation"
-                    android:layout_gravity="center_vertical"
-                    style="@style/text_thirdTitle"/>
-                <TextView
-                    android:id="@+id/tv_connectionSituation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_connection_false"
-                    android:layout_gravity="center_vertical"/>
-                <android.widget.Button
-                    android:id="@+id/btn_testConnect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:text="@string/text_test_connection"
-                    android:layout_marginStart="30dp"
-                    style="@style/ButtonStyle.Primary"/>
-                <ProgressBar
-                    android:id="@+id/pb_StartScan"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_marginStart="10dp"
-                    android:visibility="gone"/>
-            </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvDevices"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@+id/btnStartScan" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_prompt"
-                android:layout_marginTop="@dimen/dp_10"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_returnResults"
-                android:layout_marginTop="10dp"
-                style="@style/text_firstTitle"/>
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@color/white"
-                android:layout_marginTop="5dp">
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_current_gear"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_currentGear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_mileage"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_mileage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:layout_marginTop="5dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_RealTime_value"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_currentValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                </LinearLayout>
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/lc_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="150dp"
-                    android:layout_marginTop="10dp"/>
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/test_test_results"
-                    style="@style/text_firstTitle"/>
-
-                <android.widget.Button
-                    android:id="@+id/btn_StartTest"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:text="@string/text_StartTest"
-                    android:enabled="false"
-                    style="@style/ButtonStyle.Primary"/>
-
-                <ProgressBar
-                    android:id="@+id/pb_testDegree"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="20dp"
-                    android:visibility="gone"/>
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -324,161 +197,73 @@
                     android:layout_height="wrap_content"
                     android:scrollbars="horizontal" />
             </LinearLayout>
-
-
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@color/white"
-                android:layout_marginTop="5dp">
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_MaxValue_4"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_MaxValue_4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                    <ImageView
-                        android:id="@+id/iv_notice_Elec"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:contentDescription="@string/text_MaxValue_4"
-                        android:src="@drawable/icon_notice_abnormal"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_detection_concentration"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_concentration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_disease_analysis_2"
-                        style="@style/text_secondTitle"/>
-                    <android.widget.Button
-                        android:id="@+id/btn_StartAnal_Elec"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:text="@string/text_StartAnal"
-                        android:layout_marginStart="30dp"
-                        android:enabled="false"
-                        style="@style/ButtonStyle.Primary"/>
-                </LinearLayout>
-
+                android:layout_marginTop="@dimen/dp_10">
                 <TextView
-                    android:id="@+id/tv_diseaseAnalysis_Elec"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="100dp"
-                    android:maxHeight="150dp"
-                    android:layout_marginTop="5dp"
-                    android:text="--" />
+                    android:text="@string/text_MaxValue_4"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_MaxValue_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <ImageView
+                    android:id="@+id/iv_notice_Elec"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/text_MaxValue_4"
+                    android:src="@drawable/icon_notice_abnormal"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_detection_concentration"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_concentration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
             </LinearLayout>
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@color/white"
-                android:layout_marginTop="5dp">
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_temperature"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_centigrade"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/unit_degree"/>
-                    <ImageView
-                        android:id="@+id/iv_notice_Degree"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:contentDescription="@string/text_temperature"
-                        android:src="@drawable/icon_notice_abnormal"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_detection_concentration"
-                        style="@style/text_thirdTitle"/>
-                    <TextView
-                        android:id="@+id/tv_concentration_degree"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_no" />
-                </LinearLayout>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_disease_analysis_2"
-                        style="@style/text_firstTitle"/>
-                    <android.widget.Button
-                        android:id="@+id/btn_StartAnal_Temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:text="@string/text_StartAnal"
-                        android:layout_marginStart="30dp"
-                        android:enabled="false"
-                        style="@style/ButtonStyle.Primary"/>
-                </LinearLayout>
-
+                android:layout_marginTop="20dp">
                 <TextView
-                    android:id="@+id/tv_diseaseAnalysis_Temperature"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="100dp"
-                    android:maxHeight="150dp"
-                    android:layout_marginTop="5dp"
-                    android:text="--" />
+                    android:text="@string/text_disease_analysis_2"
+                    style="@style/text_secondTitle"/>
+                <android.widget.Button
+                    android:id="@+id/btn_StartAnal_Elec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_StartAnal"
+                    android:layout_marginStart="30dp"
+                    android:enabled="false"
+                    style="@style/ButtonStyle.Primary"/>
             </LinearLayout>
+            <TextView
+                android:id="@+id/tv_diseaseAnalysis_Elec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="100dp"
+                android:maxHeight="150dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/default_no"
+                android:background="@color/white"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

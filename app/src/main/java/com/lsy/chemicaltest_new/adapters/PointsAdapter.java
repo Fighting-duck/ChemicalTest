@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> {
-    private List<Double> mValueList;
-    private Context mContext;
-    private Integer mColumnNum;
-    private Double mDefaultValue_y;
-    private StandardCurveViewModel mViewModel = null ;
+    List<Double> mValueList;
+    Context mContext;
+    Integer mColumnNum;
+    Double mDefaultValue_y;
+    StandardCurveViewModel mViewModel = null ;
 
     //创建内部ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -160,8 +160,12 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     }
 
+    //改变指定位置的Y值
+    @SuppressLint("NotifyDataSetChanged")
     public void alter_YValue(Integer position, Double value){
-        mValueList.set(position,value);
-        notifyDataSetChanged();
+        if (position>=0 && position<mValueList.size()) {
+            mValueList.set(position, value);
+            notifyDataSetChanged();
+        }
     }
 }

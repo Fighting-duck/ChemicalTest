@@ -43,6 +43,14 @@ public class Point implements Parcelable {
         this.add_time = add_time;
     }
 
+    @Ignore
+    public Point(Point point) {
+        this.id = point.id;
+        this.x_value = point.x_value;
+        this.y_value = point.y_value;
+        this.add_time = point.add_time;
+    }
+
 
     // getters and setters
     public Integer getId() {

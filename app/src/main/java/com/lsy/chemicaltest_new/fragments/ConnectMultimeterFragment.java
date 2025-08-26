@@ -8,9 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
@@ -21,26 +19,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.clj.fastble.data.BleDevice;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.lsy.chemicaltest_new.R;
-import com.lsy.chemicaltest_new.activitys.smpleTest.ElectricalTestActivity;
 import com.lsy.chemicaltest_new.adapters.DeviceAdapter;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentConnectMultimeterBinding;
-import com.lsy.chemicaltest_new.databinding.FragmentStandardCurveBinding;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
-import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.models.ConnectMultimeterViewModel;
-import com.lsy.chemicaltest_new.models.StandardCurveViewModel;
 import com.lsy.chemicaltest_new.utils.BleUtil;
-import com.lsy.chemicaltest_new.utils.BleUtil_new;
 import com.lsy.chemicaltest_new.utils.LineChartUtil;
 import com.lsy.chemicaltest_new.utils.TimeUtil;
 
 import java.util.List;
-import java.util.Objects;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -68,7 +59,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
     private Activity mActivity;
     private Context mContext;
     private ConnectMultimeterViewModel mViewModel;
-    private BleUtil_new mBleUtil;
+    private BleUtil mBleUtil;
     private Handler mHandler = new Handler();
     private final static int RC_BLE_PERMISSIONS  = 1000;
     private DeviceAdapter mDeviceAdapter;
@@ -110,7 +101,6 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         }
         mContext = getContext();
         mViewModel = new ViewModelProvider(this).get(ConnectMultimeterViewModel.class);
-        mViewModel.setContext(mContext);
     }
 
     @Override
@@ -119,7 +109,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         mBinding = FragmentConnectMultimeterBinding.inflate(getLayoutInflater());
         mActivity = getActivity();
         if (mActivity != null){
-            mBleUtil = new BleUtil_new(mActivity,mViewModel);
+            mBleUtil = new BleUtil(mActivity,mViewModel);
             mDeviceAdapter = new DeviceAdapter();
             mBinding.rvDevices.setAdapter(mDeviceAdapter);
         }
@@ -167,14 +157,14 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         * */
         LineChartUtil.setLineChart(mBinding.lcChart);
         mBinding.lcChart.getLegend().setEnabled(false);//图例不可用
-        IAxisValueFormatter formatter = new IAxisValueFormatter() {   //将x轴的数值转换为字符串形式的时间表示
+        //将x轴的数值转换为字符串形式的时间表示
+        mBinding.lcChart.getXAxis().setValueFormatter(new ValueFormatter() {
             @Override
-            public String getFormattedValue(float value, AxisBase axis) {
+            public String getFormattedValue(float value) {
                 //将value转化为时间
                 return TimeUtil.timeNumToStr(value);
             }
-        };
-        mBinding.lcChart.getXAxis().setValueFormatter(formatter);//设置X轴值为字符串
+        });
 
         /*
         * 设置监听器
@@ -213,19 +203,12 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
             if (bleDeviceInfo!=null){
                 mBinding.tvCurrentGear.setText(bleDeviceInfo.getGear());
                 mBinding.tvMileage.setText(bleDeviceInfo.getMileage());
-                /*mBinding.btnStartTest.setEnabled(true);
-                if (Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_Celsius)))
-                    mBinding.btnStartTest.setText(R.string.text_StartTest_temperature);
-                else
-                    mBinding.btnStartTest.setText(R.string.text_StartTest_elec);*/
                 mListener.onDeviceInfo(bleDeviceInfo);//向上传递设备信息
             }
             else {
                 //复原
                 mBinding.tvCurrentGear.setText(R.string.default_no);
                 mBinding.tvMileage.setText(R.string.default_no);
-/*                mBinding.btnStartTest.setText(R.string.text_StartTest);
-                mBinding.btnStartTest.setEnabled(false);*/
                 mListener.onDeviceInfo(null);//向上传递设备信息
             }
         });
@@ -272,15 +255,18 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
     // 开始蓝牙扫描
     private void startBleScanning() {
         Log.d(TAG, "startBleScanning: ");
+        mViewModel.clearDevices();//清空设备列表
         mBleUtil.startScan();
         mBinding.pbStartScan.setVisibility(View.VISIBLE);
         // 10秒后停止扫描指示器
         mHandler.postDelayed(() -> {
+            if (!isAdded()) return;//先检查Fragment是否已附着到Activity
+
             if (!mBleUtil.isConnected()) { // 检查是否成功连接
                 mBleUtil.stopScan();  // 超时后停止扫描
-                mViewModel.setToast(getString(R.string.toast_elec_timeOut));
             }
-            mBinding.pbStartScan.setVisibility(View.INVISIBLE);
+            if (mBinding!=null)
+                mBinding.pbStartScan.setVisibility(View.INVISIBLE);
         }, 10_000); // 15秒超时
     }
 

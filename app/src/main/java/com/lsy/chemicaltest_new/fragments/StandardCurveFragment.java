@@ -2,12 +2,9 @@ package com.lsy.chemicaltest_new.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import static com.blankj.utilcode.util.ViewUtils.runOnUiThread;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -46,7 +42,6 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentStandardCurveBinding;
 import com.lsy.chemicaltest_new.domain.CurveSetting;
 import com.lsy.chemicaltest_new.domain.Expression;
-import com.lsy.chemicaltest_new.domain.HSV;
 import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
@@ -68,13 +63,13 @@ public class StandardCurveFragment extends Fragment {
     private FragmentStandardCurveBinding mBinding;
     private Context mContext;
     private StandardCurveViewModel mViewModel;
-    private ArrayAdapter<String> mSpinner_TypeAdapter;
-    private ArrayAdapter<String> mSpinner_SampleAdapter;
-    private PointsAdapter mPointsAdapter;
-    private PointListAdapter mPointListAdapter;
+    private ArrayAdapter<String> mSpinner_TypeAdapter;//曲线类型列表适配器
+    private ArrayAdapter<String> mSpinner_SampleAdapter;//样本列表适配器
+    private PointsAdapter mPointsAdapter;//(x,y)点列表RecyclerView适配器
+    private PointListAdapter mPointListAdapter;//图表中点列表适配器
     private CombinedData mCombinedData;//联合图数据
-    private Boolean mIsAutoCalculate = true;
-    private CurveSetting mCurveSetting;
+    private Boolean mIsAutoCalculate = true;//是否自动计算
+    private CurveSetting mCurveSetting;//曲线设置
     private ImageProcessor mImageProcessor;
     private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
     private ActivityResultLauncher<Intent> bitmapResultLauncher;
@@ -92,10 +87,13 @@ public class StandardCurveFragment extends Fragment {
                     if (result.getResultCode() == RESULT_OK) { // 确保结果正常返回
                         Intent data = result.getData();
                         if (data != null) {
-                            // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
-                            float floatResult = data.getFloatExtra("result_float", 0.0f);
-                            //mViewModel.set_point_y((double)floatResult);
-                            controlResultFromActivity(floatResult);
+                            //判断是否包含key "result_float"
+                            if (data.hasExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE)){
+                                // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
+                                TestValue testValue = data.getParcelableExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE);
+                                if (testValue != null)
+                                    controlResultFromActivity(testValue.getValue());
+                            }
                         }
                     }
                 }
@@ -112,8 +110,8 @@ public class StandardCurveFragment extends Fragment {
      */
     public void controlResultFromActivity(float floatResult){
         mPointsAdapter.alter_YValue(3,(double)floatResult);
-        mBinding.tvYAverage.setTextColor(Color.RED);
-        mViewModel.setToast("从标样获取值："+floatResult);
+        String prompt = mBinding.btnVerifyStandardSample.getText().toString();
+        mViewModel.setToast(prompt+"："+floatResult);
     }
 
     @Nullable
@@ -122,7 +120,7 @@ public class StandardCurveFragment extends Fragment {
         mBinding = FragmentStandardCurveBinding.inflate(getLayoutInflater());
         mContext = getContext();
         mViewModel = new ViewModelProvider(this).get(StandardCurveViewModel.class);
-        mViewModel.setContext(mContext);
+        //mViewModel.setContext(mContext);
         return mBinding.getRoot();
     }
 
@@ -155,32 +153,8 @@ public class StandardCurveFragment extends Fragment {
             mViewModel.set_curve_minCORR(mCurveSetting.getMinCorr());
         }
 
-        // 获取字符串资源
-        Resources resources = getResources();
-        //String unitMolPerMl = resources.getString(R.string.unit_mol_per_mL);
-        String unitMa = resources.getString(R.string.unit_mA);
-        //String defaultMinCorr = resources.getString(R.string.curve_min_CORR_value);
-        //String defaultMinCo = resources.getString(R.string.default_min_CO);
-        //String defaultMaxCo = resources.getString(R.string.default_max_CO);
-
         // 设置初始值
-       // mViewModel.set_curve_xUnit(unitMolPerMl);
-        mViewModel.set_curve_yUnit(unitMa);
-
-       /* try {
-            Float minCorr = Float.valueOf(defaultMinCorr);
-            mViewModel.set_curve_minCORR(minCorr);
-            Float xMin = Float.valueOf(defaultMinCo);
-            mViewModel.set_curve_xMin(xMin);
-            Float xMax = Float.valueOf(defaultMaxCo);
-            mViewModel.set_curve_xMax(xMax);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Error parsing float values", e);
-            // 设置默认值
-            mViewModel.set_curve_minCORR(0.95f);
-            mViewModel.set_curve_xMin(0.0f);
-            mViewModel.set_curve_xMax(10.0f);
-        }*/
+        mViewModel.set_curve_yUnit(getResources().getString(R.string.unit_mA));
 
         // 更新样本列表
         mViewModel.updateSampleList();
@@ -323,7 +297,7 @@ public class StandardCurveFragment extends Fragment {
             }
         });
         mViewModel.getLiveData_pointList().observe(getViewLifecycleOwner(), pointList -> {
-            String x_unit = getString(R.string.unit_lg_c) + mViewModel.getLiveData_xUnit().getValue();
+            String x_unit = getString(R.string.unit_lg_c) + mViewModel.getLiveData_xUnit().getValue();//x轴单位
             List<Float> k_b_corr = CombinedChartUtils.buildChart(mContext, mBinding.ccChart,pointList, mViewModel.getCurveType(), x_unit);
             Log.d(TAG, "k_b_corr:"+k_b_corr.toString());
             if (pointList.size()>=2 && mIsAutoCalculate){
@@ -454,6 +428,7 @@ public class StandardCurveFragment extends Fragment {
         });
     }
 
+    //focusListener
     View.OnFocusChangeListener focusListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
@@ -522,7 +497,7 @@ public class StandardCurveFragment extends Fragment {
             mViewModel.addPoint();
             //收起键盘
             InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);// 隐藏键盘
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0,null);// 隐藏键盘
         }
         else if (view.getId() == mBinding.btnSampleAdd.getId()){
             Intent intent = new Intent(mContext, SamplesManageActivity.class);
@@ -539,19 +514,18 @@ public class StandardCurveFragment extends Fragment {
             if (mViewModel.getCurveType() == null) return;
             // 将y值数量设为1
             mBinding.edtYNumber.setText("1");
+            //保存当前直线信息
+            StandardCurve standardCurve = mViewModel.getCurve();
+            DataRepository.getInstance().setStandardCurve(standardCurve);
+            Log.d(TAG, "onClick: " + standardCurve.toString());
+            //跳转到测量界面
             if (mViewModel.getCurveType() == 1){ //从标样中获取电流
-                //保存当前直线信息
-                StandardCurve standardCurve = mViewModel.getCurve();
-                DataRepository.getInstance().setStandardCurve(standardCurve);
                 // 通过 电信号检测 获取标准样品电流值
                 Intent intent = new Intent(mContext, MeasureValueByMultimeterActivity.class);
-                intent.putExtra("showModel", ConnectMultimeterFragment.ShowModel.ELEC);
+                intent.putExtra(MeasureValueByMultimeterActivity.GET_SHOW_MODE, ConnectMultimeterFragment.ShowModel.ELEC);
                 mMeasureValueActivityLauncher.launch(intent);
             }
             else if (mViewModel.getCurveType() == 2){//从标样中获取B值
-                //保存当前直线信息
-                StandardCurve standardCurve = mViewModel.getCurve();
-                DataRepository.getInstance().setStandardCurve(standardCurve);
                 // 通过 比色图像分析 获取标准样品B值
                 // 打开图库或是拍照 选择图片,裁剪图片，获取B值
                 PhotoPickerBottomSheet.show(mContext, new PhotoPickerBottomSheet.OnPhotoPickerListener() {
@@ -614,15 +588,10 @@ public class StandardCurveFragment extends Fragment {
 
             }
             else if (mViewModel.getCurveType() == 3){//从标样中获取温度
-                //保存当前直线信息
-                StandardCurve standardCurve = mViewModel.getCurve();
-                DataRepository.getInstance().setStandardCurve(standardCurve);
                 // 通过 光热图像分析 获取标准样品温度值
                 Intent intent = new Intent(mContext, MeasureValueByMultimeterActivity.class);
-                intent.putExtra("showModel", ConnectMultimeterFragment.ShowModel.TEMPERATURE);
+                intent.putExtra(MeasureValueByMultimeterActivity.GET_SHOW_MODE, ConnectMultimeterFragment.ShowModel.TEMPERATURE);
                 mMeasureValueActivityLauncher.launch(intent);
-
-
             }
             else return;
         }
@@ -655,13 +624,6 @@ public class StandardCurveFragment extends Fragment {
         mIsAutoCalculate = isAutoCalculate;
         Log.d(TAG, "fillCurve: "+ curve);
         mViewModel.setCurve(curve);
-        /*mBinding.edtName.setText(curve.getName());
-        mBinding.edtXUnit.setText(curve.getX_axis_unit());
-        mBinding.edtYUnit.setText(curve.getY_axis_unit());
-        mBinding.edtMinX.setText(String.valueOf(curve.getMin_CO()));
-        mBinding.edtMaxX.setText(String.valueOf(curve.getMax_CO()));
-        mBinding.edtMinCORR.setText(String.valueOf(curve.getMinCorr()));
-        mBinding.edtDescription.setText(curve.getDescription());*/
         mIsAutoCalculate = true;
    }
 

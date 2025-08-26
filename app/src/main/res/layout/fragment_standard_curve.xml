@@ -47,7 +47,7 @@
         <android.widget.Button
             android:id="@+id/btn_sample_add"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:text="@string/curve_add_sample"
             style="@style/ButtonStyle.Primary"
             android:layout_marginStart="10dp"/>
@@ -257,8 +257,8 @@
             android:layout_marginStart="10dp"/>
         <android.widget.Button
             android:id="@+id/btn_point_add"
-            android:layout_width="80dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/curve_point_add"
             style="@style/ButtonStyle.Primary"
             android:layout_marginStart="10dp"/>

@@ -39,13 +39,16 @@
     <string name="test_description_hint">Notes (Optional)</string>
     <!--电信号检测-->
     <string name="title_electrical">Electrical Detection</string>
+    <string name="title_measureValue">Multimeter Measurement</string>
     <string name="electrical_selectElecCurve">Elec. Curve</string>
     <string name="electrical_selectDegreeCurve">Temp. Curve</string>
     <string name="electrical_useCurve">Elec. Curve:</string>
     <string name="electrical_useElecCurve">Elec. Curve:</string>
     <string name="electrical_useDegreeCurve">Temp. Curve:</string>
+    <string name="electrical_getCurrentFormMultimeter">Multimeter Measure Current</string>
     <string name="text_connection_situation">Multimeter Connection:</string>
     <string name="text_test_connection">Scan Device</string>
+    <string name="text_disconnect">Disconnect</string>
     <string name="text_connection_true">Yes</string>
     <string name="text_connection_false">No</string>
     <string name="text_returnResults">Return Data</string>
@@ -58,6 +61,7 @@
     <string name="text_StartTest_elec">Start Current Test</string>
     <string name="text_StartTest_temperature">Start Temp Test</string>
     <string name="text_StartTest">Start Test</string>
+    <string name="text_promptEnable">Measurement signal doesn\'t match multimeter gear. Please change the gear.</string>
     <string name="electrical_startTime">Start Time:</string>
     <string name="electrical_endTime">End Time:</string>
     <string name="text_MaxValue_4">Max Current:</string>
@@ -84,6 +88,9 @@
     <string name="curve_min_CORR">Min Correlation:</string>
     <string name="curve_input_point">Enter Data Points (At least 2)</string>
     <string name="curve_y_number">Y-Values Count:</string>
+    <string name="curve_GetCurrent">Get Current Value</string>
+    <string name="curve_GetTemperature">Get Temperature</string>
+    <string name="curve_GetB">Get Blue Value</string>
     <string name="curve_point_add">Add</string>
     <string name="curve_CORR">Correlation Coefficient:</string>
     <string name="curve_expression">Formula:</string>
@@ -144,7 +151,9 @@
     <!--光热图像分析-->
     <string name="title_thermal_image_analysis">Photothermal Analysis</string>
     <string name="thermal_Connect_thermal_device">Thermal Imager Connected?</string>
+    <string name="electrical_getTemperatureFormMultimeter">Multimeter Measure Temperature</string>
     <string name="thermal_Receive_images">Receive Image</string>
+    <string name="thermal_infraredCamera">Infrared Camera Measure Temperature</string>
     <!--光热图像取照-->
     <string name="title_thermal_image_take">Capture PT Image</string>
     <string name="thermal_performTuning">Adjust</string>
@@ -354,9 +363,11 @@
     <string name="toast_curve_notEmpty">Cannot be empty</string>
     <string name="toast_curve_cant_greaterMax">Cannot exceed maximum value</string>
     <string name="toast_curve_cant_lessMin">Cannot be less than minimum value</string>
+    <string name="toast_curve_maxPoint">Maximum of 50 points has been reached</string>
     <string name="toast_curve_updatePoint">Point updated</string>
     <string name="toast_curve_addPoint">Point added</string>
     <string name="toast_curve_XValue_invalid">invalid logX</string>
+    <string name="toast_curve_YValue_invalid">invalid avgY</string>
     <string name="toast_curve_cant_lessOne">The number of Y values cannot be less than 1</string>
     <string name="toast_elec_closeBLE">Bluetooth is disabled. Please enable it and try again.</string>
     <string name="toast_elec_openDevice">Bluetooth enabled</string>

@@ -41,19 +41,18 @@
             android:background="#D3D3D6"
             android:layout_gravity="bottom"/>
     </FrameLayout>
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp">
             <android.widget.Button
                 android:id="@+id/btn_selectElecCurve"
-                android:layout_width="150dp"
-                android:layout_height="35dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/text_selectCurve"
                 style="@style/ButtonStyle.Primary"/>
             <LinearLayout
@@ -75,98 +74,137 @@
                     android:text="@string/default_no"
                     android:gravity="center_vertical"/>
             </LinearLayout>
-            <ImageView
-                android:id="@+id/iv_tackPhoto"
-                android:layout_width="50dp"
-                android:layout_height="39dp"
-                android:background="@drawable/icon_take_photo"
-                android:layout_marginTop="10dp"/>
+            <android.widget.Button
+                android:id="@+id/btn_getTemperatureFormMultimeter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/electrical_getTemperatureFormMultimeter"
+                android:layout_marginTop="20dp"
+                style="@style/ButtonStyle.Primary"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
-                <LinearLayout
-                    android:orientation="vertical"
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/colorimetric_Original_image"
-                        style="@style/text_secondTitle"/>
-                    <ImageView
-                        android:id="@+id/iv_ThermalImage"
-                        android:layout_width="152dp"
-                        android:layout_height="114dp"
-                        android:background="@drawable/icon_no_image"
-                        android:layout_marginTop="5dp"
-                        android:scaleType="fitXY"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_current_gear"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_currentGear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/colorimetric_Test_results"
-                        style="@style/text_secondTitle"/>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/white"
-                        android:padding="10dp"
-                        android:layout_marginTop="5dp">
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_center_temperature"
-                                style="@style/text_thirdTitle"/>
-                            <TextView
-                                android:id="@+id/tv_centerTemperature"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/default_no"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/unit_degree"
-                                android:layout_marginStart="5dp"/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/text_detection_concentration"
-                                style="@style/text_thirdTitle"/>
-                            <TextView
-                                android:id="@+id/tv_CO"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/default_no"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/unit_mg_per_liter"
-                                android:layout_marginStart="5dp"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_mileage"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_mileage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/thermal_infraredCamera"
+                android:gravity="left"
+                android:layout_marginTop="20dp"
+                style="@style/text_firstTitle" />
+            <LinearLayout
+                android:id="@+id/ll_ThermalDevice"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginTop="10dp"
+                android:padding="10dp">
+                <ImageView
+                    android:id="@+id/iv_tackPhoto"
+                    android:layout_width="50dp"
+                    android:layout_height="39dp"
+                    android:background="@drawable/icon_take_photo"
+                    android:layout_marginTop="10dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/colorimetric_Original_image"
+                    style="@style/text_secondTitle"/>
+                <ImageView
+                    android:id="@+id/iv_ThermalImage"
+                    android:layout_width="152dp"
+                    android:layout_height="114dp"
+                    android:background="@drawable/icon_no_image"
+                    android:layout_marginTop="5dp"
+                    android:scaleType="fitXY"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/colorimetric_Test_results"
+                style="@style/text_firstTitle"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_center_temperature"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_centerTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unit_degree"
+                    android:layout_marginStart="5dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_detection_concentration"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_CO"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unit_mg_per_liter"
+                    android:layout_marginStart="5dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -198,5 +236,5 @@
                 android:layout_marginTop="5dp"
                 android:background="@color/white"/>
         </LinearLayout>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

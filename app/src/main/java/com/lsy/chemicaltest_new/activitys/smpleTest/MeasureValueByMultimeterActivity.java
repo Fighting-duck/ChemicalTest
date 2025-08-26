@@ -1,7 +1,5 @@
 package com.lsy.chemicaltest_new.activitys.smpleTest;
 
-import static com.blankj.utilcode.util.StringUtils.getString;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +26,7 @@ import com.lsy.chemicaltest_new.fragments.ConnectMultimeterFragment;
 import com.lsy.chemicaltest_new.models.MeasureValueByMultimeterViewModel;
 import com.lsy.chemicaltest_new.utils.TimeUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,6 +38,12 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
     private MeasureValueByMultimeterViewModel mViewModel;
     private ConnectMultimeterFragment.ShowModel mShowModel;
     private TestValueAdapter mTestValueAdapter;
+    public static final String GET_SHOW_MODE = "showModel";
+    // 返回数据key
+    public static final String RETURN_TEST_VALUE = "result_testValue";//最大电流值/衡定温度值
+    public static final String RETURN_ELEC_VALUE_LIST = "result_ValueList";//测试电流值列表
+    public static final String RETURN_BLE_DEVICE_INFO = "result_bleDeviceInfo";//万用表设备信息
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,11 +71,25 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         if (intent != null) {
             // 获取传递的参数,强制类型转换
-            mShowModel = (ConnectMultimeterFragment.ShowModel) intent.getSerializableExtra("showModel");
+            mShowModel = (ConnectMultimeterFragment.ShowModel) intent.getSerializableExtra(GET_SHOW_MODE);
             // 根据数据更新界面或逻辑
+            if (mShowModel != null){
+                switch (mShowModel){
+                    case ELEC:
+                        mBinding.llElec.setVisibility(View.VISIBLE);
+                        mBinding.tvResultValuePrompt.setText(getString(R.string.text_MaxValue_4));
+                        break;
+                    case TEMPERATURE:
+                        mBinding.llElec.setVisibility(View.GONE);
+                        mBinding.tvResultValuePrompt.setText(getString(R.string.text_temperature));
+                        break;
+                }
+            }
         }
     }
-
+    /**
+     * 创建连接万用表Fragment
+     */
     public void createMultimeterDialogFragment(){
         // 检查容器是否存在
         View container = mBinding.getRoot().findViewById(R.id.fcv_ConnectMultimeterFragment);
@@ -95,19 +114,15 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
         DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
         mBinding.rvTestValue.addItemDecoration(decoration);
 
+        //添加监听器
         mBinding.btnStartTest.setOnClickListener(this::onCLick);
         mBinding.ivBack.setOnClickListener(this::onCLick);
         mBinding.ivSave.setOnClickListener(this::onCLick);
 
-        if (mShowModel!=null && mShowModel == ConnectMultimeterFragment.ShowModel.ELEC){
-            mBinding.llElec.setVisibility(View.VISIBLE);
-        }
-        else if (mShowModel!=null && mShowModel == ConnectMultimeterFragment.ShowModel.TEMPERATURE){
-            mBinding.llDegree.setVisibility(View.VISIBLE);
-        }
-
+        //监听万用表数据
         mFragment.setOnMeasureValueListener(new ConnectMultimeterFragment.OnFragmentMultimeterListener() {
             @Override
+            //检测万用表实时数据变化
             public void onMeasureValue(TestValue testValue) {
                if (mIsRecode){
                    processResult(testValue);
@@ -115,6 +130,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             }
 
             @Override
+            //监听万用表设备信息
             public void onDeviceInfo(BleDeviceInfo bleDeviceInfo) {
                 if (bleDeviceInfo!=null){
                     // 若当前显示状态与当前万用表档位相匹配，则可以测量
@@ -124,6 +140,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
                             Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_Celsius)))){
                         mBinding.btnStartTest.setEnabled(true);
                         mBinding.tvPromptEnable.setVisibility(View.GONE);
+                        mViewModel.setBleDeviceInfo_Elec(bleDeviceInfo);
                     }
                     else{
                         mBinding.btnStartTest.setEnabled(false);
@@ -132,6 +149,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
                 }
                 else { mBinding.btnStartTest.setEnabled(false);
                     mBinding.tvPromptEnable.setVisibility(View.GONE);
+                    mViewModel.setBleDeviceInfo_Elec(null);
                 }
             }
         });
@@ -160,29 +178,24 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
                     if (listSize==14) {
                         mBinding.tvEndTime.setText(values.get(13).getTestTime());
                         TestValue maxValue = getMaxValue(values);
-                        mViewModel.setMaxValue(maxValue);
+                        mViewModel.setResultValue(maxValue);
                     }
                 }
 
             }
         });
-        // 最大值
-        mViewModel.getLiveData_MaxValue().observe(this, maxValue -> {
+        // 最大电流值 或 温度值
+        mViewModel.getLiveData_ResultValue().observe(this, maxValue -> {
             if (maxValue!=null){
-                mBinding.tvMaxValue4.setText(maxValue.toString());
+                mBinding.tvResultValue.setText(maxValue.toString());
+                mViewModel.setToast(getString(R.string.toast_elec_testOver));
+                mBinding.pbTestDegree.setVisibility(View.GONE);
             }
             else
-                mBinding.tvMaxValue4.setText(getString(R.string.default_no));
+                mBinding.tvResultValue.setText(getString(R.string.default_no));
         });
-        mViewModel.getLiveData_Degree().observe(this, degree -> {
-            if (degree!=null){
-                mBinding.tvCentigrade.setText(degree.toString());
-                mBinding.pbTestDegree.setVisibility(View.GONE);
-                mViewModel.setToast(getString(R.string.toast_elec_testOver));
-            }
-            else {
-                mBinding.tvCentigrade.setText(getString(R.string.default_no));
-            }
+        mViewModel.getLiveData_BleDeviceInfo().observe(this, bleDeviceInfo -> {
+            
         });
     }
 
@@ -193,33 +206,48 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             finish();
         } else if (id == mBinding.ivSave.getId()) {
             // TODO : 确认
-            Float returnValue = null;
-            if (mShowModel == ConnectMultimeterFragment.ShowModel.ELEC){
-                TestValue maxValue = mViewModel.getMaxValue();
-                if (maxValue==null){
-                    mViewModel.setToast("测量值不存在！");
-                }
-                else returnValue = maxValue.getValue();
+            Intent returnIntent = new Intent();
+            // 根据当前显示模式（电信号/温度）处理数据
+            switch (mShowModel){
+                case ELEC:
+                    // 获取测量值列表并传递（若不为空）
+                    List<TestValue> values = mViewModel.getValueList();
+                    if (values!=null && !values.isEmpty()){
+                        returnIntent.putParcelableArrayListExtra(RETURN_ELEC_VALUE_LIST, new ArrayList<>(values));// 14次测量值列表
+                    }
+                    break;
+                case TEMPERATURE:
+
+                    break;
             }
-            else if (mShowModel == ConnectMultimeterFragment.ShowModel.TEMPERATURE){
-                returnValue = mViewModel.getDegree();
-                if (returnValue==null){
-                    mViewModel.setToast("测量值不存在！");
-                }
+            // 返回测量值
+            TestValue resultValue = mViewModel.getResultValue();
+            if (resultValue==null){
+                mViewModel.setToast("测量值不存在！");
+                return;
             }
-            if (returnValue!=null){
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result_float", returnValue);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-            }
+            else returnIntent.putExtra(RETURN_TEST_VALUE, resultValue);
+            // 返回设备信息
+            BleDeviceInfo bleDeviceInfo = mViewModel.getBleDeviceInfo_Elec();
+            returnIntent.putExtra(RETURN_BLE_DEVICE_INFO, bleDeviceInfo);// 设备信息
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
         }
         else if (id == mBinding.btnStartTest.getId()) {
-            mTestValueAdapter.clear();
+            if (mShowModel == ConnectMultimeterFragment.ShowModel.ELEC){
+                mTestValueAdapter.clear();
+            }
+            else if (mShowModel == ConnectMultimeterFragment.ShowModel.TEMPERATURE){
+                mViewModel.setToast(getString(R.string.toast_elec_testing));
+            }
             mIsRecode = true;
         }
     }
-
+    /**
+     * 获取最大值
+     * @param testValueList 测试值列表
+     * @return 最大值
+     */
     public TestValue getMaxValue(List<TestValue> testValueList){
         if (testValueList==null || testValueList.isEmpty())
             return null;
@@ -290,7 +318,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             mOldTime = currentTime;
             mOldDegree = yValue;
         } else {
-            mViewModel.setDegree(yValue);
+            mViewModel.setResultValue(testValue);
             mIsRecode = false;
             Log.d(TAG, "温度检测结束,温度值为：" + yValue + "℃");
         }

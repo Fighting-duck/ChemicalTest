@@ -1,10 +1,15 @@
 package com.lsy.chemicaltest_new.domain;
 
-public class TestValue {
-    private Long time_long;//HH:mm:ss值
-    private String testTime;//HH:mm:ss
-    private Float value;
-    private String unit;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class TestValue implements Parcelable {
+    private Long time_long;// YYYY HH:mm:ss值
+    private String testTime;// HH:mm:ss
+    private Float value;// 值
+    private String unit;// 单位
 
     public TestValue(Long time_long,Float value, String unit) {
         this.time_long = time_long;
@@ -51,5 +56,37 @@ public class TestValue {
     @Override
     public String toString() {
         return value+" "+unit;
+    }
+
+    protected TestValue(Parcel in) {
+        time_long = in.readLong();
+        value = in.readFloat();
+        unit = in.readString();
+        testTime = in.readString();
+    }
+
+    public static final Creator<TestValue> CREATOR = new Creator<TestValue>() {
+        @Override
+        public TestValue createFromParcel(Parcel in) {
+            return new TestValue(in);
+        }
+
+        @Override
+        public TestValue[] newArray(int size) {
+            return new TestValue[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeLong(time_long);
+        parcel.writeFloat(value);
+        parcel.writeString(unit);
+        parcel.writeString(testTime);
     }
 }

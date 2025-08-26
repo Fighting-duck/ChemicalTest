@@ -25,7 +25,7 @@
                 <android.widget.Button
                     android:id="@+id/btn_CurveManage"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/test_manageCurve"
                     style="@style/ButtonStyle.Primary" />
                 <TextView
@@ -35,7 +35,7 @@
                 <android.widget.Button
                     android:id="@+id/btn_samples_manage"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/test_manageSample"
                     style="@style/ButtonStyle.Primary" />
                 <TextView
@@ -133,7 +133,7 @@
                 <android.widget.Button
                     android:id="@+id/btn_saveAll"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/test_saveAll"
                     style="@style/ButtonStyle.Primary"
                     android:layout_marginStart="20dp"/>
@@ -148,7 +148,7 @@
                 <android.widget.Button
                     android:id="@+id/btn_cleanAll"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/test_clearAll"
                     style="@style/ButtonStyle.Primary"
                     android:layout_marginStart="20dp"/>
@@ -176,7 +176,7 @@
                 <android.widget.Button
                     android:id="@+id/btn_credibility_analysis"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/test_credibility_analysis"
                     style="@style/ButtonStyle.Primary"
                     android:layout_gravity="center_vertical"/>

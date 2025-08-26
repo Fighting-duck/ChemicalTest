@@ -1,7 +1,5 @@
 package com.lsy.chemicaltest_new.utils;
 
-import static com.blankj.utilcode.util.ViewUtils.runOnUiThread;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -20,6 +18,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.Point;
@@ -27,7 +26,7 @@ import com.lsy.chemicaltest_new.domain.StandardCurve;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 
 public class CombinedChartUtils {
     // 坐标轴预留空间比例
@@ -69,6 +68,8 @@ public class CombinedChartUtils {
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);//显示方向
+        //显示点数
+        combinedChart.setMaxVisibleValueCount(100);//限制显示的点数
     }
 
     /**
@@ -82,10 +83,8 @@ public class CombinedChartUtils {
         }
 
         // 计算数据边界
-        float minX = Float.MAX_VALUE;
-        float maxX = Float.MIN_VALUE;
-        float minY = Float.MAX_VALUE;
-        float maxY = Float.MIN_VALUE;
+        float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+        float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 
         for (Point point : pointList) {
             if (point == null) continue;
@@ -93,27 +92,45 @@ public class CombinedChartUtils {
             float x = point.getX_value();
             float y = point.getY_value();
 
-            if (x < minX) minX = x;
-            if (x > maxX) maxX = x;
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
+            // 过滤无效数据
+            if (Float.isNaN(x) || Float.isInfinite(x) ||
+                    Float.isNaN(y) || Float.isInfinite(y)) {
+                continue;
+            }
+
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
         }
 
-        // 处理空数据或单一点的情况
+        // 处理单一点或空数据的情况
         if (minX == maxX) {
-            minX -= 1;
-            maxX += 1;
+            minX -= 0.5f;
+            maxX += 0.5f;
         }
-
         if (minY == maxY) {
-            minY -= 1;
-            maxY += 1;
+            minY -= 0.5f;
+            maxY += 0.5f;
         }
 
-        // 添加预留空间
+        // 限制范围防止计算溢出
+        float maxAllowedRange = 1e6f;
         float xRange = maxX - minX;
         float yRange = maxY - minY;
 
+        if (xRange > maxAllowedRange) {
+            minX = -maxAllowedRange / 2;
+            maxX = maxAllowedRange / 2;
+            xRange = maxAllowedRange;
+        }
+        if (yRange > maxAllowedRange) {
+            minY = -maxAllowedRange / 2;
+            maxY = maxAllowedRange / 2;
+            yRange = maxAllowedRange;
+        }
+
+        // 添加预留空间
         minX -= xRange * X_AXIS_SPACE;
         maxX += xRange * X_AXIS_SPACE;
         minY -= yRange * Y_AXIS_SPACE;
@@ -123,23 +140,54 @@ public class CombinedChartUtils {
         XAxis xAxis = chart.getXAxis();
         xAxis.setAxisMinimum(minX);
         xAxis.setAxisMaximum(maxX);
-        xAxis.setGranularity(1f); // 设置X轴最小间隔
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
 
-        // 设置Y轴
+        // 设置Y轴（优化格式化器）
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setAxisMinimum(minY);
         leftAxis.setAxisMaximum(maxY);
-        leftAxis.setLabelCount(Y_AXIS_LABEL_COUNT, false); // 建议的刻度数量
-        leftAxis.setSpaceTop(Y_AXIS_SPACE * 100); // 顶部预留空间百分比
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return formatLargeNumber(value);
+            }
+        });
 
-        YAxis rightAxis = chart.getAxisRight();
-        rightAxis.setEnabled(false); // 禁用右侧Y轴
-
-        // 刷新图表
         chart.notifyDataSetChanged();
         chart.invalidate();
     }
+
+    /** 格式化大数字，避免字符串过长 */
+    private static String formatLargeNumber(float value) {
+        // 处理无效数值（NaN/Infinite）
+        if (Float.isNaN(value) || Float.isInfinite(value)) {
+            return "N/A";
+        }
+
+        // 处理接近于零的值（避免显示 -0.00）
+        if (Math.abs(value) < 0.005f) {
+            return "0.00";
+        }
+
+        // 负数统一处理
+        boolean isNegative = value < 0;
+        float absValue = Math.abs(value);
+
+        // 按量级格式化
+        String formattedValue;
+        if (absValue >= 1e6) {
+            formattedValue = String.format(Locale.US, "%.1fM", absValue / 1e6);
+        } else if (absValue >= 1e3) {
+            formattedValue = String.format(Locale.US, "%.1fK", absValue / 1e3);
+        } else {
+            formattedValue = String.format(Locale.US, "%.2f", absValue);
+        }
+
+        // 还原负号
+        return isNegative ? "-" + formattedValue : formattedValue;
+    }
+
+
     //传入一条直线，根据其类型选择线条颜色，若直线公式为空，则最小二乘法拟合该曲线，不为空，直接使用公式，最后在联合图中显示直线图和散点图
     public static List<Float> buildChart(Context context, StandardCurve standardCurve, CombinedChart combinedChart) {
         List<Point> pointList = standardCurve.getPointList();

@@ -4,6 +4,8 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -20,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -43,7 +46,6 @@ public class AddCurveActivity extends BaseActivity {
     private AddCurveViewModel mViewModel;
     private StandardCurveFragment mFragment;
     private ActivityResultLauncher<Intent> mFromAlumn;
-    private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,12 +54,13 @@ public class AddCurveActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
         mViewModel = new ViewModelProvider(this).get(AddCurveViewModel.class);
         mViewModel.setContext(this);
-        initUI();
+
         //添加另一个布局
         mFragment = new StandardCurveFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fcv_CurveFragment, mFragment);
         transaction.commit();
+        initUI();
     }
 
     @Override
@@ -71,6 +74,7 @@ public class AddCurveActivity extends BaseActivity {
         Log.d(TAG, "onResume");
         StandardCurve curve = DataRepository.getInstance().getStandardCurve();
         if (curve != null){
+            Log.d(TAG, "onResume: curve is not null:"+ curve);
             mFragment.fillCurve(curve,false);// 填充曲线
         }
         else Log.d(TAG, "onResume: curve is null");

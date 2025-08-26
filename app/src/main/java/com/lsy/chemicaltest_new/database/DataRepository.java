@@ -180,11 +180,10 @@ public class DataRepository {
 
     public void setStandardCurve(StandardCurve standardCurve) {
         synchronized (lock) {
-            if (!Objects.equals(this.mStandardCurve, standardCurve)) {
-                this.mStandardCurve = standardCurve != null ?
-                        new StandardCurve(standardCurve) : null;
-                Log.d(TAG,"setStandardCurve:"+mStandardCurve);
-            }
+            //不要判断，直接复制
+            this.mStandardCurve = standardCurve != null ?
+                    new StandardCurve(standardCurve) : null;
+            Log.d(TAG,"setStandardCurve:"+mStandardCurve);
         }
     }
 

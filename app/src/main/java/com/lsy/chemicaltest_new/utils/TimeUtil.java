@@ -47,11 +47,4 @@ public class TimeUtil {
         int seconds = Integer.parseInt(split1[2]);
         return 3600 * hours + 60 * minutes + seconds;
     }
-
-    /**
-     * 根据给定的毫秒时间戳（YYYY-MM-DD HH:mm:ss 值），计算自当天午夜以来的总秒数。
-     *
-     * @param time 毫秒时间戳
-     * @return 自当天午夜以来的总秒数 3600 * hours + 60 * minutes + seconds
-     */
 }

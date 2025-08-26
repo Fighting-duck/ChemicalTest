@@ -2,6 +2,7 @@ package com.lsy.chemicaltest_new.domain;
 
 import static com.blankj.utilcode.util.StringUtils.getString;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -262,6 +263,7 @@ public class History_multiple implements Serializable {
         this.curve_ids = curve_ids;
     }
 
+    @NonNull
     @Override
     public String toString() {
         String result =  "History_multiple{" +

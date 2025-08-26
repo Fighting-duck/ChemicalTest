@@ -3,37 +3,29 @@ package com.lsy.chemicaltest_new.activitys.smpleTest;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityThermalBinding;
+import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
-import com.lsy.chemicaltest_new.domain.ThermalTestResult;
+import com.lsy.chemicaltest_new.domain.Temperature_Elec;
+import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.domain.dialog.CurveDetailDialog;
+import com.lsy.chemicaltest_new.fragments.ConnectMultimeterFragment;
 import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;
 import com.lsy.chemicaltest_new.models.ThermalViewModel;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
@@ -52,6 +44,8 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
     private Context mContext;
     private ThermalViewModel mViewModel;
     private ActivityResultLauncher<Intent> bitmapResultLauncher;
+    private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
+    private static final ConnectMultimeterFragment.ShowModel SHOW_MODEL_TEMPERATURE = ConnectMultimeterFragment.ShowModel.TEMPERATURE;//显示状态为温度模式
 
 
     @Override
@@ -62,11 +56,33 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
         setContentView(mBinding.getRoot());
         mContext = this;
         mViewModel = new ViewModelProvider(this).get(ThermalViewModel.class);
-        mViewModel.setContext(this);
         // 初始化Activity结果监听
         bitmapResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> handleBitmapResult(result.getResultCode(), result.getData())
+        );
+        mMeasureValueActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    // 处理返回结果：result是SecondActivity关闭后返回的数据
+                    if (result.getResultCode() == RESULT_OK) { // 确保结果正常返回
+                        Intent data = result.getData();
+                        if (data != null) {
+                            //判断是否包含key "result_float"
+                            if (data.hasExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE)){
+                                // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
+                                TestValue testValue = data.getParcelableExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE);
+                                if (testValue != null)
+                                    mViewModel.setTemperature(testValue.getValue());
+                            }
+                            if (data.hasExtra(MeasureValueByMultimeterActivity.RETURN_BLE_DEVICE_INFO)){
+                                BleDeviceInfo bleDeviceInfo = data.getParcelableExtra(MeasureValueByMultimeterActivity.RETURN_BLE_DEVICE_INFO);
+                                if (bleDeviceInfo != null)
+                                    mViewModel.setBleDeviceInfo_Elec(bleDeviceInfo);
+                            }
+                        }
+                    }
+                }
         );
         initUI();
     }
@@ -81,7 +97,28 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-
+        restoreData();
+    }
+    //恢复数据
+    private void restoreData() {
+        Temperature_Elec temperature_elec = DataRepository.getInstance().getTemperature_Elec();
+        if (temperature_elec!=null){
+            BleDeviceInfo bleDeviceInfo = temperature_elec.getBleDeviceInfo();
+            StandardCurve standardCurve = temperature_elec.getStandardCurve();
+            Float temperature = temperature_elec.getTemperature();
+            Float detectionCo = temperature_elec.getDetectionCo();
+            String diseaseAnal = temperature_elec.getDiseaseAnal();
+            if (bleDeviceInfo!=null)
+                mViewModel.setBleDeviceInfo_Elec(bleDeviceInfo);
+            if (standardCurve!=null)
+                mViewModel.setStandardCurve(standardCurve);
+            if (temperature!=null)
+                mViewModel.setTemperature(temperature);
+            if (detectionCo!=null)
+                mViewModel.setCO(detectionCo);
+            if (diseaseAnal!=null)
+                mViewModel.setDiseaseAnal(diseaseAnal);
+        }
     }
 
     // 处理返回的Bitmap结果
@@ -102,12 +139,15 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
     }
 
     private void initUI() {
+        // 监听器
         mBinding.ivBack.setOnClickListener(this::onCLick);
+        mBinding.btnGetTemperatureFormMultimeter.setOnClickListener(this::onCLick);
         mBinding.ivTackPhoto.setOnClickListener(this::onCLick);
         mBinding.ivThermalImage.setOnClickListener(this::onCLick);
         mBinding.ivSave.setOnClickListener(this::onCLick);
         mBinding.btnSelectElecCurve.setOnClickListener(this::onCLick);
         mBinding.tvCurve.setOnClickListener(this::onCLick);
+        mBinding.btnStartAnal.setOnClickListener(this::onCLick);
 
         mViewModel.getLiveData_toast().observe(this, toast -> {
             if (toast != null){
@@ -116,8 +156,12 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
             }
         });
         mViewModel.getLiveData_Curve().observe(this, curve -> {
-            if (curve == null) mBinding.tvCurve.setText(R.string.default_no);
-            else mBinding.tvCurve.setText(curve.getName());
+            if (curve == null) {
+                mBinding.tvCurve.setText(R.string.default_no);
+            }
+            else {
+                mBinding.tvCurve.setText(curve.getName());
+            }
         });
         mViewModel.getLiveData_ThermalBitmap().observe(this,bitmap -> {
             if (bitmap== null) return;
@@ -128,14 +172,31 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
             mBinding.tvCenterTemperature.setText(String.valueOf(temperature));
         });
         mViewModel.getLiveData_CO().observe(this,CO->{
-            if(CO == null) return;
-            mBinding.tvCO.setText(String.valueOf(CO));
+            if(CO == null) {
+                mBinding.tvCO.setText(getString(R.string.default_no));
+                mBinding.btnStartAnal.setEnabled( false);
+            }
+            else {
+                mBinding.tvCO.setText(String.valueOf(CO));
+                mBinding.btnStartAnal.setEnabled(true);
+            }
+
         });
         mViewModel.getLiveData_diseaseAnal().observe(this,diseaseAnal ->{
             if(diseaseAnal == null) return;
             mBinding.tvDiseaseAnalysis.setText(diseaseAnal);
         });
+        mViewModel.getLiveData_BleDeviceInfo().observe(this, bleDeviceInfo ->{
+            if (bleDeviceInfo != null) {
+                mBinding.tvCurrentGear.setText(bleDeviceInfo.getGear());
+                mBinding.tvMileage.setText(bleDeviceInfo.getMileage());
+            }
+
+        });
         mViewModel.getLiveData_ThermalTestResult().observe(this, testResult->{
+
+        });
+        mViewModel.getLiveData_Temperature_Elec().observe(this, testResult->{
 
         });
     }
@@ -147,6 +208,11 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
                 mViewModel.clearAll();
             }
             finish();
+        }
+        else if (id ==mBinding.btnGetTemperatureFormMultimeter.getId()) {
+            Intent intent = new Intent(this, MeasureValueByMultimeterActivity.class);
+            intent.putExtra(MeasureValueByMultimeterActivity.GET_SHOW_MODE, SHOW_MODEL_TEMPERATURE);
+            mMeasureValueActivityLauncher.launch(intent);
         }
         else if (id ==mBinding.btnSelectElecCurve.getId()) {
             showSelectDialog("select_curve");
@@ -167,6 +233,9 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
         else if (id==mBinding.ivSave.getId()){
             //保存
             if (mViewModel.save()) finish();
+        }
+        else if (id==mBinding.btnStartAnal.getId()){
+            mViewModel.startDiseaseAnal();
         }
     }
     private void checkAndRequestUSBPermissions() {

@@ -1,13 +1,15 @@
 package com.lsy.chemicaltest_new.domain;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "BleDeviceInfo")
-public class BleDeviceInfo {
+public class BleDeviceInfo implements Parcelable{
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String gear;//当前挡位
@@ -68,5 +70,36 @@ public class BleDeviceInfo {
                 ", mileage='" + mileage + '\'' +
                 ", unit='" + unit + '\'' +
                 '}';
+    }
+
+    public static final Creator<BleDeviceInfo> CREATOR = new Creator<BleDeviceInfo>() {
+        @Override
+        public BleDeviceInfo createFromParcel(Parcel in) {
+            return new BleDeviceInfo(in);
+        }
+
+        @Override
+        public BleDeviceInfo[] newArray(int size) {
+            return new BleDeviceInfo[size];
+        }
+    };
+    protected BleDeviceInfo(Parcel in) {
+        id = in.readInt();
+        gear = in.readString();
+        mileage = in.readString();
+        unit = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(gear);
+        parcel.writeString(mileage);
+        parcel.writeString(unit);
     }
 }

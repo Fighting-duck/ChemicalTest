@@ -68,6 +68,7 @@ public class AlterCurveActivity extends BaseActivity implements EasyPermissions.
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
         StandardCurve curve = DataRepository.getInstance().getStandardCurve();
         if (curve != null){
             mViewModel.setOldCurve(curve);

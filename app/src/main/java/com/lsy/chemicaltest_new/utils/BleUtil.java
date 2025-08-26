@@ -1,18 +1,16 @@
 package com.lsy.chemicaltest_new.utils;
 
-import static com.blankj.utilcode.util.StringUtils.getString;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
@@ -23,14 +21,12 @@ import com.clj.fastble.callback.BleWriteCallback;
 import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.clj.fastble.scan.BleScanRuleConfig;
-import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.DMM_INFO;
 import com.lsy.chemicaltest_new.domain.DMM_ReturnResult;
-import com.lsy.chemicaltest_new.models.ElecViewModel;
+import com.lsy.chemicaltest_new.models.ConnectMultimeterViewModel;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class BleUtil {
@@ -38,27 +34,15 @@ public class BleUtil {
     private static final String CCCD_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     //设备名过滤列表
     private static final String[] DEVICE_NAME_LIST = {"UT60BT"};
-    private static final String TAG = "BleUtil" ;
-
-    private final Integer readingNum = 14;//测量次数
-    private final long readingTimeInterval = 4000/40;//测量时间间隔ms 电流
+    private static final String TAG = "BleUtil_new" ;
 
     private final Activity mActivity;
-    private Context mContext;
     private BleDevice mBleDevice = null;
 
-    private ElecViewModel mViewModel;
-    //控制测量参数
-    private Boolean mIsRecode = false;//正在记录数据。。。，记录中为ture，测量结束后恢复为false
-    private Boolean mIsFirstTest = true;//仅第一次测量时为true,第一次测量结束后恢复为false
-    private Integer mTestControlled = 0;//控制测试次数
-    private Float mOldDegree = null;
-    private Boolean lock = false;//锁
-    private long mCurrentTime;
+    private ConnectMultimeterViewModel mViewModel;
 
-    public BleUtil(Activity activity,ElecViewModel viewModel) {
+    public BleUtil(@NonNull Activity activity, @NonNull ConnectMultimeterViewModel viewModel) {
         mActivity = activity;
-        mContext = activity.getApplicationContext();
         mViewModel = viewModel;
         // FastBle初始化及配置
         BleManager.getInstance().init(mActivity.getApplication());
@@ -85,7 +69,6 @@ public class BleUtil {
     }
     //摧毁蓝牙连接（在不需要蓝牙功能时调用）
     public void onDestroy() {
-        mIsRecode = false;
         // 关闭蓝牙连接
         if (mBleDevice != null) {
             BleManager.getInstance().disconnect(mBleDevice);
@@ -127,7 +110,6 @@ public class BleUtil {
             public void onScanStarted(boolean success) {
                 if (success) {
                     Log.i(TAG, "开始扫描...");
-                    mViewModel.clearDevices();
                 } else {
                     Log.i(TAG, "蓝牙未打开！！！");
                 }
@@ -267,6 +249,7 @@ public class BleUtil {
     public void openNotify(BleDevice bleDevice) {
         //打开通知
         this.openNotify(bleDevice,DMM_INFO.UUID_SERVICE_NOTIFY,DMM_INFO.UUID_CHARACTERISTIC_NOTIFY);
+        mViewModel.setIsConnected(true);
     }
     public Boolean stopNotify(){
         if (mBleDevice!=null && isConnected())
@@ -301,11 +284,6 @@ public class BleUtil {
                     }
                 });
     }
-    public void startTest(){
-        mIsFirstTest = true;//恢复初始状态
-        mIsRecode = true;//开始记录
-        mTestControlled = 0;//恢复初始测量次数
-    }
 
     //读取RSSI
     public void readRSSI(BleDevice bleDevice) {
@@ -324,7 +302,6 @@ public class BleUtil {
             }
         });
     }
-    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     //打开notify
     public void openNotify(BleDevice bleDevice, String uuid_service, String uuid_characteristic_notify) {
@@ -354,90 +331,17 @@ public class BleUtil {
                             Log.e(TAG,"挡位不对！");
                             return;
                         }
-                        Log.d(TAG,"分析后数据："+result.toString());
-                        mViewModel.setGearAndMileage(result.getBleDeviceInfo());
-                        mViewModel.setCurrentTestValue(result.getTestValue());
-                        if (result.getTestValue().getValue() == Float.MAX_VALUE) return;
                         //获取当前时间值
                         long currentTime = System.currentTimeMillis();//ms
+                        result.getTestValue().setTime_long(currentTime);//设置时间
+                        Log.d(TAG,"分析后数据："+result.toString());
+                        mViewModel.setGearAndMileage(result.getBleDeviceInfo());//设置挡位和里程
+                        mViewModel.setCurrentTestValue(result.getTestValue());//设置当前测试值
+                        if (result.getTestValue().getValue() == Float.MAX_VALUE) return;
                         float xValue = TimeUtil.timeStrToNum(currentTime);//提取时间
                         float yValue = result.getTestValue().getValue();//电流值或温度值
                         mViewModel.addEntryInLast(xValue, yValue);//图表显示
-                        if (mIsRecode){
-                            processResult(result,mIsFirstTest,currentTime,xValue);
-                            mIsFirstTest = false;
-                        }
                     }
                 });
-    }
-
-    /***
-     * 处理万用表返回结果,依据结果的档位，判断是进行温度检测还是电流检测
-     * @param result 万用表返回数据
-     */
-    public void processResult(DMM_ReturnResult result,Boolean isFirstTest,long currentTime,float xValue) {
-        if (!Objects.equals(result.getBleDeviceInfo().getGear(), getString(R.string.multimeter_Celsius))) {
-            //电信号检测
-            if (lock){
-                lock = false;//上锁
-                mHandler.postDelayed(() -> checkCurrent(result,xValue), readingTimeInterval);
-            }
-            if (isFirstTest) {
-                Log.d(TAG, "=======================电流检测开始============================");
-                mViewModel.updateBleDeviceInfo_Elec(result.getBleDeviceInfo());
-                lock = true;//解锁
-            }
-
-        } else {
-            Log.d(TAG, "温度检测，当前温度：" + result.getTestValue().toString());
-            //温度检测
-            if (isFirstTest) {
-                Log.d(TAG, "=======================温度检测开始============================");
-                mOldDegree = result.getTestValue().getValue();//电流值或温度值
-                mCurrentTime = currentTime;
-                mViewModel.updateBleDeviceInfo_Degree(result.getBleDeviceInfo());
-                lock = true;
-            }
-            if (currentTime - mCurrentTime > 4000){
-                checkTemperature(result,currentTime);
-            }
-        }
-    }
-
-    /***
-     * 该方法在 4 秒后被调用，用于检查温度是否有变化。若有变化，就再次设置定时器；若没有变化，就结束温度检测。
-     * @param result  万用表返回数据
-     */
-    private void checkTemperature(DMM_ReturnResult result,long currentTime) {
-        float yValue = result.getTestValue().getValue();
-        if (yValue != mOldDegree) {
-            Log.d(TAG, "温度改变，当前oldDegree温度：" +mOldDegree+" -> "+ yValue);
-            mViewModel.setToast("温度改变!");
-            mCurrentTime = currentTime;
-            mOldDegree = yValue;
-        } else {
-            mViewModel.setDegree(yValue);
-            mIsRecode = false;
-            Log.d(TAG, "温度检测结束,温度值为：" + yValue + "℃");
-        }
-        lock = true;
-    }
-
-    /***
-     * 该方法在 readingTimeInterval 时间后被调用，用于检查电流测量是否达到次数上限。若未达到，就记录当前值并设置下一次定时器；若达到，就结束电流检测。
-     * @param result 万用表返回数据
-     */
-    private void checkCurrent(DMM_ReturnResult result,float xValue) {
-        Log.d(TAG, "电流检测，当前第" + mTestControlled + "次电流测量，当前电流：" + result.getTestValue().toString());
-        mTestControlled++;
-        if (mTestControlled > readingNum) {
-            mIsRecode = false;
-            Log.d(TAG, "电流检测结束,最大电流值为：" + result.getTestValue());
-        } else {
-            // 获取当前时间（确保每次都是最新时间）
-            result.getTestValue().setTestTime(TimeUtil.timeNumToStr(xValue));
-            mViewModel.addValueToList(result.getTestValue());
-        }
-        lock = true;//解锁
     }
 }

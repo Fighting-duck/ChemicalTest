@@ -1,6 +1,6 @@
 package com.lsy.chemicaltest_new.models;
 
-import android.content.Context;
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -25,10 +25,6 @@ public class ConnectMultimeterViewModel extends ViewModel {
     MutableLiveData<BleDeviceInfo> mBleDeviceInfo = new MutableLiveData<>();//连接蓝牙设备信息
     MutableLiveData<LineData> mLines = new MutableLiveData<>();//图表数据
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
-    MutableLiveData<List<TestValue>> mTestValueList = new MutableLiveData<>();//测量值 14次
-    MutableLiveData<TestValue> mMaxValue = new MutableLiveData<>();//最大值
-    MutableLiveData<Float> mDegree = new MutableLiveData<>();//4秒内值变化大不（变化不超过1度）的温度
-    Context mContext; // 上下文信息
 
     // get LiveData
     public MutableLiveData<Boolean> getLiveData_isConnectDevice(){ return mIsConnectDevice;}
@@ -50,21 +46,9 @@ public class ConnectMultimeterViewModel extends ViewModel {
     public MutableLiveData<String> getLiveData_toast(){
         return mLiveData_toast;
     }
-    public MutableLiveData<List<TestValue>> getLiveData_TestValueList() {
-        return mTestValueList;
-    }
-    public MutableLiveData<TestValue> getLiveData_MaxValue() {
-        return mMaxValue;
-    }
-    public MutableLiveData<Float> getLiveData_Degree() {
-        return mDegree;
-    }
 
     public void setToast(String prompt){
         LiveDataUtils.safeUpdate(mLiveData_toast,prompt);
-    }
-    public void setContext(Context context){
-        mContext = context;
     }
 
     /***
@@ -95,9 +79,6 @@ public class ConnectMultimeterViewModel extends ViewModel {
     public void setCurrentTestValue(TestValue testValue) {
         mRealTimeValue.setValue(testValue);
     }
-    public void setDegree(Float degree){
-        mDegree.postValue(degree);
-    }
     /***
      * 清空蓝牙设备列表
      */
@@ -127,7 +108,7 @@ public class ConnectMultimeterViewModel extends ViewModel {
         LineData lineData = mLines.getValue();
         if (lineData == null)  {
             lineData = new LineData();
-            LineDataSet lineDataSet = new LineDataSet(null, mContext.getString(R.string.chart_electric));
+            LineDataSet lineDataSet = new LineDataSet(null, getString(R.string.chart_electric));
             lineData = LineChartUtil.addLine(lineData, lineDataSet, R.color.line_electric);
         }
         //获取点数
@@ -139,18 +120,6 @@ public class ConnectMultimeterViewModel extends ViewModel {
         //添加点
         lineData = LineChartUtil.addEntryInLast(lineData,xValue, yValue,0);
         mLines.setValue(lineData);
-    }
-    /***
-     * 添加测量值到列表
-     * @param value 测量值
-     */
-    public  void addValueToList(TestValue value){
-        List<TestValue> values  = mTestValueList.getValue();
-        if (values== null) {
-            values = new ArrayList<>();
-        }
-        values.add(value);
-        mTestValueList.setValue(values);
     }
 
     public List<BleDevice> getBleDeviceList() {

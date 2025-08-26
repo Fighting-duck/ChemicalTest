@@ -1,6 +1,7 @@
 package com.lsy.chemicaltest_new.models;
 
-import android.content.Context;
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
+
 import android.util.Log;
 
 import androidx.lifecycle.MediatorLiveData;
@@ -23,6 +24,9 @@ import java.util.List;
 
 public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     private static final String TAG = "StandardCurveViewModel";
+    private static final float tolerance = 1e-6f;//误差范围
+    private static final int MAX_POINT_COUNT = 50;//最多点数
+
     MutableLiveData<List<Sample>> mLiveData_sampleList = new MutableLiveData<>();
     MutableLiveData<Integer> mLiveData_samplePosition = new MutableLiveData<>();//在sampleList中的位置
     MutableLiveData<Integer> mLiveData_curveType = new MutableLiveData<>();//曲线类型 1:elec 2:color 3:thermal
@@ -95,10 +99,6 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     }
     public void setToast(String prompt){
         LiveDataUtils.safeUpdate(mLiveData_toast,prompt);
-    }
-    Context mContext;
-    public void setContext(Context context){
-        mContext = context;
     }
 
     public StandardCurveViewModel() {
@@ -298,6 +298,12 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (curve.getPointList()!=null && !curve.getPointList().isEmpty())
             mLiveData_PointList.setValue(curve.getPointList());
     }
+
+    /***
+     * 根据id获取样品在列表中的位置
+     * @param id  id
+     * @return 位置
+     */
     private Integer getSamplePositionById(Integer id){
         List<Sample> sampleList = mLiveData_sampleList.getValue();
         if (sampleList == null) return null;
@@ -319,7 +325,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (sampleList != null && samplePosition != null && samplePosition < sampleList.size()) {
             String curveName = sampleList.get(samplePosition).getName() +
                     "-" + StandardCurve.getCurveType(type)+
-                    "-"+mContext.getString(R.string.title_standardCurve);
+                    "-"+getString(R.string.title_standardCurve);
             mLiveData_curveName.setValue(curveName);
         }
     }
@@ -484,10 +490,10 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         Log.d(TAG, "currentCorr: "+corr +"   minCorr:"+minCORR);
         if (minCORR == null || corr == null) return;
         if (corr < minCORR){
-            mLiveData_CO_noticeCorr.setValue(mContext.getString(R.string.toast_abnormal_LessThanMin));
+            mLiveData_CO_noticeCorr.setValue(getString(R.string.toast_abnormal_LessThanMin));
         }
         else{
-            mLiveData_CO_noticeCorr.setValue(mContext.getString(R.string.toast_normal));
+            mLiveData_CO_noticeCorr.setValue(getString(R.string.toast_normal));
         }
     }
     /**
@@ -500,12 +506,17 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         Point point = mLiveData_Point.getValue();
         // 如果点列表为空，则初始化一个新列表
         if (pointList == null) {
+            Log.d(TAG, "addPoint: pointList is null,初始化列表");
             pointList = new ArrayList<>();
         }
         if (point == null) return;
-        // 检验point x值的有效性
+        // 检验point x值、y值的有效性
         if (point.getX_value().isInfinite() || point.getX_value().isNaN()){
-            setToast(mContext.getString(R.string.toast_curve_XValue_invalid));
+            setToast(getString(R.string.toast_curve_XValue_invalid));
+            return;
+        }
+        if (point.getY_value().isInfinite() || point.getY_value().isNaN()){
+            setToast(getString(R.string.toast_curve_YValue_invalid));
             return;
         }
         point.setAdd_time(TimeUtil.getCurrentDateTime());// 设置点的添加时间
@@ -513,32 +524,33 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         for (int i = 0; i < pointList.size(); i++) {
             Point existingPoint = pointList.get(i);
             // 使用 Float.compare 进行浮点数比较，避免精度问题
-            if (Float.compare(existingPoint.getX_value(), point.getX_value()) == 0) {
+            //if (Float.compare(existingPoint.getX_value(), point.getX_value()) == 0) {
+            //两个值误差精度在误差范围类视为相同值
+            if (Math.abs(existingPoint.getX_value() - point.getX_value()) <= tolerance) {
                 Log.d(TAG, "更新点：" +existingPoint.toString() +"->" + point.toString());
                 existingPoint.setY_value(point.getY_value());
                 existingPoint.setAdd_time(point.getAdd_time());
                 // 如果找到相同的点，进行更新
                 pointList.set(i, existingPoint);
-                setToast(mContext.getString(R.string.toast_curve_updatePoint));
+                setToast(getString(R.string.toast_curve_updatePoint));
                 // 将更新后的点列表发布到 LiveData
                 mLiveData_PointList.setValue(pointList);
                 return ;
             }
         }
+        // 检查列表长度，避免OOM
+        if (pointList.size() >= MAX_POINT_COUNT) {
+            setToast(getString(R.string.toast_curve_maxPoint)); // 提示“已达最大点数”
+            return;
+        }
         // 如果没有找到相同的点，添加新点
-        Point newPoint = new Point();
-        newPoint.setX_value(point.getX_value());
-        newPoint.setY_value(point.getY_value());
-        newPoint.setAdd_time(point.getAdd_time());
-        pointList.add(newPoint);
-        Log.d(TAG, "添加点："+point.toString());
+        pointList.add(new Point(point));
+        Log.d(TAG, "添加点："+point.toString()+",列表长度："+pointList.size());
         // 对列表进行升序排序
         Collections.sort(pointList, (p1, p2) -> Float.compare(p1.getX_value(), p2.getX_value()));
         // 将更新后的点列表发布到 LiveData
         mLiveData_PointList.setValue(pointList);
-        setToast(mContext.getString(R.string.toast_curve_addPoint));
-        // 将更新后的点列表发布到 LiveData
-        mLiveData_PointList.setValue(pointList);
+        setToast(getString(R.string.toast_curve_addPoint));
     }
     /***
      * 根据索引删除图表中一个点
@@ -590,11 +602,11 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     public String getYUnitByType(int type) {
         switch (type) {
             case 1:
-                return mContext.getString(R.string.unit_mA);
+                return getString(R.string.unit_mA);
             case 2:
-                return mContext.getString(R.string.unit_blue);
+                return getString(R.string.unit_blue);
             case 3:
-                return mContext.getString(R.string.unit_degree);
+                return getString(R.string.unit_degree);
             default:
                 return "";
         }
