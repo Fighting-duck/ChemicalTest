@@ -35,6 +35,7 @@ public class ThermalViewModel extends AndroidViewModel {
     private MutableLiveData<Float> mLiveData_CO = new MutableLiveData<>();// 浓度
     private MutableLiveData<String> mLiveData_diseaseAnal = new MutableLiveData<>();// 病害分析
     private MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
+    MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
 
     public MutableLiveData<String> getLiveData_toast(){
         return mLiveData_toast;
@@ -66,6 +67,10 @@ public class ThermalViewModel extends AndroidViewModel {
     }
     public MutableLiveData<String> getLiveData_diseaseAnal() {
         return mLiveData_diseaseAnal;
+    }
+
+    public MutableLiveData<String> getLiveData_notice(){
+        return mLiveData_notice;
     }
 
     public ThermalViewModel(Application application) {
@@ -199,13 +204,29 @@ public class ThermalViewModel extends AndroidViewModel {
         calculateCO(temperature);
         return temperature;
     }
+
+    /***
+     * 通知CO值是否属于正常范围
+     * @param CO 浓度值
+     * @param curve 标准曲线
+     */
+    private void noticeCO(Float CO,StandardCurve curve){
+        if (CO < curve.getMin_CO()){
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoLessThanNormalValue));
+        }
+        else if (CO > curve.getMax_CO()){
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoGreaterThanNormalValue));
+        }
+        else
+            mLiveData_notice.setValue(getString(R.string.toast_normal));
+    }
     //通过直线计算浓度
     public void calculateCO(Float temperature) {
         StandardCurve curve = mLiveData_curve.getValue();
         if (curve != null && temperature!=null){
             Float CO = curve.calculateX_toY(temperature);
             mLiveData_CO.setValue(CO);
-            //noticeCO(CO,curve,0);
+            noticeCO(CO,curve);
         }
     }
     //病害分析

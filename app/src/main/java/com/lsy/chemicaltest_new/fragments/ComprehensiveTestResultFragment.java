@@ -4,43 +4,26 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.adapters.RecordAdapter;
 import com.lsy.chemicaltest_new.databinding.FragmentComprehensiveTestResultBinding;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
-import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.HSV;
 import com.lsy.chemicaltest_new.domain.History_multiple;
-import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.Temperature_Elec;
@@ -48,9 +31,6 @@ import com.lsy.chemicaltest_new.domain.ThermalTestResult;
 import com.lsy.chemicaltest_new.domain.dialog.CurveDetailDialog;
 import com.lsy.chemicaltest_new.models.ComprehensiveTestResultViewModel;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ComprehensiveTestResultFragment extends Fragment {
     private final String TAG = "ComprehensiveTestResultFrag";
@@ -263,8 +243,8 @@ public class ComprehensiveTestResultFragment extends Fragment {
     }
     public String showBleDeviceInfo(BleDeviceInfo bleDeviceInfo){
         if (bleDeviceInfo!=null){
-            return getString(R.string.text_gear_0)+"("+bleDeviceInfo.getGear()+")"+
-                    "  "+getString(R.string.text_mileage_0)+"("+bleDeviceInfo.getMileage()+")";
+            return getString(R.string.historyPreview_gear)+"("+bleDeviceInfo.getGear()+")"+
+                    "  "+getString(R.string.historyPreview_mileage)+"("+bleDeviceInfo.getMileage()+")";
         }
         else
             return null;

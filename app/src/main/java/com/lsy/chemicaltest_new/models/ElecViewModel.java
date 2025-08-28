@@ -15,12 +15,10 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
-import com.lsy.chemicaltest_new.domain.Temperature_Elec;
 import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,28 +29,22 @@ public class ElecViewModel extends ViewModel {
     MutableLiveData<BleDeviceInfo> mBleDeviceInfo = new MutableLiveData<>();//连接蓝牙设备信息
     MutableLiveData<List<TestValue>> mTestValueList = new MutableLiveData<>();//测量值 14次
     MutableLiveData<TestValue> mMaxValue = new MutableLiveData<>();//最大值
-    MutableLiveData<StandardCurve> mStandardCurve_Elec = new MutableLiveData<>();//使用的电信号标准曲线
+    MutableLiveData<StandardCurve> mStandardCurve = new MutableLiveData<>();//使用的电信号标准曲线
     MutableLiveData<Float> mCOElec = new MutableLiveData<>();//电信号 浓度
-    MutableLiveData<String> mDiseaseAnalElec = new MutableLiveData<>();//电信号 病害分析
+    MutableLiveData<String> mDiseaseAnal = new MutableLiveData<>();//电信号 病害分析
     MediatorLiveData<ElecTestResult> mElecTestResult = new MediatorLiveData<>();//电信号检测结果综合
-/*    //温度检测
-    MutableLiveData<StandardCurve> mStandardCurve_Degree = new MutableLiveData<>();//使用的温度标准曲线
-    MutableLiveData<Float> mDegree = new MutableLiveData<>();//4秒内值变化大不（变化不超过1度）的温度
-    MutableLiveData<Float> mCOTemperature = new MutableLiveData<>();//温度 浓度
-    MutableLiveData<String> mDiseaseAnalTemperature = new MutableLiveData<>();//温度 病害分析
-    MediatorLiveData<Temperature_Elec> mTemperature_Elec = new MediatorLiveData<>();//温度检查结果综合*/
     //其它
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
-    MutableLiveData<String> mLiveData_CO_noticeElec = new MutableLiveData<>();
-    MutableLiveData<String> mLiveData_CO_noticeDegree = new MutableLiveData<>();
+    MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
+
     public MutableLiveData<BleDeviceInfo> getLiveData_BleDeviceInfo() {
         return mBleDeviceInfo;
     }
     public MutableLiveData<TestValue> getLiveData_MaxValue() {
         return mMaxValue;
     }
-    public MutableLiveData<StandardCurve> getLiveData_StandardCurve_Elec() {
-        return mStandardCurve_Elec;
+    public MutableLiveData<StandardCurve> getLiveData_StandardCurve() {
+        return mStandardCurve;
     }
     public MutableLiveData<List<TestValue>> getLiveData_TestValueList() {
         return mTestValueList;
@@ -61,7 +53,7 @@ public class ElecViewModel extends ViewModel {
         return mCOElec;
     }
     public MutableLiveData<String> getLiveData_DiseaseAnalElec() {
-        return mDiseaseAnalElec;
+        return mDiseaseAnal;
     }
     public MediatorLiveData<ElecTestResult> getLiveData_ElecTestResult() {
         return mElecTestResult;
@@ -69,23 +61,21 @@ public class ElecViewModel extends ViewModel {
     public MutableLiveData<String> getLiveData_toast(){
         return mLiveData_toast;
     }
-    public MutableLiveData<String> getLiveData_CO_noticeElec(){
-        return mLiveData_CO_noticeElec;
+    public MutableLiveData<String> getLiveData_notice(){
+        return mLiveData_notice;
     }
-    public MutableLiveData<String> getLiveData_CO_noticeDegree(){
-        return mLiveData_CO_noticeDegree;
-    }
+
 
     public void setToast(String prompt){
         LiveDataUtils.safeUpdate(mLiveData_toast,prompt);
     }
 
     public ElecViewModel(){
-        mElecTestResult.addSource(mStandardCurve_Elec,this::updateStandardCurve_Elec);
+        mElecTestResult.addSource(mStandardCurve,this::updateStandardCurve_Elec);
         mElecTestResult.addSource(mTestValueList, this::updateTestValueList);
         mElecTestResult.addSource(mMaxValue, this::updateMaxValue);
         mElecTestResult.addSource(mCOElec, this::updateCO);
-        mElecTestResult.addSource(mDiseaseAnalElec, this::updateDiseaseAnal);
+        mElecTestResult.addSource(mDiseaseAnal, this::updateDiseaseAnal);
         mElecTestResult.addSource(mBleDeviceInfo, this::updateBleDeviceInfo);
     }
 
@@ -168,11 +158,11 @@ public class ElecViewModel extends ViewModel {
     }
 
     public void setStandardCurve_Elec(StandardCurve standardCurve) {
-        mStandardCurve_Elec.setValue(standardCurve);
+        mStandardCurve.setValue(standardCurve);
     }
 
     public void setElecCurveAndCalculateCO(StandardCurve standardCurve) {
-        mStandardCurve_Elec.setValue(standardCurve);
+        mStandardCurve.setValue(standardCurve);
         calculate_ElecCO(); // 计算出当前最大电流对应的浓度
         // 病害分析
         diseaseAnalElec();
@@ -195,27 +185,7 @@ public class ElecViewModel extends ViewModel {
      * @param diseaseAnal 病害分析结果
      */
     public void setDiseaseAnal_Elec(String diseaseAnal) {
-        mDiseaseAnalElec.setValue(diseaseAnal);
-    }
-
-    /***
-     * 清空测量值列表
-     */
-    public void clearValueList() {
-           mTestValueList.setValue(null);
-    }
-
-    /***
-     * 添加测量值到列表
-     * @param value 测量值
-     */
-    public  void addValueToList(TestValue value){
-        List<TestValue> values  = mTestValueList.getValue();
-        if (values== null) {
-            values = new ArrayList<>();
-        }
-        values.add(value);
-        mTestValueList.setValue(values);
+        mDiseaseAnal.setValue(diseaseAnal);
     }
 
     public void setTestValueList(List<TestValue> mTestValueList) {
@@ -226,7 +196,7 @@ public class ElecViewModel extends ViewModel {
      * @return 单位
      */
     public String getUnit_elec() {
-        StandardCurve curve = mStandardCurve_Elec.getValue();
+        StandardCurve curve = mStandardCurve.getValue();
         if (curve != null) {
             return curve.getX_axis_unit();
         }
@@ -238,36 +208,28 @@ public class ElecViewModel extends ViewModel {
      * @return 对应浓度
      */
     public void calculate_ElecCO(){
-        StandardCurve curve = mStandardCurve_Elec.getValue();
+        StandardCurve curve = mStandardCurve.getValue();
         TestValue current = mMaxValue.getValue(); // 获取当前测试值 y
         if (curve != null && current!=null){
             Float CO = curve.calculateX_toY(current.getValue());
             mCOElec.setValue(CO);
-            noticeCO(CO,curve,0);
+            noticeCO(CO,curve);
         }
     }
     /***
      * 通知CO值是否属于正常范围
      * @param CO 浓度值
      * @param curve 标准曲线
-     * @param type 类型，0：电流，1：温度
      */
-    private void noticeCO(Float CO,StandardCurve curve,Integer type){
-        MutableLiveData<String> notice = null;
-        if (type==0)
-            notice = mLiveData_CO_noticeElec;
-        else if (type==1)
-            notice = mLiveData_CO_noticeDegree;
-        else
-            return;
+    private void noticeCO(Float CO,StandardCurve curve){
         if (CO < curve.getMin_CO()){
-            notice.setValue(getString(R.string.toast_abnormal_CoLessThanNormalValue));
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoLessThanNormalValue));
         }
         else if (CO > curve.getMax_CO()){
-            notice.setValue(getString(R.string.toast_abnormal_CoGreaterThanNormalValue));
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoGreaterThanNormalValue));
         }
         else
-            notice.setValue(getString(R.string.toast_normal));
+            mLiveData_notice.setValue(getString(R.string.toast_normal));
     }
     /***
      * 病害分析
@@ -279,7 +241,7 @@ public class ElecViewModel extends ViewModel {
            //根据CO进行病害分析
            //...
            String diseaseAnal = "病害分析,电信号检测->浓度值："+CO;
-           mDiseaseAnalElec.setValue(diseaseAnal);
+           mDiseaseAnal.setValue(diseaseAnal);
            return diseaseAnal;
        }
         return null;
@@ -304,24 +266,23 @@ public class ElecViewModel extends ViewModel {
 
     public boolean clearAll() {
         // 移除所有数据源
-        mElecTestResult.removeSource(mStandardCurve_Elec);
+        mElecTestResult.removeSource(mStandardCurve);
         mElecTestResult.removeSource(mBleDeviceInfo);
         mElecTestResult.removeSource(mTestValueList);
         mElecTestResult.removeSource(mMaxValue);
         mElecTestResult.removeSource(mCOElec);
-        mElecTestResult.removeSource(mDiseaseAnalElec);
+        mElecTestResult.removeSource(mDiseaseAnal);
 
 
         // 清空每个数据源的值
         mBleDeviceInfo.setValue(null);
         mTestValueList.setValue(null);
         mMaxValue.setValue(null);
-        mStandardCurve_Elec.setValue(null);
+        mStandardCurve.setValue(null);
         mCOElec.setValue(null);
-        mDiseaseAnalElec.setValue(null);
+        mDiseaseAnal.setValue(null);
 
-        mLiveData_CO_noticeElec.setValue(null);
-        mLiveData_CO_noticeDegree.setValue(null);
+        mLiveData_notice.setValue(null);
         // 将 mElecTestResult 的值设置为 null 或默认值
         mElecTestResult.setValue(null);
         return true;

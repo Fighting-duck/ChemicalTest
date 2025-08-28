@@ -24,6 +24,8 @@
     <string name="colo">Colo. Test</string>
     <string name="thermal">PT. Test</string>
     <string name="enter">enter</string>
+    <string name="text_useCurve">Standard Curve:</string>
+    <string name="text_StartAnal">Start Analysis</string>
     <!-- 样品测试 -->
     <string name="test_select_standard_curve">Select Standard Curve</string>
     <string name="test_manageCurve">Curve Mgt</string>
@@ -39,24 +41,20 @@
     <string name="test_description_hint">Notes (Optional)</string>
     <!--电信号检测-->
     <string name="title_electrical">Electrical Detection</string>
-    <string name="title_measureValue">Multimeter Measurement</string>
-    <string name="electrical_selectElecCurve">Elec. Curve</string>
-    <string name="electrical_selectDegreeCurve">Temp. Curve</string>
-    <string name="electrical_useCurve">Elec. Curve:</string>
-    <string name="electrical_useElecCurve">Elec. Curve:</string>
-    <string name="electrical_useDegreeCurve">Temp. Curve:</string>
     <string name="electrical_getCurrentFormMultimeter">Multimeter Measure Current</string>
-    <string name="text_connection_situation">Multimeter Connection:</string>
-    <string name="text_test_connection">Scan Device</string>
-    <string name="text_disconnect">Disconnect</string>
-    <string name="text_connection_true">Yes</string>
-    <string name="text_connection_false">No</string>
-    <string name="text_returnResults">Return Data</string>
-    <string name="text_prompt">Select "DC Current" (DCmA/DCuA) or Temp. (℃)</string>
+
+    <string name="history_sure">Confirm</string>
+    <!--万用表测量-->
+    <string name="title_measureValue">Multimeter Measurement</string>
+    <string name="measureValue_connection_situation">Multimeter Connection:</string>
+    <string name="measureValue_test_connection">Scan Device</string>
+    <string name="measureValue_disconnect">Disconnect</string>
+    <string name="measureValue_connection_true">Yes</string>
+    <string name="measureValue_connection_false">No</string>
+    <string name="measureValue_returnResults">Return Data</string>
+    <string name="measureValue_prompt">Select "DC Current" (DCmA/DCuA) or Temp. (℃)</string>
     <string name="text_current_gear">Current Gear:</string>
     <string name="text_mileage">Range:</string>
-    <string name="text_gear_0">gear</string>
-    <string name="text_mileage_0">mileage</string>
     <string name="text_RealTime_value">Real-Time Value:</string>
     <string name="text_StartTest_elec">Start Current Test</string>
     <string name="text_StartTest_temperature">Start Temp Test</string>
@@ -66,8 +64,6 @@
     <string name="electrical_endTime">End Time:</string>
     <string name="text_MaxValue_4">Max Current:</string>
     <string name="text_temperature">Constant Temp:</string>
-    <string name="text_StartAnal">Start Analysis</string>
-    <string name="history_sure">Confirm</string>
     <!--testValue item-->
     <string name="testValue_No">Sequence:</string>
     <string name="testValue_testValue">Value:</string>
@@ -118,6 +114,7 @@
     <string name="sample_edit">Edit</string>
     <string name="sample_editing">Editing...</string>
     <string name="sample_totalNum">Total Samples:</string>
+    <string name="sample_deleteDialog_title">>Do you delete the image?</string>
     <!---标准曲线管理-->
     <string name="title_standardCurve">Standard Curves</string>
     <string name="curveManage_noText">No Curves Available</string>
@@ -128,17 +125,14 @@
     <string name="curveManage_sample">Sample:</string>
     <string name="curveManage_formula">Formula:</string>
     <string name="curveManage_corr">Coefficient:</string>
-
     <!--比色图像分析-->
     <string name="title_colorimetric_image_analysis">Colorimetric Analysis</string>
-    <string name="colorimetric_useCurve">Standard Curve:</string>
     <string name="colorimetric_getPhoto">Gallery</string>
     <string name="colorimetric_alterCropPhoto">Adjust Crop Area</string>
     <string name="colorimetric_Original_image">Original Image:</string>
     <string name="colorimetric_isSave">Save Original Image?</string>
     <string name="switch_on">Yes</string>
     <string name="switch_off">No</string>
-    <string name="colorimetric_Test_results">Test Results:</string>
     <string name="colorimetric_Select_area">Selected Area:</string>
     <string name="colorimetric_Corrected_RGB_color">Corrected RGB:</string>
     <string name="colorimetric_crop">Crop</string>
@@ -150,10 +144,9 @@
     <string name="colorimetric_Value">V:</string>
     <!--光热图像分析-->
     <string name="title_thermal_image_analysis">Photothermal Analysis</string>
-    <string name="thermal_Connect_thermal_device">Thermal Imager Connected?</string>
     <string name="electrical_getTemperatureFormMultimeter">Multimeter Measure Temperature</string>
-    <string name="thermal_Receive_images">Receive Image</string>
     <string name="thermal_infraredCamera">Infrared Camera Measure Temperature</string>
+    <string name="thermal_Test_results">Test Results:</string>
     <!--光热图像取照-->
     <string name="title_thermal_image_take">Capture PT Image</string>
     <string name="thermal_performTuning">Adjust</string>
@@ -173,7 +166,6 @@
     <string name="history_colorimetric_concentration">Colo. Conc.:</string>
     <string name="history_thermal_concentration">PT. Conc.:</string>
     <string name="history_credibility">Credibility:</string>
-
     <!--历史预览-->
     <string name="title_historyPreview">History Preview</string>
     <string name="historyPreview_delete">Delete</string>
@@ -184,6 +176,8 @@
     <string name="historyPreview_result">Test Result</string>
     <string name="historyPreview_14_records">14 Measurements:</string>
     <string name="historyPreview_sequenceNumber">No.</string>
+    <string name="historyPreview_gear">gear</string>
+    <string name="historyPreview_mileage">mileage</string>
     <string name="historyPreview_value">Value</string>
     <string name="historyPreview_unit">Unit</string>
     <string name="historyPreview_time">Test Time:</string>
@@ -194,7 +188,6 @@
     <string name="historyPreview_results_electrical">Elec. Test Result</string>
     <string name="historyPreview_results_colorimetric_image">Colo. Test Result</string>
     <string name="historyPreview_results_thermal_image">PT. Test Result</string>
-
     <!-- 我的 -->
     <string name="mine_experimenter">Experimenter:</string>
     <string name="mine_phone">Phone:</string>
@@ -222,8 +215,7 @@
     <string name="userGuide_word">word</string>
     <string name="userGuide_pdf">pdf</string>
     <string name="userGuide_excel">excel</string>
-
-    <!--    关于万用表相关-->
+    <!--关于万用表相关-->
     <string name="multimeter_Celsius">Temp. (Celsius)</string>
     <string name="multimeter_Celsius_mileage_1">-40–300 ℃</string>
     <string name="multimeter_Celsius_mileage_2">200–1000 ℃</string>
@@ -233,15 +225,12 @@
     <string name="multimeter_DcmA">DC Milliamp (DCmA)</string>
     <string name="multimeter_DcmA_mileage_1">0–60 mA</string>
     <string name="multimeter_DcmA_mileage_2">0–600 mA</string>
-
     <!-- 图表-->
     <string name="chart_electric">I</string>
     <string name="chart_xTabel_time">Time/s</string>
-
     <!--基础配置-->
     <integer name="colorimetric_readTime">4</integer><!--测量时间 s-->
     <integer name="colorimetric_readNum">14</integer><!--在测量时间内的测量次数-->
-
     <!-- 默认值 -->
     <string name="default_no_text">no text</string>
     <string name="default_number">0</string>
@@ -265,7 +254,6 @@
     <string name="unit_mA">mA</string>
     <string name="unit_percent">%</string>
     <string name="unit_mol">M</string>
-
     <!--字符串数组-->
     <string-array name="standardCurve_type">
         <item>@string/elec</item>
@@ -280,22 +268,20 @@
     </string-array>
     <!--文件提供者-->
     <string name="file_provider_authority">com.lsy.chemicaltest_new.file.provider</string>
-
     <!--弹框-->
     <string name="dialog_positive">Confirm</string>
     <string name="dialog_negative">Cancel</string>
     <!-- 历史纪录 -->
     <string name="historyPreview_dialog_title">Delete Record</string>
     <string name="historyPreview_dialog_message">Are you sure delete this record?</string>
-
     <!--权限弹框-->
     <string name="permission_dialog_title">Permission Settings</string>
     <string name="permission_dialog_title_needPermission">Permission Required</string>
-    <string name="permission_dialog_rational_writeStorage">Storage permission is required to export data. Please enable it manually.</string>
+    <string name="permission_dialog_rational_writeStorage">Storage permission is required to export data. Please enable it manually</string>
     <string name="permission_dialog_rational_storage">Applications require storage permissions to access files</string>
-    <string name="permission_dialog_needBleAndLocation">Bluetooth permission is required to scan and connect devices. Location permission is required to discover nearby Bluetooth devices.</string>
-    <string name="permission_dialog_needLocation">Location permission is required to get your current position.</string>
-    <string name="permission_dialog_toSetting">You have permanently denied necessary permissions. Please enable them in Settings.</string>
+    <string name="permission_dialog_needBleAndLocation">Bluetooth permission is required to scan and connect devices. Location permission is required to discover nearby Bluetooth devices</string>
+    <string name="permission_dialog_needLocation">Location permission is required to get your current position</string>
+    <string name="permission_dialog_toSetting">You have permanently denied necessary permissions. Please enable them in Settings</string>
     <string name="permission_dialog_positive_continue">Continue</string>
     <string name="permission_dialog_positive">Go to Settings</string>
     <string name="permission_dialog_negative">Cancel</string>
@@ -313,25 +299,27 @@
     <string name="dialog_restart_message">Language change requires app restart to take effect. Restart now?</string>
     <string name="dialog_restart_positive">Restart</string>
     <string name="dialog_restart_negative">Restart Later</string>
+
     <!-- 通知 -->
     <string name="toast_add_success">Added successfully</string>
     <string name="toast_add_fail">Failed to add</string>
     <string name="toast_save_success">Saved successfully</string>
     <string name="toast_save_fail">Failed to save</string>
-    <string name="toast_save_fail_tryAgain">Save failed. Please try again.</string>
-    <string name="toast_save_fail_exception">Save failed. An exception occurred.</string>
+    <string name="toast_save_fail_tryAgain">Save failed. Please try again</string>
+    <string name="toast_save_fail_exception">Save failed. An exception occurred</string>
     <string name="toast_tempSave_success">Temporarily saved</string>
     <string name="toast_tempSave_fail">Failed to save temporarily</string>
-    <string name="toast_tempSave_fail_exception">Temporary save failed: System error</string>
     <string name="toast_delete_success">Deleted successfully</string>
     <string name="toast_delete_fail">Failed to delete</string>
-    <string name="toast_delete_fail_exception">Delete failed. An exception occurred.</string>
-    <string name="toast_delete_fail_image">Delete failed. Image deletion failed.</string>
     <string name="toast_update_success">Updated successfully</string>
     <string name="toast_update_fail">Failed to update</string>
-    <string name="toast_update_fail_exception">Update failed. An exception occurred.</string>
     <string name="toast_refresh_success">Refreshed successfully</string>
     <string name="toast_refresh_fail">Failed to refresh</string>
+
+    <string name="toast_tempSave_fail_exception">Temporary save failed: System error</string>
+    <string name="toast_delete_fail_exception">Delete failed. An exception occurred</string>
+    <string name="toast_delete_fail_image">Delete failed. Image deletion failed</string>
+    <string name="toast_update_fail_exception">Update failed. An exception occurred</string>
     <string name="toast_insufficientSspace">Insufficient storage space</string>
     <string name="toast_fillComplete">Please fill in all required fields</string>
     <string name="toast_normal">Normal</string>
@@ -369,11 +357,15 @@
     <string name="toast_curve_XValue_invalid">invalid logX</string>
     <string name="toast_curve_YValue_invalid">invalid avgY</string>
     <string name="toast_curve_cant_lessOne">The number of Y values cannot be less than 1</string>
-    <string name="toast_elec_closeBLE">Bluetooth is disabled. Please enable it and try again.</string>
+    <string name="toast_elec_closeBLE">Bluetooth is disabled. Please enable it and try again</string>
     <string name="toast_elec_openDevice">Bluetooth enabled</string>
     <string name="toast_elec_testOver">Test completed</string>
-    <string name="toast_elec_testing">Testing in progress...</string>
-    <string name="toast_elec_timeOut">Connection timed out. Please try again.</string>
+    <string name="toast_elec_testing">Testing in progress…</string>
+    <string name="toast_elec_timeOut">Connection timed out. Please try again</string>
+    <string name="toast_system_fail">System Error</string>
+    <string name="toast_elec_noResult">The measured value does not exist</string>
+    <string name="toast_elec_temperatureChange">Temperature changes</string>
+    <string name="toast_color_too_much">Many colors in the box selection area affect color accuracy</string>
     <string name="toast_sample_getSamples_fail">Failed to retrieve sample information</string>
     <string name="toast_sample_name_empty">Sample name cannot be empty</string>
     <string name="toast_sample_refresh_fail">Failed to update sample</string>
@@ -382,6 +374,9 @@
     <string name="toast_sample_deleteFail_existCurve">Cannot delete sample with existing curves</string>
     <string name="toast_thermal_getCrop_fail">Failed to capture image</string>
     <string name="toast_history_get_fail">Failed to retrieve history records</string>
+    <string name="toast_history_load_history_fail">An error occurred loading history list</string>
+    <string name="toast_history_load_time_fail">An error occurred loading time list</string>
+    <string name="toast_history_load_sample_fail">An error occurred loading sample list</string>
     <string name="toast_takePhoto_cropFail">Crop failed</string>
     <string name="toast_takePhoto_startCropFail">Failed to start crop</string>
     <string name="toast_takePhoto_canceleOperation">Operation canceled or failed</string>
@@ -389,11 +384,12 @@
     <string name="toast_takePhoto_pictureOversize">Image is too large</string>
     <string name="toast_takePhoto_loadFail">Failed to load image</string>
     <string name="toast_takePhoto_fail">Failed to take photo</string>
+    <string name="toast_takePhoto_selectImage_fail">Failed to select the image</string>
     <string name="toast_takePhoto_noSelectImage">No image selected</string>
     <!--权限-->
     <string name="toast_permission_write_storage">Storage permission is required to export data</string>
-    <string name="toast_permission_write_storage_deny">Permission denied. Cannot export data.</string>
-    <string name="toast_permission_deny">Permission denied. Functionality may be limited.</string>
+    <string name="toast_permission_write_storage_deny">Permission denied. Cannot export data</string>
+    <string name="toast_permission_deny">Permission denied. Functionality may be limited</string>
     <string name="toast_permission_usb">USB permission is required for this operation</string>
     <string name="toast_permission_denyPermissions">The following permissions are denied. Functionality may be limited: </string>
     <string name="toast_permission_grantPermissions">Permissions have been granted</string>

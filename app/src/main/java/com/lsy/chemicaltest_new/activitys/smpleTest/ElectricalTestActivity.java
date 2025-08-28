@@ -12,8 +12,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -25,14 +23,11 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityElectricalTestBinding;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
-import com.lsy.chemicaltest_new.domain.StandardCurve;
-import com.lsy.chemicaltest_new.domain.Temperature_Elec;
 import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.domain.dialog.CurveDetailDialog;
 import com.lsy.chemicaltest_new.fragments.ConnectMultimeterFragment;
 import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;
 import com.lsy.chemicaltest_new.models.ElecViewModel;
-import com.lsy.chemicaltest_new.utils.TimeUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -142,7 +137,7 @@ public class ElectricalTestActivity extends BaseActivity{
         mBinding.btnStartAnalElec.setOnClickListener(this::onCLick);
         mBinding.btnSelectCurve.setOnClickListener(this::onCLick);
         mBinding.tvCurve.setOnClickListener(this::onCLick);
-        mBinding.ivNoticeElec.setOnClickListener(this::onCLick);
+        mBinding.ivNotice.setOnClickListener(this::onCLick);
 
         //设置观察者
         mViewModel.getLiveData_toast().observe(this, toast -> {
@@ -151,7 +146,7 @@ public class ElectricalTestActivity extends BaseActivity{
                 mViewModel.setToast(null);
             }
         });
-        mViewModel.getLiveData_StandardCurve_Elec().observe(this, curve -> {
+        mViewModel.getLiveData_StandardCurve().observe(this, curve -> {
             if (curve!= null){
                 mBinding.tvCurve.setText(curve.getName());
             }
@@ -165,23 +160,6 @@ public class ElectricalTestActivity extends BaseActivity{
                 mBinding.tvEndTime.setText(values.get(13).getTestTime());
                 mTestValueAdapter.update(values);
             }
-/*            if (values==null){
-                mBinding.tvStartTime.setText("");
-                mBinding.tvEndTime.setText("");
-                mTestValueAdapter.clear();
-                return;
-            }
-            mTestValueAdapter.update(values);
-            int listSize = values.size();
-            if(listSize>1) {
-                mBinding.tvStartTime.setText(values.get(0).getTestTime());
-                if (listSize==14) {
-                    mBinding.tvEndTime.setText(values.get(13).getTestTime());
-                    TestValue maxValue = getMaxValue(values);
-                    mViewModel.setMaxValue(maxValue);
-                }
-            }*/
-
         });
         // 最大值
         mViewModel.getLiveData_MaxValue().observe(this, maxValue -> {
@@ -192,18 +170,6 @@ public class ElectricalTestActivity extends BaseActivity{
             else
                 mBinding.tvMaxValue4.setText(getString(R.string.default_no));
         });
-/*        mViewModel.getLiveData_Degree().observe(this, degree -> {
-            if (degree!=null){
-                mBinding.tvCentigrade.setText(degree.toString());
-                mBinding.pbTestDegree.setVisibility(View.GONE);
-                mViewModel.setToast(getString(R.string.toast_elec_testOver));
-                mBinding.btnStartAnalTemperature.setVisibility(View.VISIBLE);
-                mViewModel.calculate_DegreeCO();//计算浓度
-            }
-            else {
-                mBinding.tvCentigrade.setText(getString(R.string.default_no));
-            }
-        });*/
         mViewModel.getLiveData_COElec().observe(this, CO -> {
             if (CO != null){
                 String unit = mViewModel.getUnit_elec();
@@ -213,21 +179,21 @@ public class ElectricalTestActivity extends BaseActivity{
             else{
                 mBinding.tvConcentration.setText(getString(R.string.default_no));
                 mBinding.btnStartAnalElec.setEnabled(false);
-                mBinding.ivNoticeElec.setVisibility(View.GONE);
+                mBinding.ivNotice.setVisibility(View.GONE);
             }
         });
         mViewModel.getLiveData_DiseaseAnalElec().observe(this, result -> {
             if (result!= null)  // 病害分析结果不为空时，显示
                  mBinding.tvDiseaseAnalysisElec.setText(result);
         });
-        mViewModel.getLiveData_CO_noticeElec().observe(this, result -> {
+        mViewModel.getLiveData_notice().observe(this, result -> {
             if (result != null){
-                mBinding.ivNoticeElec.setVisibility(View.VISIBLE);
+                mBinding.ivNotice.setVisibility(View.VISIBLE);
                 if (result.equals(getString(R.string.toast_normal))){
-                    mBinding.ivNoticeElec.setImageResource(R.drawable.icon_notice_normal);
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_normal);
                 }
                 else {
-                    mBinding.ivNoticeElec.setImageResource(R.drawable.icon_notice_abnormal);
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_abnormal);
                 }
             }
         });
@@ -237,29 +203,10 @@ public class ElectricalTestActivity extends BaseActivity{
                 mBinding.tvMileage.setText(bleDeviceInfo.getMileage());
             }
         });
-        mViewModel.getLiveData_CO_noticeDegree().observe(this, result -> {
-            if (result != null){
-                if (result.equals(getString(R.string.toast_normal))){
-                    mBinding.ivNoticeElec.setImageResource(R.drawable.icon_notice_normal);
-                }
-            }
-        });
         mViewModel.getLiveData_ElecTestResult().observe(this, elecTestResult -> {
             if (elecTestResult!=null)
                 Log.d(TAG, "elecTestResult:"+elecTestResult.toString());
         });
-    }
-
-    public TestValue getMaxValue(List<TestValue> testValueList){
-        if (testValueList==null || testValueList.isEmpty())
-            return null;
-        TestValue maxValue = testValueList.get(0);
-        for (TestValue value : testValueList) {
-            if (value.getValue()>maxValue.getValue()){
-                maxValue = value;
-            }
-        }
-        return maxValue;
     }
 
 
@@ -274,8 +221,8 @@ public class ElectricalTestActivity extends BaseActivity{
             showSelectDialog("select_curve_electrical");
         }
         else if (id==mBinding.tvCurve.getId()){
-            if (mViewModel.getLiveData_StandardCurve_Elec().getValue()!=null) {
-                CurveDetailDialog curveDetailDialog = new CurveDetailDialog(mContext,mViewModel.getLiveData_StandardCurve_Elec().getValue());
+            if (mViewModel.getLiveData_StandardCurve().getValue()!=null) {
+                CurveDetailDialog curveDetailDialog = new CurveDetailDialog(mContext,mViewModel.getLiveData_StandardCurve().getValue());
                 curveDetailDialog.show();
             }
         }
@@ -292,9 +239,9 @@ public class ElectricalTestActivity extends BaseActivity{
             mViewModel.save();
             finish();
         }
-        else if (id==mBinding.ivNoticeElec.getId()){
-            if (mViewModel.getLiveData_CO_noticeElec().getValue()!=null)
-                mViewModel.setToast(mViewModel.getLiveData_CO_noticeElec().getValue());
+        else if (id==mBinding.ivNotice.getId()){
+            if (mViewModel.getLiveData_notice().getValue()!=null)
+                mViewModel.setToast(mViewModel.getLiveData_notice().getValue());
         }
     }
     //  显示选择曲线对话框
@@ -318,12 +265,9 @@ public class ElectricalTestActivity extends BaseActivity{
             dialogFragment = new SelectCurveFragment(1);
         else
             dialogFragment = new SelectCurveFragment(3);
-        dialogFragment.setOnSelectCurveListener(new SelectCurveFragment.OnFragmentChangeListener() {
-            @Override
-            public void onSelectCurve(StandardCurve selectCurve) {
-                if (Objects.equals(dialogFragment.getTag(), "select_curve_electrical"))
-                    mViewModel.setElecCurveAndCalculateCO(selectCurve);
-            }
+        dialogFragment.setOnSelectCurveListener(selectCurve -> {
+            if (Objects.equals(dialogFragment.getTag(), "select_curve_electrical"))
+                mViewModel.setElecCurveAndCalculateCO(selectCurve);
         });
         return dialogFragment;
     }

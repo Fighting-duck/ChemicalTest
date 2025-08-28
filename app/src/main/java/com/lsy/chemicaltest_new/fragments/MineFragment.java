@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -56,7 +55,6 @@ public class MineFragment extends Fragment {
         mBinding = FragmentMineBinding.inflate(inflater, container, false);
         mContext = this.getContext();
         mViewModel = new ViewModelProvider(this).get(MineViewModel.class);
-        mViewModel.setContext(mContext);
         mAvatarHelper = new AvatarWithBlurBackground(mContext, mBinding.ivHeadBackground);
         mSharePreferencesManager = new SharePreferencesManager(mContext);
         initUI();
@@ -105,7 +103,7 @@ public class MineFragment extends Fragment {
                        mActivity.takePhoto(new ImageProcessor.ImageProcessingCallback() {
                            @Override
                            public void onImageSelected(Bitmap bitmap) {
-                               mViewModel.updateHeadImage(bitmap);
+                               mViewModel.updateHeadImage(bitmap,mContext);
                            }
 
                            @Override
@@ -122,7 +120,7 @@ public class MineFragment extends Fragment {
                         mActivity.pickFromGallery(new ImageProcessor.ImageProcessingCallback() {
                             @Override
                             public void onImageSelected(Bitmap bitmap) {
-                                mViewModel.updateHeadImage(bitmap);
+                                mViewModel.updateHeadImage(bitmap,mContext);
                             }
 
                             @Override
@@ -191,21 +189,13 @@ public class MineFragment extends Fragment {
             final EditText input = new EditText(mContext);
             builder.setView(input);
 
-            builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // 获取编辑框中的文本
-                    String inputText = input.getText().toString();
-                    mViewModel.setExperimenterName(inputText);
-                }
+            builder.setPositiveButton(getString(R.string.dialog_positive), (dialog, which) -> {
+                // 获取编辑框中的文本
+                String inputText = input.getText().toString();
+                mViewModel.setExperimenterName(inputText,mContext);
             });
 
-            builder.setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+            builder.setNegativeButton(getString(R.string.dialog_negative), (dialog, which) -> dialog.cancel());
 
             Dialog dialog = builder.create();
             dialog.show();

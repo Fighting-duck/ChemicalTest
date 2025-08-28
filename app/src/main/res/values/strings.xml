@@ -24,6 +24,8 @@
     <string name="colo">比色图像</string>
     <string name="thermal">光热图像</string>
     <string name="enter">进入</string>
+    <string name="text_useCurve">标准曲线:</string>
+    <string name="text_StartAnal">开始分析</string>
     <!-- 样品测试 -->
     <string name="test_select_standard_curve">请选择标准曲线</string>
     <string name="test_manageCurve">曲线管理</string>
@@ -39,24 +41,21 @@
     <string name="test_description_hint">备注(可填)</string>
     <!--电信号检测-->
     <string name="title_electrical">电信号检测</string>
-    <string name="title_measureValue">万用表测量</string>
-    <string name="electrical_selectElecCurve">选择标准曲线</string>
-    <string name="electrical_selectDegreeCurve">选择温度标准曲线</string>
-    <string name="electrical_useCurve">电信号标准曲线:</string>
-    <string name="electrical_useElecCurve">电信号标准曲线:</string>
-    <string name="electrical_useDegreeCurve">温度标准曲线:</string>
     <string name="electrical_getCurrentFormMultimeter">万用表测电流值</string>
-    <string name="text_connection_situation">万能表连接情况:</string>
-    <string name="text_test_connection">扫描设备</string>
-    <string name="text_disconnect">断开连接</string>
-    <string name="text_connection_true">是</string>
-    <string name="text_connection_false">否</string>
-    <string name="text_returnResults">返回数据</string>
-    <string name="text_prompt">档位请选择“直流电流档”(DCmA或DCuA)或温度档(℃/℉)</string>
+
+    <string name="history_sure">确定</string>
+    <!--万用表测量-->
+    <string name="title_measureValue">万用表测量</string>
+    <string name="measureValue_connection_situation">万能表连接情况:</string>
+    <string name="measureValue_test_connection">扫描设备</string>
+    <string name="measureValue_disconnect">断开连接</string>
+    <string name="measureValue_connection_true">是</string>
+    <string name="measureValue_connection_false">否</string>
+    <string name="measureValue_returnResults">返回数据</string>
+    <string name="measureValue_prompt_elec">档位请选择“直流电流档”(DCmA或DCuA)</string>
+    <string name="measureValue_prompt_temperature">档位请选择温度档(℃/℉)</string>
     <string name="text_current_gear">当前挡位:</string>
     <string name="text_mileage">里程:</string>
-    <string name="text_gear_0">档位</string>
-    <string name="text_mileage_0">里程</string>
     <string name="text_RealTime_value">实时测量值:</string>
     <string name="text_StartTest_elec">开始测量电流</string>
     <string name="text_StartTest_temperature">开始测量温度</string>
@@ -66,8 +65,6 @@
     <string name="electrical_endTime">结束测量时间:</string>
     <string name="text_MaxValue_4">电流最大值:</string>
     <string name="text_temperature">衡定温度值:</string>
-    <string name="text_StartAnal">开始分析</string>
-    <string name="history_sure">确定</string>
     <!--testValue item-->
     <string name="testValue_No">序号:</string>
     <string name="testValue_testValue">测量值:</string>
@@ -118,6 +115,7 @@
     <string name="sample_edit">修改</string>
     <string name="sample_editing">修改中…</string>
     <string name="sample_totalNum">样品数:</string>
+    <string name="sample_deleteDialog_title">是否删除该图片?</string>
     <!---标准曲线管理-->
     <string name="title_standardCurve">标准曲线</string>
     <string name="curveManage_noText">暂无标准曲线</string>
@@ -128,17 +126,14 @@
     <string name="curveManage_sample">样品:</string>
     <string name="curveManage_formula">公式:</string>
     <string name="curveManage_corr">系数:</string>
-
     <!--比色图像分析-->
     <string name="title_colorimetric_image_analysis">比色图像分析</string>
-    <string name="colorimetric_useCurve">标准曲线:</string>
     <string name="colorimetric_getPhoto">从图库中获取</string>
     <string name="colorimetric_alterCropPhoto">修改框选区域</string>
     <string name="colorimetric_Original_image">原图:</string>
     <string name="colorimetric_isSave">是否保存原图:</string>
     <string name="switch_on">Y</string>
     <string name="switch_off">N</string>
-    <string name="colorimetric_Test_results">检测结果:</string>
     <string name="colorimetric_Select_area">框选区域:</string>
     <string name="colorimetric_Corrected_RGB_color">校正后RGB颜色:</string>
     <string name="colorimetric_crop">裁剪</string>
@@ -150,10 +145,9 @@
     <string name="colorimetric_Value">V:</string>
     <!--光热图像分析-->
     <string name="title_thermal_image_analysis">光热图像分析</string>
-    <string name="thermal_Connect_thermal_device">是否连接热成像仪:</string>
     <string name="electrical_getTemperatureFormMultimeter">万用表测温度值</string>
-    <string name="thermal_Receive_images">接收图像:</string>
     <string name="thermal_infraredCamera">红外摄像仪测温</string>
+    <string name="thermal_Test_results">检测结果:</string>
     <!--光热图像取照-->
     <string name="title_thermal_image_take">光热图像取照</string>
     <string name="thermal_performTuning">调整</string>
@@ -173,7 +167,6 @@
     <string name="history_colorimetric_concentration">比色浓度:</string>
     <string name="history_thermal_concentration">光热浓度:</string>
     <string name="history_credibility">可信度:</string>
-
     <!--历史预览-->
     <string name="title_historyPreview">历史预览</string>
     <string name="historyPreview_delete">删除</string>
@@ -184,6 +177,8 @@
     <string name="historyPreview_result">检查结果</string>
     <string name="historyPreview_14_records">14次测量:</string>
     <string name="historyPreview_sequenceNumber">序号</string>
+    <string name="historyPreview_gear">档位</string>
+    <string name="historyPreview_mileage">里程</string>
     <string name="historyPreview_value">值</string>
     <string name="historyPreview_unit">单位</string>
     <string name="historyPreview_time">检测时间</string>
@@ -194,7 +189,6 @@
     <string name="historyPreview_results_electrical">电信号检测结果</string>
     <string name="historyPreview_results_colorimetric_image">比色图像分析结果</string>
     <string name="historyPreview_results_thermal_image">光热图像分析结果</string>
-
     <!-- 我的 -->
     <string name="mine_experimenter">实验员:</string>
     <string name="mine_phone">手机号:</string>
@@ -222,8 +216,7 @@
     <string name="userGuide_word">word</string>
     <string name="userGuide_pdf">pdf</string>
     <string name="userGuide_excel">excel</string>
-
-    <!--    关于万用表相关-->
+    <!--关于万用表相关-->
     <string name="multimeter_Celsius">温度档(Celsius)</string>
     <string name="multimeter_Celsius_mileage_1">-40–300 ℃</string>
     <string name="multimeter_Celsius_mileage_2">200–1000 ℃</string>
@@ -239,7 +232,6 @@
     <!--基础配置-->
     <integer name="colorimetric_readTime">4</integer><!--测量时间 s-->
     <integer name="colorimetric_readNum">14</integer><!--在测量时间内的测量次数-->
-
     <!-- 默认值 -->
     <string name="default_no_text">无</string>
     <string name="default_number">0</string>
@@ -263,7 +255,6 @@
     <string name="unit_mA">mA</string>
     <string name="unit_percent">%</string>
     <string name="unit_mol">M</string>
-
     <!--字符串数组-->
     <string-array name="standardCurve_type">
         <item>@string/elec</item>
@@ -276,17 +267,14 @@
         <item>比色</item>
         <item>光热</item>
     </string-array>
-
     <!--文件提供者-->
     <string name="file_provider_authority">com.lsy.chemicaltest_new.file.provider</string>
-
     <!--弹框-->
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
     <!-- 历史纪录 -->
     <string name="historyPreview_dialog_title">删除历史记录</string>
     <string name="historyPreview_dialog_message">是否删除该历史记录?</string>
-
     <!--权限弹框-->
     <string name="permission_dialog_title">权限设置</string>
     <string name="permission_dialog_title_needPermission">需要权限</string>
@@ -312,6 +300,7 @@
     <string name="dialog_restart_message">切换语言需要重启应用生效，是否立即重启?</string>
     <string name="dialog_restart_positive">重启</string>
     <string name="dialog_restart_negative">稍后重启</string>
+
     <!-- 通知 -->
     <string name="toast_add_success">添加成功</string>
     <string name="toast_add_fail">添加失败</string>
@@ -321,16 +310,17 @@
     <string name="toast_save_fail_exception">保存失败,出现异常</string>
     <string name="toast_tempSave_success">暂存成功</string>
     <string name="toast_tempSave_fail">暂存失败</string>
-    <string name="toast_tempSave_fail_exception">暂存失败: 系统错误</string>
     <string name="toast_delete_success">删除成功</string>
     <string name="toast_delete_fail">删除失败</string>
-    <string name="toast_delete_fail_exception">删除失败，发生异常</string>
-    <string name="toast_delete_fail_image">删除失败，图片删除操作失败</string>
     <string name="toast_update_success">更新成功</string>
     <string name="toast_update_fail">更新失败</string>
-    <string name="toast_update_fail_exception">更新失败,出现异常</string>
     <string name="toast_refresh_success">刷新成功</string>
     <string name="toast_refresh_fail">刷新失败</string>
+
+    <string name="toast_tempSave_fail_exception">暂存失败: 系统错误</string>
+    <string name="toast_delete_fail_exception">删除失败，发生异常</string>
+    <string name="toast_delete_fail_image">删除失败，图片删除操作失败</string>
+    <string name="toast_update_fail_exception">更新失败,出现异常</string>
     <string name="toast_insufficientSspace">存储空间不足</string>
     <string name="toast_fillComplete">请填写完整</string>
     <string name="toast_normal">正常</string>
@@ -348,7 +338,7 @@
     <string name="toast_curve_valueConflict">最小CO值不能大于最大CO值</string>
     <string name="toast_curve_limitMin">最小 corr 值不能小于0</string>
     <string name="toast_curve_limitMax">最大 corr 值不能大于1</string>
-    <string name="toast_curve_saving">保存中...</string>
+    <string name="toast_curve_saving">保存中…</string>
     <string name="toast_curve_accessFile_deny">文件访问被拒绝</string>
     <string name="toast_curve_fileFormat_error">文件格式错误</string>
     <string name="toast_curve_empty">曲线为空</string>
@@ -373,6 +363,11 @@
     <string name="toast_elec_testOver">测量结束</string>
     <string name="toast_elec_testing">正在测量中…</string>
     <string name="toast_elec_timeOut">连接超时，请重试</string>
+    <string name="toast_system_fail">系统错误</string>
+    <string name="toast_elec_noResult">测量值不存在！</string>
+    <string name="toast_elec_temperatureChange">温度改变!</string>
+    <string name="toast_testing_gearChange">正在测量中，档位发生变化，测量失败</string>
+    <string name="toast_color_too_much">框选区域杂色偏多，会影响颜色精度！</string>
     <string name="toast_sample_getSamples_fail">获取样品信息失败</string>
     <string name="toast_sample_name_empty">样品名不能为空</string>
     <string name="toast_sample_refresh_fail">更新样品失败</string>
@@ -381,6 +376,9 @@
     <string name="toast_sample_deleteFail_existCurve">该样本存在标准曲线，无法删除</string>
     <string name="toast_thermal_getCrop_fail">获取截图时出错了</string>
     <string name="toast_history_get_fail">获取历史记录失败</string>
+    <string name="toast_history_load_history_fail">加载历史记录列表出错</string>
+    <string name="toast_history_load_time_fail">加载时间列表时出错</string>
+    <string name="toast_history_load_sample_fail">加载样本列表时出错</string>
     <string name="toast_takePhoto_cropFail">裁剪失败</string>
     <string name="toast_takePhoto_startCropFail">启动裁剪失败</string>
     <string name="toast_takePhoto_canceleOperation">操作取消或失败</string>
@@ -388,6 +386,7 @@
     <string name="toast_takePhoto_pictureOversize">图片过大</string>
     <string name="toast_takePhoto_loadFail">图片加载失败</string>
     <string name="toast_takePhoto_fail">拍照失败</string>
+    <string name="toast_takePhoto_selectImage_fail">选取图片失败</string>
     <string name="toast_takePhoto_noSelectImage">未选择图片</string>
     <!--权限-->
     <string name="toast_permission_write_storage">需要存储权限来导出数据</string>

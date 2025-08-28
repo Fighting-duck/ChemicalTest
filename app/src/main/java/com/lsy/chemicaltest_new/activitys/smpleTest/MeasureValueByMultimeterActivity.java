@@ -58,7 +58,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        createMultimeterDialogFragment();
+        createMultimeterDialogFragment(mShowModel);
         initUI();
     }
 
@@ -78,10 +78,12 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
                     case ELEC:
                         mBinding.llElec.setVisibility(View.VISIBLE);
                         mBinding.tvResultValuePrompt.setText(getString(R.string.text_MaxValue_4));
+                        mBinding.tvMeasureValuePrompt.setText(R.string.measureValue_prompt_elec);
                         break;
                     case TEMPERATURE:
                         mBinding.llElec.setVisibility(View.GONE);
                         mBinding.tvResultValuePrompt.setText(getString(R.string.text_temperature));
+                        mBinding.tvMeasureValuePrompt.setText(R.string.measureValue_prompt_temperature);
                         break;
                 }
             }
@@ -90,7 +92,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
     /**
      * 创建连接万用表Fragment
      */
-    public void createMultimeterDialogFragment(){
+    public void createMultimeterDialogFragment(ConnectMultimeterFragment.ShowModel showModel){
         // 检查容器是否存在
         View container = mBinding.getRoot().findViewById(R.id.fcv_ConnectMultimeterFragment);
         if (container == null) {
@@ -98,7 +100,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             return;
         }
         //添加另一个布局
-        mFragment = ConnectMultimeterFragment.newInstance(ConnectMultimeterFragment.ShowModel.ELEC);
+        mFragment = ConnectMultimeterFragment.newInstance(showModel);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fcv_ConnectMultimeterFragment, mFragment);
         // 不调用 addToBackStack(null);
@@ -125,6 +127,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             //检测万用表实时数据变化
             public void onMeasureValue(TestValue testValue) {
                if (mIsRecode){
+                   Log.d(TAG, "onMeasureValue: " + testValue.toString());
                    processResult(testValue);
                }
             }
@@ -135,7 +138,8 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
                 if (bleDeviceInfo!=null){
                     // 若当前显示状态与当前万用表档位相匹配，则可以测量
                     if ((mShowModel == ConnectMultimeterFragment.ShowModel.ELEC &&
-                            Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_DcuA)))
+                            (Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_DcuA))
+                            || Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_DcmA))))
                     || (mShowModel == ConnectMultimeterFragment.ShowModel.TEMPERATURE &&
                             Objects.equals(bleDeviceInfo.getGear(), getString(R.string.multimeter_Celsius)))){
                         mBinding.btnStartTest.setEnabled(true);
@@ -223,7 +227,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             // 返回测量值
             TestValue resultValue = mViewModel.getResultValue();
             if (resultValue==null){
-                mViewModel.setToast("测量值不存在！");
+                mViewModel.setToast(getString(R.string.toast_elec_noResult));
                 return;
             }
             else returnIntent.putExtra(RETURN_TEST_VALUE, resultValue);
@@ -234,12 +238,9 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
             finish();
         }
         else if (id == mBinding.btnStartTest.getId()) {
-            if (mShowModel == ConnectMultimeterFragment.ShowModel.ELEC){
-                mTestValueAdapter.clear();
-            }
-            else if (mShowModel == ConnectMultimeterFragment.ShowModel.TEMPERATURE){
-                mViewModel.setToast(getString(R.string.toast_elec_testing));
-            }
+            mViewModel.clearValueList();
+            mViewModel.setResultValue(null);//清空上一次测量结果
+            mViewModel.setToast(getString(R.string.toast_elec_testing));
             mIsRecode = true;
         }
     }
@@ -263,43 +264,53 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
     //控制测量参数
     private Boolean mIsRecode = false;//正在记录数据。。。，记录中为ture，测量结束后恢复为false
     private Boolean mIsFirstTest = true;//仅第一次测量时为true,第一次测量结束后恢复为false
-    private Integer mTestControlled = 0;//控制测试次数
+    private Integer mTestControlled = 0;//电流已经测试的次数
     private Float mOldDegree = null;
     private Boolean lock = false;//锁
     private long mOldTime;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private final Integer readingNum = 14;//测量次数
     private final long readingTimeInterval = 4000/40;//测量时间间隔ms 电流
+    private String mStartTest_unit = null;//记录测试时的档位（用单位代替）
 
     /***
      * 处理万用表返回结果,依据结果的档位，判断是进行温度检测还是电流检测
      * @param testValue 万用表返回数据
      */
     public void processResult(TestValue testValue) {
-        if (!Objects.equals(testValue.getUnit(), getString(R.string.unit_degree))) {
-            //电信号检测
+        // 1.测试开始,设置测试开始参数
+        if (mIsFirstTest){
+            // 不同参数设置
+            if (!Objects.equals(testValue.getUnit(), getString(R.string.unit_degree))){
+                Log.d(TAG, "=======================电流检测开始============================");
+
+            }else {
+                Log.d(TAG, "=======================温度检测开始============================");
+                mOldDegree = testValue.getValue();//电流值或温度值
+                mOldTime = testValue.getTime_long();
+            }
+            mStartTest_unit = testValue.getUnit();//记录测试时的档位（用单位代替）
+            lock = true;//解锁
+            mIsFirstTest = false;
+        }
+        // 2.检查档位是否发生变化，发生变化，则测量结束
+        if (!Objects.equals(testValue.getUnit(), mStartTest_unit)) {
+            mIsRecode = false;
+            mViewModel.setToast(getString(R.string.toast_testing_gearChange));
+            mViewModel.clearValueList();
+            mIsFirstTest = true;
+            return;
+        }
+        // 档位未发生变化，测量继续
+        if (!Objects.equals(testValue.getUnit(), getString(R.string.unit_degree))) {//电信号检测
             if (lock){
                 lock = false;//上锁
                 mHandler.postDelayed(() -> checkCurrent(testValue), readingTimeInterval);
             }
-            if (mIsFirstTest) {
-                Log.d(TAG, "=======================电流检测开始============================");
-                //mViewModel.updateBleDeviceInfo_Elec(result.getBleDeviceInfo());
-                lock = true;//解锁
-            }
 
-        } else {
+        } else {//温度检测
             Long  currentTime = testValue.getTime_long();
             Log.d(TAG, "温度检测，当前温度：" + testValue.toString());
-            //温度检测
-            if (mIsFirstTest) {
-                Log.d(TAG, "=======================温度检测开始============================");
-                mOldDegree = testValue.getValue();//电流值或温度值
-                mOldTime = testValue.getTime_long();
-                //mViewModel.updateBleDeviceInfo_Degree(result.getBleDeviceInfo());
-                lock = true;
-                mIsFirstTest = false;
-            }
             if (currentTime - mOldTime > 4000){
                 checkTemperature(testValue,currentTime);
             }
@@ -314,15 +325,18 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
         float yValue = testValue.getValue();
         if (yValue != mOldDegree) {
             Log.d(TAG, "温度改变，当前oldDegree温度：" +mOldDegree+" -> "+ yValue);
-            mViewModel.setToast("温度改变!");
+            mViewModel.setToast(getString(R.string.toast_elec_temperatureChange));
             mOldTime = currentTime;
             mOldDegree = yValue;
         } else {
+            // 测试结束
             mViewModel.setResultValue(testValue);
             mIsRecode = false;
+            mIsFirstTest = true;
             Log.d(TAG, "温度检测结束,温度值为：" + yValue + "℃");
         }
         lock = true;
+
     }
 
     /***
@@ -333,7 +347,10 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
         Log.d(TAG, "电流检测，当前第" + mTestControlled + "次电流测量，当前电流：" + testValue.toString());
         mTestControlled++;
         if (mTestControlled > readingNum) {
+            //测试结束
             mIsRecode = false;
+            mIsFirstTest = true;
+            mTestControlled = 0;
             Log.d(TAG, "电流检测结束,最大电流值为：" + testValue);
         } else {
             // 获取当前时间（确保每次都是最新时间）

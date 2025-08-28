@@ -258,14 +258,5 @@ public class SampleTestFragment extends Fragment {
         mViewModel.setHistoryMultiple(null);
 
         mFragment.restoreAll();
-
-        // 移除当前 Fragment
-/*        if (mFragment != null) {
-            //mFragment.updateData(new History_multiple());
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.remove(mFragment);
-            transaction.commit();
-        }
-        createComprehensiveTestResultFragment();*/
     }
 }

@@ -225,7 +225,7 @@ public class SamplesManageActivity extends BaseActivity {
                                     @Override
                                     public void onError(String message) {
                                         Log.e(TAG, "crop photo onImageSelected: " + message);
-                                        mViewModel.setToast("裁剪图片时出错啦");
+                                        mViewModel.setToast(getString(R.string.toast_takePhoto_cropFail));
                                     }
                                 });
                             }
@@ -233,7 +233,7 @@ public class SamplesManageActivity extends BaseActivity {
                             @Override
                             public void onError(String message) {
                                 Log.e(TAG, "take photo onImageSelected: " + message);
-                                mViewModel.setToast("拍照时出错啦");
+                                mViewModel.setToast(getString(R.string.toast_takePhoto_fail));
                             }
                         });
                     }
@@ -253,7 +253,7 @@ public class SamplesManageActivity extends BaseActivity {
                                     @Override
                                     public void onError(String message) {
                                         Log.e(TAG, "crop photo onImageSelected: " + message);
-                                        mViewModel.setToast("裁剪图片时出错啦");
+                                        mViewModel.setToast(getString(R.string.toast_takePhoto_cropFail));
                                     }
                                 });
                             }
@@ -261,7 +261,7 @@ public class SamplesManageActivity extends BaseActivity {
                             @Override
                             public void onError(String message) {
                                 Log.e(TAG, "crop photo onImageSelected: " + message);
-                                mViewModel.setToast("选取图片时出错啦");
+                                mViewModel.setToast(getString(R.string.toast_takePhoto_selectImage_fail));
                             }
                         });
                     }
@@ -275,7 +275,7 @@ public class SamplesManageActivity extends BaseActivity {
                     BitmapDrawable drawable = ((BitmapDrawable) (mBinding.ivImage).getDrawable());
                     PhotoUtil.viewLargeImage(mContext, drawable);
                 } else
-                    mViewModel.setToast("样品图为空！");
+                    mViewModel.setToast(getString(R.string.toast_no_image));
                 return false;
             }
 
@@ -284,15 +284,15 @@ public class SamplesManageActivity extends BaseActivity {
                 // 长按事件处理  弹框通知是否删除
                 if (mViewModel.getImage() != null) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle("是否删除该图片?")
-                           .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    builder.setTitle(getString(R.string.sample_deleteDialog_title))
+                           .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mViewModel.setImage(null);
                                     dialog.dismiss();
                                 }
                             })
-                           .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                           .setNegativeButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -301,42 +301,33 @@ public class SamplesManageActivity extends BaseActivity {
                 }
             }
         });
-        mAdapter.setOnEditClickListener(new SampleAdapter.OnEditClickListener() {
-            @Override
-            public void onEditClick(int position) {
-                if (mAdapter != null) {
-                    Sample sample = mAdapter.getCurrentList().get(position);
-                    // 处理编辑逻辑
-                    mViewModel.setCurrentState(2, sample);//修改当前状态为修改
-                }
+        mAdapter.setOnEditClickListener(position -> {
+            if (mAdapter != null) {
+                Sample sample = mAdapter.getCurrentList().get(position);
+                // 处理编辑逻辑
+                mViewModel.setCurrentState(2, sample);//修改当前状态为修改
             }
         });
-        mAdapter.setOnDeleteClickListener(new SampleAdapter.OnDeleteClickListener() {
-            @Override
-            public void onDeleteClick(int position) {
-                if (mAdapter != null){
-                    //弹框提示是否删除
-                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
-                    builder.setTitle(getString(R.string.dialog_deleteSample_title));
-                    builder.setMessage(getString(R.string.dialog_deleteSample_message));
-                    builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mViewModel.deleteSample(position);
-                        }
-                    });
-                    builder.setNegativeButton(getString(R.string.dialog_negative), null);
-                    builder.create().show();
-                }
+        mAdapter.setOnDeleteClickListener(position -> {
+            if (mAdapter != null){
+                //弹框提示是否删除
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
+                builder.setTitle(getString(R.string.dialog_deleteSample_title));
+                builder.setMessage(getString(R.string.dialog_deleteSample_message));
+                builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mViewModel.deleteSample(position);
+                    }
+                });
+                builder.setNegativeButton(getString(R.string.dialog_negative), null);
+                builder.create().show();
             }
         });
-        mAdapter.setOnImageClickListener(new SampleAdapter.OnImageClickListener() {
-            @Override
-            public void onImageClick(int position) {
-                if (mAdapter != null) {
-                    Sample sample = mAdapter.getCurrentList().get(position);
-                    PhotoUtil.viewLargeImage(mContext, sample.getImage());
-                }
+        mAdapter.setOnImageClickListener(position -> {
+            if (mAdapter != null) {
+                Sample sample = mAdapter.getCurrentList().get(position);
+                PhotoUtil.viewLargeImage(mContext, sample.getImage());
             }
         });
         //设置下拉刷新布局的进度圆圈颜色
@@ -353,7 +344,7 @@ public class SamplesManageActivity extends BaseActivity {
                 @Override
                 public void onUpdateFailed(Exception e) {
                     mBinding.srlRefreshLayout.setRefreshing(false);
-                    mViewModel.setToast("获取样品信息失败");
+                    mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
             });
         });

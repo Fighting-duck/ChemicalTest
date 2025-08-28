@@ -56,7 +56,6 @@ public class ColorimetricActivity extends BaseActivity {
         mContext = this;
         setContentView(mBinding.getRoot());
         mViewModel = new ViewModelProvider(this).get(ColoViewModel.class);
-        mViewModel.setContext(this);
         // 初始化Activity结果监听 处理图片裁剪返回结果
         bitmapResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -106,6 +105,7 @@ public class ColorimetricActivity extends BaseActivity {
         mBinding.btnStartAnal.setOnClickListener(this::onCLick);
         mBinding.btnSelectCurve.setOnClickListener(this::onCLick);
         mBinding.tvCurve.setOnClickListener(this::onCLick);
+        mBinding.ivNotice.setOnClickListener(this::onCLick);
         mBinding.swIsSaveOriginalImage.setOnCheckedChangeListener((buttonView, isChecked) -> {
             MyApplication.INSTANCE.setIsSaveColoOriginalImage(isChecked);
         });
@@ -161,7 +161,7 @@ public class ColorimetricActivity extends BaseActivity {
                         0f         // 最小亮度=0
                 );
                 if (!colors.isEmpty() && colors.size()>1){
-                    mViewModel.setToast("框选区域杂色偏多，会影响颜色精度！");
+                    mViewModel.setToast(getString(R.string.toast_color_too_much));
                 }
                 if (!colors.isEmpty()){
                     float[] hsv = new float[3];
@@ -200,13 +200,30 @@ public class ColorimetricActivity extends BaseActivity {
             mBinding.tvValue.setText(String.valueOf(hsv.getValue()));
         });
         mViewModel.getLiveData_CO().observe(this, co -> {
-            if (co == null) return;
-            String unit = mViewModel.getUnit();
-            mBinding.tvCORGB.setText(co+" "+unit);
+            if (co == null) {
+                mBinding.tvCORGB.setText(getString(R.string.default_no));
+                mBinding.ivNotice.setVisibility(View.GONE);
+                mBinding.btnStartAnal.setEnabled(false);
+            }else {
+                String unit = mViewModel.getUnit();
+                mBinding.tvCORGB.setText(co+" "+unit);
+                mBinding.ivNotice.setVisibility(View.VISIBLE);
+            }
         });
         mViewModel.getLiveData_diseaseAnal().observe(this,result->{
             if (result == null) return;
             mBinding.tvDiseaseAnalysis.setText(result);
+        });
+        mViewModel.getLiveData_notice().observe(this, result -> {
+            if (result != null){
+                mBinding.ivNotice.setVisibility(View.VISIBLE);
+                if (result.equals(getString(R.string.toast_normal))){
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_normal);
+                }
+                else {
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_abnormal);
+                }
+            }
         });
         mViewModel.getLiveData_coloTestResult().observe(this, result ->{
             if (result!=null){
@@ -316,6 +333,10 @@ public class ColorimetricActivity extends BaseActivity {
         }
         else if (id==mBinding.ivSave.getId()){
             if (mViewModel.save()) finish();
+        }
+        else if (id==mBinding.ivNotice.getId()){
+            if (mViewModel.getLiveData_notice().getValue()!=null)
+                mViewModel.setToast(mViewModel.getLiveData_notice().getValue());
         }
     }
     //显示选择标准曲线弹框

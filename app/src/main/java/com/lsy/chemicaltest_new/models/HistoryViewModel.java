@@ -1,5 +1,7 @@
 package com.lsy.chemicaltest_new.models;
 
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -16,7 +18,6 @@ import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
-import com.lsy.chemicaltest_new.domain.Experimenter;
 import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.HSV;
 import com.lsy.chemicaltest_new.domain.History_multiple;
@@ -47,7 +48,6 @@ import java.util.stream.Collectors;
 
 public class HistoryViewModel extends ViewModel {
     private static final String TAG = "HistoryViewModel";
-     Context mContext;
     // 数据状态枚举
     public enum DataState {
         LOADING,    // 加载中
@@ -101,9 +101,6 @@ public class HistoryViewModel extends ViewModel {
     public void setToast(String prompt){
         LiveDataUtils.safeUpdate(mLiveData_toast,prompt);
     }
-    public void  setContext(Context mContext){
-        this.mContext = mContext;
-    }
     private void executeTask(Runnable task,String prompt) {
         UUID taskId = UUID.randomUUID();
         Future<?> future = MyApplication.DB_EXECUTOR.submit(() -> {
@@ -142,9 +139,9 @@ public class HistoryViewModel extends ViewModel {
                         .distinct()  // 去重
                         .collect(Collectors.toList());
             }
-            uniqueTimes.add(0, mContext.getString(R.string.history_unlimitedTime));  // 在开头添加特殊项
+            uniqueTimes.add(0, getString(R.string.history_unlimitedTime));  // 在开头添加特殊项
             LiveDataUtils.safeUpdate(mLiveData_uniqueTimes, uniqueTimes);
-        },"加载时间列表时出错");
+        }, getString(R.string.toast_history_load_time_fail));
     }
     /***
      * 更新样品列表
@@ -153,10 +150,10 @@ public class HistoryViewModel extends ViewModel {
         executeTask(() -> {
             List<String> samples = new ArrayList<>();
             List<String> sampleName = MyApplication.DATABASE_INSTANCE.getSampleDao().getAll_AvailableName();
-            samples.add(mContext.getString(R.string.history_unlimitedSamples));
+            samples.add(getString(R.string.history_unlimitedSamples));
             samples.addAll(sampleName);
             LiveDataUtils.safeUpdate(mLiveData_sampleName, samples);
-        },"加载样本列表时出错");
+        }, getString(R.string.toast_history_load_sample_fail));
     }
     public Integer getSampleIdByName(String sampleName) {
         return MyApplication.DATABASE_INSTANCE.getSampleDao().getSampleByName(sampleName);
@@ -330,7 +327,7 @@ public class HistoryViewModel extends ViewModel {
             List<History_multiple> fillHistories = getFilledHistories(histories);
             Log.d(TAG, "histories中条目个数："+fillHistories.size());
             LiveDataUtils.safeUpdate(mLiveData_histories, fillHistories);
-        },"加载历史记录出错啦！");
+        },getString(R.string.toast_history_load_history_fail));
     }
 
     public interface UpdateCallback {

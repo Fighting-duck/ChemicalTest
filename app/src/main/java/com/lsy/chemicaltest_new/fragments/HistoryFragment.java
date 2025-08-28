@@ -77,7 +77,6 @@ public class HistoryFragment extends Fragment {
         mBinding = FragmentHistoryBinding.inflate(inflater, container, false);
         mViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
         mContext = getContext();
-        mViewModel.setContext(mContext);
         initUI();
         return mBinding.getRoot();
     }
@@ -138,26 +137,23 @@ public class HistoryFragment extends Fragment {
         mHistoryAdapter = new HistoryAdapter();
         mBinding.rvHistory.setLayoutManager(new LinearLayoutManager(mContext));
         mBinding.rvHistory.setAdapter(mHistoryAdapter);
-        mHistoryAdapter.setOnViewClickListener(new HistoryAdapter.OnViewClickListener() {
-            @Override
-            public void onClick(History_multiple history) {
-                //跳转到历史预览界面
-                Intent intent = new Intent(mContext, HistoryPreviewActivity.class);
+        mHistoryAdapter.setOnViewClickListener(history -> {
+            //跳转到历史预览界面
+            Intent intent = new Intent(mContext, HistoryPreviewActivity.class);
 
-                mViewModel.setPreviewHistory(history, new HistoryViewModel.CheckHistoryCallback() {
-                    @Override
-                    public void onUpdateSuccess() {
-                        Log.d(TAG, "预览历史："+history.toString());
-                        DataRepository.getInstance().setHistory_multiple(history);
-                        mContext.startActivity(intent);
-                    }
+            mViewModel.setPreviewHistory(history, new HistoryViewModel.CheckHistoryCallback() {
+                @Override
+                public void onUpdateSuccess() {
+                    Log.d(TAG, "预览历史："+history.toString());
+                    DataRepository.getInstance().setHistory_multiple(history);
+                    mContext.startActivity(intent);
+                }
 
-                    @Override
-                    public void onUpdateFailure(Exception e) {
-                        mViewModel.setToast(getString(R.string.toast_curve_loadData_fail));
-                    }
-                });
-            }
+                @Override
+                public void onUpdateFailure(Exception e) {
+                    mViewModel.setToast(getString(R.string.toast_curve_loadData_fail));
+                }
+            });
         });
         //初始化时间下拉框列表   给下拉框创建适配器
         mSpinnerAdapter_data = new ArrayAdapter<String>(mContext, R.layout.spinner_selected_item, mDateList);

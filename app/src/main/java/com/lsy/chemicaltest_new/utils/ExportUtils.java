@@ -18,7 +18,6 @@ import com.lsy.chemicaltest_new.database.SharePreferencesManager;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
-import com.lsy.chemicaltest_new.domain.Experimenter;
 import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.History_multiple;
 import com.lsy.chemicaltest_new.domain.Point;
@@ -408,8 +407,8 @@ public class ExportUtils {
     }
     private static String showBleDeviceInfo(BleDeviceInfo bleDeviceInfo){
         if (bleDeviceInfo!=null){
-            return getString(R.string.text_gear_0)+"("+bleDeviceInfo.getGear()+")"+
-                    "  "+getString(R.string.text_mileage_0)+"("+bleDeviceInfo.getMileage()+")";
+            return getString(R.string.historyPreview_gear)+"("+bleDeviceInfo.getGear()+")"+
+                    "  "+getString(R.string.historyPreview_mileage)+"("+bleDeviceInfo.getMileage()+")";
         }
         else
             return null;

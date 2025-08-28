@@ -329,6 +329,8 @@ public class BleUtil {
                         DMM_ReturnResult result = DMM_INFO.analysisResult(data);
                         if (result == null){
                             Log.e(TAG,"挡位不对！");
+                            mViewModel.setCurrentTestValue(null);
+                            mViewModel.setGearAndMileage(null);
                             return;
                         }
                         //获取当前时间值

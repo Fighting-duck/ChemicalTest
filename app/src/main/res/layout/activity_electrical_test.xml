@@ -76,7 +76,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/electrical_useElecCurve"
+                    android:text="@string/text_useCurve"
                     style="@style/text_thirdTitle"/>
                 <TextView
                     android:id="@+id/tvCurve"
@@ -212,15 +212,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/default_no"/>
-                <ImageView
-                    android:id="@+id/iv_notice_Elec"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:contentDescription="@string/text_MaxValue_4"
-                    android:src="@drawable/icon_notice_abnormal"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:visibility="gone"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -235,6 +226,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/default_no"/>
+                <ImageView
+                    android:id="@+id/iv_notice"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/text_detection_concentration"
+                    android:src="@drawable/icon_notice_abnormal"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"

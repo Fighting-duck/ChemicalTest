@@ -55,10 +55,10 @@ import com.lsy.chemicaltest_new.utils.PhotoUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class StandardCurveFragment extends Fragment {
-
     private static final String TAG = "StandardCurveFragment";
     private FragmentStandardCurveBinding mBinding;
     private Context mContext;
@@ -91,8 +91,13 @@ public class StandardCurveFragment extends Fragment {
                             if (data.hasExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE)){
                                 // 从Intent中获取float数据（key为"result_float"，与SecondActivity对应）
                                 TestValue testValue = data.getParcelableExtra(MeasureValueByMultimeterActivity.RETURN_TEST_VALUE);
-                                if (testValue != null)
-                                    controlResultFromActivity(testValue.getValue());
+                                if (testValue != null){
+                                    String prompt = "";
+                                    if (Objects.equals(testValue.getUnit(), getString(R.string.unit_degree)))
+                                         prompt = getString(R.string.curve_GetTemperature);
+                                    else prompt = getString(R.string.curve_GetCurrent);
+                                    controlResultFromActivity(testValue.getValue(),prompt);
+                                }
                             }
                         }
                     }
@@ -108,9 +113,9 @@ public class StandardCurveFragment extends Fragment {
      * 对万用表测量值 界面 或 拍照/图库 截取图片界面 传过来的电流、温度、b值进行处理
      * @param floatResult 测量值
      */
-    public void controlResultFromActivity(float floatResult){
+    public void controlResultFromActivity(float floatResult,String prompt){
         mPointsAdapter.alter_YValue(3,(double)floatResult);
-        String prompt = mBinding.btnVerifyStandardSample.getText().toString();
+
         mViewModel.setToast(prompt+"："+floatResult);
     }
 
@@ -544,7 +549,7 @@ public class StandardCurveFragment extends Fragment {
                                     @Override
                                     public void onError(String message) {
                                         Log.e(TAG, "crop photo onImageSelected: " + message);
-                                        mViewModel.setToast("裁剪图片时出错啦");
+                                        mViewModel.setToast(getString(R.string.toast_takePhoto_cropFail));
                                     }
                                 });
                             }
@@ -552,7 +557,7 @@ public class StandardCurveFragment extends Fragment {
                             @Override
                             public void onError(String message) {
                                 Log.e(TAG, "take photo onImageSelected: " + message);
-                                mViewModel.setToast("拍照时出错啦");
+                                mViewModel.setToast(getString(R.string.toast_takePhoto_fail));
                             }
                         });
                     }
@@ -572,7 +577,7 @@ public class StandardCurveFragment extends Fragment {
                                     @Override
                                     public void onError(String message) {
                                         Log.e(TAG, "crop photo onImageSelected: " + message);
-                                        mViewModel.setToast("裁剪图片时出错啦");
+                                        mViewModel.setToast(getString(R.string.toast_takePhoto_selectImage_fail));
                                     }
                                 });
                             }
@@ -580,7 +585,7 @@ public class StandardCurveFragment extends Fragment {
                             @Override
                             public void onError(String message) {
                                 Log.e(TAG, "crop photo onImageSelected: " + message);
-                                mViewModel.setToast("选取图片时出错啦");
+                                mViewModel.setToast(getString(R.string.toast_takePhoto_selectImage_fail));
                             }
                         });
                     }
@@ -610,13 +615,14 @@ public class StandardCurveFragment extends Fragment {
                 0f         // 最小亮度=0
         );
         if (!colors.isEmpty() && colors.size()>1){
-            mViewModel.setToast("框选区域杂色偏多，会影响颜色精度！");
+            mViewModel.setToast(getString(R.string.toast_color_too_much));
             return;
         }
         if (!colors.isEmpty()){
             Integer color = colors.get(0);//获取主要颜色
             RGB rgb = RGB.fromColor( color);
-            controlResultFromActivity(rgb.getBlue());
+            String prompt = getString(R.string.curve_GetB);
+            controlResultFromActivity(rgb.getBlue(),prompt);
         }
     }
 

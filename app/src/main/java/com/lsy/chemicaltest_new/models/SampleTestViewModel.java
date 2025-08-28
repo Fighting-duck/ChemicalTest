@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SampleTestViewModel extends ViewModel {
     private static final String TAG = "SampleTestViewModel";

@@ -148,6 +148,7 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
         mBinding.btnSelectElecCurve.setOnClickListener(this::onCLick);
         mBinding.tvCurve.setOnClickListener(this::onCLick);
         mBinding.btnStartAnal.setOnClickListener(this::onCLick);
+        mBinding.ivNotice.setOnClickListener(this::onCLick);
 
         mViewModel.getLiveData_toast().observe(this, toast -> {
             if (toast != null){
@@ -175,10 +176,12 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
             if(CO == null) {
                 mBinding.tvCO.setText(getString(R.string.default_no));
                 mBinding.btnStartAnal.setEnabled( false);
+                mBinding.ivNotice.setVisibility(View.GONE);
             }
             else {
                 mBinding.tvCO.setText(String.valueOf(CO));
                 mBinding.btnStartAnal.setEnabled(true);
+                mBinding.ivNotice.setVisibility(View.VISIBLE);
             }
 
         });
@@ -192,6 +195,17 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
                 mBinding.tvMileage.setText(bleDeviceInfo.getMileage());
             }
 
+        });
+        mViewModel.getLiveData_notice().observe(this, result -> {
+            if (result != null){
+                mBinding.ivNotice.setVisibility(View.VISIBLE);
+                if (result.equals(getString(R.string.toast_normal))){
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_normal);
+                }
+                else {
+                    mBinding.ivNotice.setImageResource(R.drawable.icon_notice_abnormal);
+                }
+            }
         });
         mViewModel.getLiveData_ThermalTestResult().observe(this, testResult->{
 
@@ -236,6 +250,10 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
         }
         else if (id==mBinding.btnStartAnal.getId()){
             mViewModel.startDiseaseAnal();
+        }
+        else if (id==mBinding.ivNotice.getId()){
+            if (mViewModel.getLiveData_notice().getValue()!=null)
+                mViewModel.setToast(mViewModel.getLiveData_notice().getValue());
         }
     }
     private void checkAndRequestUSBPermissions() {

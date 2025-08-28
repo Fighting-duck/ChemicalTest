@@ -114,7 +114,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
             mBinding.rvDevices.setAdapter(mDeviceAdapter);
         }
         else {
-            mViewModel.setToast("内部错误");
+            mViewModel.setToast(getString(R.string.toast_system_fail));
         }
         return mBinding.getRoot();
     }
@@ -189,11 +189,11 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         mViewModel.getLiveData_isConnectDevice().observe(this, state -> {
             if (state!=null){
                 if (state) {
-                    mBinding.tvConnectionSituation.setText(R.string.text_connection_true);
+                    mBinding.tvConnectionSituation.setText(R.string.measureValue_connection_true);
                     mBinding.btnDisConnect.setEnabled(true);
                 }
                 else {
-                    mBinding.tvConnectionSituation.setText(R.string.text_connection_false);
+                    mBinding.tvConnectionSituation.setText(R.string.measureValue_connection_false);
                     mBinding.btnDisConnect.setEnabled(false);
                 }
             }

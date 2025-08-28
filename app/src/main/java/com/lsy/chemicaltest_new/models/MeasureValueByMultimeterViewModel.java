@@ -75,11 +75,17 @@ public class MeasureValueByMultimeterViewModel extends ViewModel {
         mTestValueList.setValue(values);
     }
 
+    public void clearValueList(){
+        mTestValueList.setValue(null);
+    }
+
     public void setBleDeviceInfo_Elec(BleDeviceInfo bleDeviceInfo) {
         mBleDeviceInfo.setValue(bleDeviceInfo);
     }
     public BleDeviceInfo getBleDeviceInfo_Elec() {
         return mBleDeviceInfo.getValue();
     }
+
+
 
 }

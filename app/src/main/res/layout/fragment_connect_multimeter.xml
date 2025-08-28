@@ -13,20 +13,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_connection_situation"
+            android:text="@string/measureValue_connection_situation"
             android:layout_gravity="center_vertical"
             style="@style/text_thirdTitle"/>
         <TextView
             android:id="@+id/tv_connectionSituation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_connection_false"
+            android:text="@string/measureValue_connection_false"
             android:layout_gravity="center_vertical"/>
         <android.widget.Button
             android:id="@+id/btn_testConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_test_connection"
+            android:text="@string/measureValue_test_connection"
             android:layout_marginStart="30dp"
             style="@style/ButtonStyle.Primary"/>
         <ProgressBar
@@ -41,7 +41,7 @@
             android:id="@+id/btn_disConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_disconnect"
+            android:text="@string/measureValue_disconnect"
             android:layout_marginStart="30dp"
             android:enabled="false"
             style="@style/ButtonStyle.Primary"/>
@@ -57,12 +57,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_prompt"
-        android:layout_marginTop="@dimen/dp_10"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_returnResults"
+        android:text="@string/measureValue_returnResults"
         android:layout_marginTop="10dp"
         style="@style/text_secondTitle"/>
     <LinearLayout

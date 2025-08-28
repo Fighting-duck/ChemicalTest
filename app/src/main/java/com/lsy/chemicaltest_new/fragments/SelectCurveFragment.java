@@ -3,10 +3,7 @@ package com.lsy.chemicaltest_new.fragments;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -161,19 +158,11 @@ public class SelectCurveFragment extends DialogFragment {
             }
         });
         // 设置取消按钮点击事件
-        mBinding.btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        mBinding.btnCancel.setOnClickListener(view -> dismiss());
         // 设置确定按钮点击事件
-        mBinding.btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onSelectCurve(mViewModel.getShowCurves());
-                dismiss();
-            }
+        mBinding.btnOk.setOnClickListener(view -> {
+            listener.onSelectCurve(mViewModel.getShowCurves());
+            dismiss();
         });
     }
 }

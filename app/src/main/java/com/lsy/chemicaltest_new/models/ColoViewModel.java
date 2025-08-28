@@ -1,8 +1,9 @@
 package com.lsy.chemicaltest_new.models;
 
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
+
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -23,7 +24,6 @@ import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ColoViewModel extends AndroidViewModel {
@@ -38,10 +38,7 @@ public class ColoViewModel extends AndroidViewModel {
     MutableLiveData<Float> mLiveData_CO = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_diseaseAnal = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
-    Context mContext;
-    public void setContext(Context context){
-        mContext = context;
-    }
+    MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
     public MutableLiveData<String> getLiveData_toast(){
         return mLiveData_toast;
     }
@@ -75,6 +72,9 @@ public class ColoViewModel extends AndroidViewModel {
     }
     public MutableLiveData<String> getLiveData_diseaseAnal(){
         return mLiveData_diseaseAnal;
+    }
+    public MutableLiveData<String> getLiveData_notice(){
+        return mLiveData_notice;
     }
 
     public ColoViewModel(Application application){
@@ -178,7 +178,7 @@ public class ColoViewModel extends AndroidViewModel {
         mLiveData_curve.setValue(showCurve);
         RGB rgb = mLiveData_rgb.getValue();
         if (rgb!=null){
-            setToast(mContext.getString(R.string.toast_updateCO));
+            setToast(getString(R.string.toast_updateCO));
             // 使用Blue分量计算浓度值
             calculateCO(rgb.getBlue());
             // 进行病害分析
@@ -233,15 +233,29 @@ public class ColoViewModel extends AndroidViewModel {
      * @param blue 蓝色分量
      * @return 浓度值
      */
-    public Float calculateCO(int blue){
+    public void calculateCO(int blue){
         StandardCurve curve = mLiveData_curve.getValue();
         if (curve != null) {
             Float CO = curve.calculateX_toY((float) blue);
             mLiveData_CO.setValue(CO);
-            return CO;
+            noticeCO(CO,curve);
         }
-        //setToast(mContext.getString(R.string.toast_pleaseSelectCurve));
-        return null;
+    }
+
+    /***
+     * 通知CO值是否属于正常范围
+     * @param CO 浓度值
+     * @param curve 标准曲线
+     */
+    private void noticeCO(Float CO,StandardCurve curve){
+        if (CO < curve.getMin_CO()){
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoLessThanNormalValue));
+        }
+        else if (CO > curve.getMax_CO()){
+            mLiveData_notice.setValue(getString(R.string.toast_abnormal_CoGreaterThanNormalValue));
+        }
+        else
+            mLiveData_notice.setValue(getString(R.string.toast_normal));
     }
     public void setCo(Float co){
         mLiveData_CO.setValue(co);
@@ -281,13 +295,13 @@ public class ColoViewModel extends AndroidViewModel {
             // 1. 获取当前结果（线程安全获取）
             ColoTestResult result = mLiveData_coloTestResult.getValue();
             if (result == null){
-                setToast(mContext.getString(R.string.toast_tempSave_fail));
+                setToast(getString(R.string.toast_tempSave_fail));
                 return false;
             }
             // 2. 查看是否选择曲线  不使用直线也可以保存
 /*            StandardCurve curve = mLiveData_curve.getValue();
             if (curve == null) {
-                mLiveData_toast.setValue(mContext.getString(R.string.toast_pleaseSelectCurve));
+                mLiveData_toast.setValue(getString(R.string.toast_pleaseSelectCurve));
                 return false;
             }*/
             // 3. 设置保存时间（当前时间）
@@ -299,11 +313,11 @@ public class ColoViewModel extends AndroidViewModel {
             // 4. 更新LiveData
             mLiveData_coloTestResult.setValue(result);
             DataRepository.getInstance().setColoTestResult(result);//保存到数据仓库
-            mLiveData_toast.setValue(mContext.getString(R.string.toast_tempSave_success));
+            mLiveData_toast.setValue(getString(R.string.toast_tempSave_success));
             return true;
         }catch (Exception e){
             Log.e(TAG,"暂存数据时发生异常", e);
-            setToast(mContext.getString(R.string.toast_tempSave_fail_exception));
+            setToast(getString(R.string.toast_tempSave_fail_exception));
             return false;
         }
     }

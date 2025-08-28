@@ -56,7 +56,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"/>
-
+            <TextView
+                android:id="@+id/tv_measureValue_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/measureValue_prompt_elec"
+                android:layout_marginTop="@dimen/dp_10"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -174,7 +179,8 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
                 <TextView
                     android:id="@+id/tv_resultValuePrompt"
                     android:layout_width="wrap_content"
