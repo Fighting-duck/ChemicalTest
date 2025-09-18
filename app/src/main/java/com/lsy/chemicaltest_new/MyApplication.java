@@ -161,7 +161,8 @@ public class MyApplication extends Application {
             curve.setMax_CO(10.0f);
             curve.setMinCorr(90.0f);
             // 1. 电信号曲线
-            curve.setName(sample.getName()+"-"+getString(R.string.elec)+"-标准直线");
+            String name_tail = "-标准曲线";
+            curve.setName(sample.getName()+"-"+getString(R.string.elec)+name_tail);
             curve.setType(1);
             curve.setPoint_set(pointIds_elec.toString());
             curve.setExpression(expression_elec.getK() + "," + expression_elec.getB());
@@ -169,7 +170,7 @@ public class MyApplication extends Application {
             curve.setDescription("一般而言，随着轻质石油中目标电活性成分浓度升高，检测电流呈线性或特定函数关系增强。");
             DATABASE_INSTANCE.getStandardCurveDao().add(curve);
             // 2. 比色曲线
-            curve.setName(sample.getName()+"-"+getString(R.string.colo)+"-标准直线");
+            curve.setName(sample.getName()+"-"+getString(R.string.colo)+name_tail);
             curve.setType(2);
             curve.setPoint_set(pointIds_colo.toString());
             curve.setExpression(expression_colo.getK() + "," + expression_colo.getB());
@@ -177,7 +178,7 @@ public class MyApplication extends Application {
             curve.setDescription("天然轻质石油颜色多样，常见为褐色、棕黄色等，其颜色主要由胶质、沥青质等含量决定，含量越高颜色越深。");
             DATABASE_INSTANCE.getStandardCurveDao().add(curve);
             // 3. 光热曲线
-            curve.setName(sample.getName()+"-"+getString(R.string.thermal)+"-标准直线");
+            curve.setName(sample.getName()+"-"+getString(R.string.thermal)+name_tail);
             curve.setType(3);
             curve.setPoint_set(pointIds_thermal.toString());
             curve.setExpression(expression_thermal.getK() + "," + expression_thermal.getB());

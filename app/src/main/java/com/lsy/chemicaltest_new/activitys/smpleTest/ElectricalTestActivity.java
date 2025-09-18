@@ -165,7 +165,7 @@ public class ElectricalTestActivity extends BaseActivity{
         mViewModel.getLiveData_MaxValue().observe(this, maxValue -> {
             if (maxValue!=null){
                 mBinding.tvMaxValue4.setText(maxValue.toString());
-                mViewModel.calculate_ElecCO();//使用电流计算浓度
+                mViewModel.calculateCO();//使用电流计算浓度
             }
             else
                 mBinding.tvMaxValue4.setText(getString(R.string.default_no));

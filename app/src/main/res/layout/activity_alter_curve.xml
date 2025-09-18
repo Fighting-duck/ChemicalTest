@@ -58,8 +58,8 @@
                     android:layout_weight="3"/>
                 <android.widget.Button
                     android:id="@+id/btn_export"
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     style="@style/ButtonStyle.Primary"
                     android:text="@string/curve_export"/>
             </LinearLayout>

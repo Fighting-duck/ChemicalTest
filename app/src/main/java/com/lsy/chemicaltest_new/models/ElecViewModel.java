@@ -17,6 +17,7 @@ import com.lsy.chemicaltest_new.domain.ElecTestResult;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
+import com.lsy.chemicaltest_new.utils.NumberUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -163,7 +164,7 @@ public class ElecViewModel extends ViewModel {
 
     public void setElecCurveAndCalculateCO(StandardCurve standardCurve) {
         mStandardCurve.setValue(standardCurve);
-        calculate_ElecCO(); // 计算出当前最大电流对应的浓度
+        calculateCO(); // 计算出当前最大电流对应的浓度
         // 病害分析
         diseaseAnalElec();
     }
@@ -207,13 +208,13 @@ public class ElecViewModel extends ViewModel {
      * 使用电流计算浓度
      * @return 对应浓度
      */
-    public void calculate_ElecCO(){
+    public void calculateCO(){
         StandardCurve curve = mStandardCurve.getValue();
         TestValue current = mMaxValue.getValue(); // 获取当前测试值 y
         if (curve != null && current!=null){
-            Float CO = curve.calculateX_toY(current.getValue());
-            mCOElec.setValue(CO);
-            noticeCO(CO,curve);
+            Float co = curve.calculateX_toY(current.getValue());
+            mCOElec.setValue(NumberUtils.roundCO(co));
+            noticeCO(co,curve);
         }
     }
     /***

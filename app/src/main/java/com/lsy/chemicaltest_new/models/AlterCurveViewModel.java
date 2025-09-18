@@ -86,6 +86,7 @@ public class AlterCurveViewModel extends ViewModel {
                         return;
                     }
                 }
+                Log.d(TAG, "AlterStandardCurve: newCurve:" + "无相同曲线名曲线");
                 // 2. 检查点集是否改变
                 List<Point> newPointList = newCurve.getPointList();
                 if (newPointList == null || newPointList.size() < 2) {
@@ -95,11 +96,13 @@ public class AlterCurveViewModel extends ViewModel {
                 }
                 // 3.1 如果点集未改变，直接更新曲线
                 if (newPointList.equals(mOldCurve.getPointList())) {
+                    Log.d(TAG, "AlterStandardCurve: newCurve:" + "点集无改变");
                     MyApplication.DATABASE_INSTANCE.getStandardCurveDao().update(newCurve);
                     setToast(mContext.getString(R.string.toast_update_success));
                     mLiveData_alterState.postValue(AlterState.SUCCESS);
                     return;
                 }
+                Log.d(TAG, "AlterStandardCurve: newCurve:" + "点集改变");
                 // 3.2 如果点集改变，则更新点集
                 List<Long> points_id = alterPoints(mOldCurve.getPointList(), newPointList);
                 if (points_id == null || points_id.isEmpty()) {

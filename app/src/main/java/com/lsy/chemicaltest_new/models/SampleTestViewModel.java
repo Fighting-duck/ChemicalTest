@@ -1,5 +1,7 @@
 package com.lsy.chemicaltest_new.models;
 
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -116,24 +118,29 @@ public class SampleTestViewModel extends ViewModel {
     /***
      * 可信度分析
      * 根据三个实验浓度相差值进行判断，返回一个Float类型的可信度
-     * @return 可信度
      */
-    public Float analyzeCredibility() {
+    public void analyzeCredibility() {
         if (mLiveData_history.getValue() == null)
-            return null;
+            return;
         if (mLiveData_history.getValue().getElecTestResult() == null ||
                 mLiveData_history.getValue().getColoTestResult() == null ||
                 mLiveData_history.getValue().getTemperature_elec() == null)
-            return null;
+            return;
 
         // 获取三种检测方法的浓度值
         Float co_elec = mLiveData_history.getValue().getElecTestResult().getDetectionCo();
         Float co_colo = mLiveData_history.getValue().getColoTestResult().getDetectionCo();
         Float co_temperature = mLiveData_history.getValue().getTemperature_elec().getDetectionCo();
 
+        Log.d(TAG, "co_elec: " + co_elec + ", co_colo: " + co_colo + ", co_temperature: " + co_temperature);
         // 检查是否有无效值（例如NaN或null）
         if (co_elec == null || co_colo == null || co_temperature == null) {
-            return null;
+            setToast(getString(R.string.toast_credibilityAnalysis_false));
+            return;
+        }
+        if (co_elec.isInfinite() || co_colo.isInfinite() || co_temperature.isInfinite()){
+            mLiveData_credibility.setValue(0.0f);
+            return;
         }
 
         // 为不同检测方法分配权重（根据方法可靠性确定）
@@ -156,7 +163,6 @@ public class SampleTestViewModel extends ViewModel {
         credibility = Math.max(0, Math.min(100, credibility));
 
         mLiveData_credibility.setValue(credibility);
-        return credibility;
     }
 
     public void setCredibility(Float credibility){

@@ -25,6 +25,7 @@ import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -341,7 +342,7 @@ public class CombinedChartUtils {
      */
     @SuppressLint({"SetTextI18n","DefaultLocale"})
     public static List<Float> build_FitLine(List<Entry> entries){
-        int N = entries.size();
+        final int N = entries.size();
         float sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 =0;
         for (Entry entry : entries) {
             float x = entry.getX();
@@ -352,15 +353,42 @@ public class CombinedChartUtils {
             sumX2 += x * x;
             sumY2 += y * y;
         }
-        float k = (N * sumXY - sumX * sumY) / (N * sumX2 - sumX * sumX);
+        final float denominator = (N * sumX2) - (sumX * sumX);
+        // 处理垂直线或数值不稳定情况
+        if (Math.abs(denominator) < 1e-6f) {
+            return Arrays.asList(Float.NaN, Float.NaN, 0f); // 返回无效标记
+        }
+        float k = (N * sumXY - sumX * sumY) / denominator;
         float b = (sumY - k * sumX) / N;
         // 计算相关系数 r
-        float r = (N * sumXY - sumX * sumY) / (float) Math.sqrt((N * sumX2 - sumX * sumX) * (N * sumY2 - sumY * sumY));
+        //float r = (N * sumXY - sumX * sumY) / (float) Math.sqrt((N * sumX2 - sumX * sumX) * (N * sumY2 - sumY * sumY));
+        float r = computeR(N, sumX, sumY, sumXY, sumX2, sumY2);
         List<Float> result = new ArrayList<>();
-        result.add(k);
-        result.add(b);
-        result.add(r);
+        result.add(NumberUtils.roundCurve_k_b_r( k));
+        result.add(NumberUtils.roundCurve_k_b_r( b));
+        result.add(NumberUtils.roundCurve_k_b_r( r));
         return result;
+    }
+
+    /**
+     * 安全计算Pearson相关系数（强制限制在[0,1]范围内）
+     */
+    private static float computeR(
+            int N, float sumX, float sumY,
+            float sumXY, float sumX2, float sumY2) {
+
+        float cov = (N * sumXY) - (sumX * sumY);
+        float varX = (N * sumX2) - (sumX * sumX);
+        float varY = (N * sumY2) - (sumY * sumY);
+        // 处理分母接近零的情况
+        if (varX <= 1e-6f || varY <= 1e-6f) {
+            return 0f;
+        }
+        // 计算结果并钳制到[0,1]范围
+        float r = cov / (float) Math.sqrt(varX * varY);
+        r = Math.min(1f, Math.max(-1f, r)); // 先限制到 [-1, 1]
+        r = Math.abs(r);                     // 转成 [0,1]
+        return r;
     }
 
     /***

@@ -183,6 +183,103 @@ public class StandardCurveFragment extends Fragment {
         // 设置联合图表数据到 CombinedChart
         mBinding.ccChart.setData(mCombinedData);
 
+        /**RecycleView**/
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext,2,GridLayoutManager.HORIZONTAL, false);
+        mPointsAdapter = new PointsAdapter(mContext, mViewModel,2);
+        mBinding.rvPoints.setLayoutManager(gridLayoutManager);
+        mBinding.rvPoints.setAdapter(mPointsAdapter);
+
+        GridLayoutManager gridLayoutManager_2 = new GridLayoutManager(mContext,1,GridLayoutManager.HORIZONTAL, false);
+        mPointListAdapter = new PointListAdapter(mContext, mViewModel);
+        mBinding.rvPointList.setLayoutManager(gridLayoutManager_2);
+        mBinding.rvPointList.setAdapter(mPointListAdapter);
+        DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
+        mBinding.rvPointList.addItemDecoration(decoration);
+
+        /**Listener**/
+        mBinding.edtYNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String str_yNumber = s.toString();
+                if (!str_yNumber.isEmpty()) {
+                    mPointsAdapter.alter_YNum(Integer.parseInt(str_yNumber));
+                }
+            }
+        });
+        mBinding.edtDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String description = s.toString();
+                mViewModel.setDescription(description);
+            }
+        });
+        mBinding.edtName.setOnFocusChangeListener(focusListener);
+        mBinding.edtYNumber.setOnFocusChangeListener(focusListener);
+        mBinding.edtXUnit.setOnFocusChangeListener(focusListener);
+        mBinding.edtYUnit.setOnFocusChangeListener(focusListener);
+        mBinding.edtMinX.setOnFocusChangeListener(focusListener);
+        mBinding.edtMaxX.setOnFocusChangeListener(focusListener);
+        mBinding.edtMinCORR.setOnFocusChangeListener(focusListener);
+        mBinding.btnPointAdd.setOnClickListener(this::onClick);
+        mBinding.btnSampleAdd.setOnClickListener(this::onClick);
+        mBinding.btnVerifyStandardSample.setOnClickListener(this::onClick);
+        mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
+        mBinding.edtY.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String str_y = s.toString();
+                if (!str_y.isEmpty()) {
+                    Float result = mViewModel.calculateCo_toY(Float.parseFloat(str_y));
+                    Log.d(TAG, "y:"+str_y+" x:"+result);
+                    if (result != null)
+                        mBinding.tvX.setText(String.valueOf(result));
+                    else
+                        mBinding.tvX.setText("");
+                }else mBinding.tvX.setText("");
+            }
+        });
+        mBinding.spTypeList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //String selectedItem = (String) parent.getItemAtPosition(position);
+                // 处理用户选择的选项
+                mViewModel.setType(position+1);
+                Log.d(TAG, "sample type: " + position+1);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        mBinding.spSampleList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = (String) parent.getItemAtPosition(position);
+                // 处理用户选择的选项
+                mViewModel.setCurveSample(position);
+                Log.d(TAG, "sample name: "+ position+ "," + selectedItem);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // 用户未选择任何选项时的处理
+            }
+        });
+
         /**ViewModel**/
         mViewModel.getLiveData_toast().observe(getViewLifecycleOwner(), toast -> {
             if (toast != null){
@@ -208,14 +305,12 @@ public class StandardCurveFragment extends Fragment {
         });
         mViewModel.getLiveData_sample().observe(getViewLifecycleOwner(), samplePosition -> {
             if (samplePosition == null) return;
-            int selection = Math.max(0, samplePosition); // 确保 selection 不会小于 0
-            mBinding.spSampleList.setSelection(selection);
+            // 填充曲线
+            mBinding.spSampleList.setSelection(Math.max(0, samplePosition));// 确保 selection 不会小于 0
         });
         mViewModel.getLiveData_curveType().observe(this, curveType -> {
             if(curveType == null) return;
-            int selection = Math.max(0, curveType - 1); // 确保 selection 不会小于 0
-            mBinding.spTypeList.setSelection(selection);
-            Log.d(TAG, "current curveType:"+curveType);
+            mBinding.spTypeList.setSelection(Math.max(0, curveType - 1));// 确保 selection 不会小于 0
             //设置获取标样数据按钮的文字
             switch (curveType){
                 case 1:
@@ -235,6 +330,7 @@ public class StandardCurveFragment extends Fragment {
                 mViewModel.restoreCurveName();
                 return;
             }
+            Log.d(TAG, "current curveName:"+curveName);
             mBinding.edtName.setText(curveName);
         });
         mViewModel.getLiveData_xUnit().observe(getViewLifecycleOwner(), xUnit -> {
@@ -333,102 +429,6 @@ public class StandardCurveFragment extends Fragment {
                 else {
                     mBinding.ivNoticeCorr.setImageResource(R.drawable.icon_notice_abnormal);
                 }
-            }
-        });
-
-        //RecycleView
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext,2,GridLayoutManager.HORIZONTAL, false);
-        mPointsAdapter = new PointsAdapter(mContext, mViewModel,2);
-        mBinding.rvPoints.setLayoutManager(gridLayoutManager);
-        mBinding.rvPoints.setAdapter(mPointsAdapter);
-
-        GridLayoutManager gridLayoutManager_2 = new GridLayoutManager(mContext,1,GridLayoutManager.HORIZONTAL, false);
-        mPointListAdapter = new PointListAdapter(mContext, mViewModel);
-        mBinding.rvPointList.setLayoutManager(gridLayoutManager_2);
-        mBinding.rvPointList.setAdapter(mPointListAdapter);
-        DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
-        mBinding.rvPointList.addItemDecoration(decoration);
-
-        //Listener
-        mBinding.edtYNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
-                String str_yNumber = s.toString();
-                if (!str_yNumber.isEmpty()) {
-                    mPointsAdapter.alter_YNum(Integer.parseInt(str_yNumber));
-                }
-            }
-        });
-        mBinding.edtDescription.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
-                String description = s.toString();
-                mViewModel.setDescription(description);
-            }
-        });
-        mBinding.edtName.setOnFocusChangeListener(focusListener);
-        mBinding.edtYNumber.setOnFocusChangeListener(focusListener);
-        mBinding.edtXUnit.setOnFocusChangeListener(focusListener);
-        mBinding.edtYUnit.setOnFocusChangeListener(focusListener);
-        mBinding.edtMinX.setOnFocusChangeListener(focusListener);
-        mBinding.edtMaxX.setOnFocusChangeListener(focusListener);
-        mBinding.edtMinCORR.setOnFocusChangeListener(focusListener);
-        mBinding.btnPointAdd.setOnClickListener(this::onClick);
-        mBinding.btnSampleAdd.setOnClickListener(this::onClick);
-        mBinding.btnVerifyStandardSample.setOnClickListener(this::onClick);
-        mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
-        mBinding.edtY.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                String str_y = s.toString();
-                if (!str_y.isEmpty()) {
-                    Float result = mViewModel.calculateCo_toY(Float.parseFloat(str_y));
-                    Log.d(TAG, "y:"+str_y+" x:"+result);
-                    if (result != null)
-                        mBinding.tvX.setText(String.valueOf(result));
-                    else
-                        mBinding.tvX.setText("");
-                }else mBinding.tvX.setText("");
-            }
-        });
-        mBinding.spTypeList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //String selectedItem = (String) parent.getItemAtPosition(position);
-                // 处理用户选择的选项
-                mViewModel.setType(position+1);
-                Log.d(TAG, "sample type: " + position+1);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        mBinding.spSampleList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = (String) parent.getItemAtPosition(position);
-                // 处理用户选择的选项
-                mViewModel.setCurveSample(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // 用户未选择任何选项时的处理
             }
         });
     }
@@ -627,10 +627,10 @@ public class StandardCurveFragment extends Fragment {
     }
 
    public void fillCurve(StandardCurve curve , Boolean isAutoCalculate){
-        mIsAutoCalculate = isAutoCalculate;
-        Log.d(TAG, "fillCurve: "+ curve);
-        mViewModel.setCurve(curve);
-        mIsAutoCalculate = true;
+       mIsAutoCalculate = isAutoCalculate;
+       Log.d(TAG, "fillCurve: "+ curve);
+       mViewModel.setCurve(curve);
+       mIsAutoCalculate = true;
    }
 
    public StandardCurve getCurve(){

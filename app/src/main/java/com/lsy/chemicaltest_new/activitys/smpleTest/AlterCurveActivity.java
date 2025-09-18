@@ -2,7 +2,6 @@ package com.lsy.chemicaltest_new.activitys.smpleTest;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -17,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
 import com.lsy.chemicaltest_new.database.DataRepository;
@@ -29,8 +27,6 @@ import com.lsy.chemicaltest_new.utils.ExportUtils;
 import com.lsy.chemicaltest_new.utils.StorageUtils;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -52,12 +48,14 @@ public class AlterCurveActivity extends BaseActivity implements EasyPermissions.
         mViewModel = new ViewModelProvider(this).get(AlterCurveViewModel.class);
         mViewModel.setContext(this);
         setContentView(mBinding.getRoot());
-        initUI();
+
         //添加另一个布局
         mFragment = new StandardCurveFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fcv_CurveFragment, mFragment);
         transaction.commit();
+
+        initUI();
     }
 
     @Override
@@ -71,7 +69,8 @@ public class AlterCurveActivity extends BaseActivity implements EasyPermissions.
         Log.d(TAG, "onResume");
         StandardCurve curve = DataRepository.getInstance().getStandardCurve();
         if (curve != null){
-            mViewModel.setOldCurve(curve);
+            mViewModel.setOldCurve(new StandardCurve(curve));// 保存旧曲线
+            Log.d(TAG, "onResume oldCurve: " + curve);
             mFragment.fillCurve(curve,false);
         }
     }

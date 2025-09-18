@@ -1,17 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ChemicalTest_new" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
-        <!-- 确保状态栏可见性 -->
-        <item name="android:windowFullscreen">false</item>
-
-        <!-- 状态栏显式控制 -->
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
-        <!-- 针对不同安卓版本的兼容设置 -->
-        <item name="android:fitsSystemWindows">true</item>
-
+    <style name="Theme.ChemicalTest_new" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <!--工具栏和状态栏-->
         <item name="colorPrimary">@color/bottom_nav_dark</item>

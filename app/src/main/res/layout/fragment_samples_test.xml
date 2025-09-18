@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".fragments.SampleTestFragment">
     <ScrollView
         android:layout_width="match_parent"
@@ -13,10 +14,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background"
             android:padding="10dp"
-            android:textSize="14sp"
-            >
+            android:textSize="14sp">
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

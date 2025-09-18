@@ -16,6 +16,7 @@ import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.interfaces.OperateCurve;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
+import com.lsy.chemicaltest_new.utils.NumberUtils;
 import com.lsy.chemicaltest_new.utils.TimeUtil;
 
 import java.util.ArrayList;
@@ -304,7 +305,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
      * @param id  id
      * @return 位置
      */
-    private Integer getSamplePositionById(Integer id){
+    public Integer getSamplePositionById(Integer id){
         List<Sample> sampleList = mLiveData_sampleList.getValue();
         if (sampleList == null) return null;
         for (int i = 0; i < sampleList.size(); i++){
@@ -408,7 +409,8 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (point == null){
             point = new Point();
         }
-        point.setX_value((float) Math.log10(x));//对x取对数
+        float lgX = (float) Math.log10(x);
+        point.setX_value(NumberUtils.roundCurve_lgX_avgY(lgX));//对x取对数
         mLiveData_Point.setValue(point);
     }
 
@@ -422,7 +424,8 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (point == null){
             point = new Point();
         }
-        point.setY_value(y.floatValue());
+        float avgY = y.floatValue();
+        point.setY_value(NumberUtils.roundCurve_lgX_avgY(avgY));
         mLiveData_Point.setValue(point);
     }
 
@@ -591,6 +594,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
      * 更新样品列表
      */
     public void updateSampleList(){
+        Log.d(TAG, "更新样品列表");
         List<Sample> sampleList = MyApplication.DATABASE_INSTANCE.getSampleDao().getAll_Available();
         mLiveData_sampleList.setValue(sampleList);
     }

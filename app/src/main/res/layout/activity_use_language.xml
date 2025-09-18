@@ -45,8 +45,7 @@
             android:layout_height="50dp"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/language_round_selector"
-            android:layout_marginTop="10dp">
+            android:background="@drawable/language_round_selector">
             <ImageView
                 android:id="@+id/iv_selectCH"
                 android:layout_width="20dp"

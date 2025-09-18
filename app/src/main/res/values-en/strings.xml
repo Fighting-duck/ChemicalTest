@@ -52,7 +52,8 @@
     <string name="measureValue_connection_true">Yes</string>
     <string name="measureValue_connection_false">No</string>
     <string name="measureValue_returnResults">Return Data</string>
-    <string name="measureValue_prompt">Select "DC Current" (DCmA/DCuA) or Temp. (℃)</string>
+    <string name="measureValue_prompt_elec">Select "DC Current" (DCmA/DCuA)</string>
+    <string name="measureValue_prompt_temperature">Select Temp. (℃)</string>
     <string name="text_current_gear">Current Gear:</string>
     <string name="text_mileage">Range:</string>
     <string name="text_RealTime_value">Real-Time Value:</string>
@@ -366,6 +367,7 @@
     <string name="toast_elec_noResult">The measured value does not exist</string>
     <string name="toast_elec_temperatureChange">Temperature changes</string>
     <string name="toast_color_too_much">Many colors in the box selection area affect color accuracy</string>
+    <string name="toast_testing_gearChange">Measurement in progress, gear change, measurement failure</string>
     <string name="toast_sample_getSamples_fail">Failed to retrieve sample information</string>
     <string name="toast_sample_name_empty">Sample name cannot be empty</string>
     <string name="toast_sample_refresh_fail">Failed to update sample</string>

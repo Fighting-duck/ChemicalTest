@@ -54,6 +54,7 @@
     <string name="measureValue_returnResults">返回数据</string>
     <string name="measureValue_prompt_elec">档位请选择“直流电流档”(DCmA或DCuA)</string>
     <string name="measureValue_prompt_temperature">档位请选择温度档(℃/℉)</string>
+
     <string name="text_current_gear">当前挡位:</string>
     <string name="text_mileage">里程:</string>
     <string name="text_RealTime_value">实时测量值:</string>

@@ -20,6 +20,7 @@ import com.lsy.chemicaltest_new.domain.HSV;
 import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
+import com.lsy.chemicaltest_new.utils.NumberUtils;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -236,9 +237,9 @@ public class ColoViewModel extends AndroidViewModel {
     public void calculateCO(int blue){
         StandardCurve curve = mLiveData_curve.getValue();
         if (curve != null) {
-            Float CO = curve.calculateX_toY((float) blue);
-            mLiveData_CO.setValue(CO);
-            noticeCO(CO,curve);
+            Float co = curve.calculateX_toY((float) blue);
+            mLiveData_CO.setValue(NumberUtils.roundCO(co));
+            noticeCO(co,curve);
         }
     }
 

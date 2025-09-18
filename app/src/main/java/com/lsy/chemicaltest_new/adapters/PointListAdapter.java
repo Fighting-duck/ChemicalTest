@@ -95,10 +95,11 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.View
         if (point!=null){
             holder.tv_x.setText(String.valueOf(mPointList.get(position).getX_value()));
             holder.tv_y.setText(String.valueOf(mPointList.get(position).getY_value()));
-            String[] addTime = mPointList.get(position).getAdd_time().split(" ");
+            /*String[] addTime = mPointList.get(position).getAdd_time().split(" ");
             if (addTime.length >= 2){
                 holder.tv_addTime.setText(addTime[1]);
-            }
+            }*/
+            holder.tv_addTime.setText(mPointList.get(position).getAdd_time());
         }
     }
 

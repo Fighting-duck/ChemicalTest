@@ -183,7 +183,7 @@ public class SampleTestFragment extends Fragment {
             if (cred == null)
                 mBinding.tvCredibility.setText(getString(R.string.default_no));
             else
-                mBinding.tvCredibility.setText(String.valueOf(cred));
+                mBinding.tvCredibility.setText(cred +" %");
         });
     }
     private void onClick(View view){
@@ -208,9 +208,7 @@ public class SampleTestFragment extends Fragment {
             mContext.startActivity(intent);
         }
         else if (view.getId() == mBinding.btnCredibilityAnalysis.getId()){
-            if (mViewModel.analyzeCredibility()==null){
-                mViewModel.setToast(getString(R.string.toast_credibilityAnalysis_false));
-            }
+            mViewModel.analyzeCredibility();
         }
         else if (view.getId() == mBinding.btnSaveAll.getId()) {
             if (elecTestResult == null && temperatureElec == null && coloTestResult == null && thermalTestResult == null){

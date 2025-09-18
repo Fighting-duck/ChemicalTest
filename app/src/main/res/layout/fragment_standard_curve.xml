@@ -238,8 +238,9 @@
             style="@style/text_thirdTitle"/>
         <TextView
             android:id="@+id/tv_x_average"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="70dp"
             android:background="@color/background_border_2"
             android:layout_marginStart="10dp"/>
 
