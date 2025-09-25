@@ -4,7 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-
+/**
+ * 描述：曲线方程
+ * 作者：LSY
+ * 时间：2021/12/23
+ *
+ * Y = k * lgX + b
+ */
 public class Expression implements Parcelable {
     private Float k;
     private Float b;
@@ -37,7 +43,7 @@ public class Expression implements Parcelable {
      * @return x值（浓度）
      */
     public Float calculateX_toY(Float y) {
-        return (float) Math.pow(10,(y - b) / k);
+        return (float) Math.pow(10,(y - b) / k);// y = k * lg(x) + b
     }
 
     public Float getK() {

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.room.Transaction;
 
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
@@ -647,5 +648,66 @@ public class HistoryViewModel extends ViewModel {
             Collections.reverse(histories);
             LiveDataUtils.safeUpdate(mLiveData_histories, histories);
         });
+    }
+
+    // 定义一个回调接口
+    public interface DeleteHistoryCallback {
+        void onDeleteSuccess();
+        void onDeleteFailure(Exception e);
+    }
+    /***
+     * 删除历史记录
+     * @param callback 回调接口
+     */
+    @Transaction
+    public void deleteHistories(List<History_multiple> histories,@NonNull HistoryPreviewViewModel.DeleteHistoryCallback callback) {
+        // 参数检验
+        Objects.requireNonNull(histories, "histories cannot be null");
+        Objects.requireNonNull(callback, "Callback cannot be null");
+
+        final  UUID taskId = UUID.randomUUID();
+        Future<?> future = MyApplication.DB_EXECUTOR.submit(() -> {
+            try{
+                for (History_multiple history_multiple : histories){
+                    // 0.删除历史记录
+                    MyApplication.DATABASE_INSTANCE.getHistory_multipleDao().delete(history_multiple);//删除
+                    // 1.删除万用表检测电流历史记录
+                    if (history_multiple.getElec_id() != null) {
+                        MyApplication.DATABASE_INSTANCE.getElecTestResultDao().deleteById(history_multiple.getElec_id());
+                    }
+                    // 2.删除万用表检测温度历史记录
+                    if (history_multiple.getDegree_id() != null) {
+                        MyApplication.DATABASE_INSTANCE.getElecTemperatureDao().deleteById(history_multiple.getDegree_id());
+                    }
+                    // 3.删除比色图像检测历史记录
+                    if (history_multiple.getColo_id() != null && history_multiple.getColoTestResult()!=null) {
+                        // 删除原始图像
+                        String originalImage_path = history_multiple.getColoTestResult().getOriginalImage_path();
+                        if (originalImage_path != null) PhotoUtil.deleteImage(originalImage_path);
+                        // 删除裁剪图像
+                        String cropImage_path = history_multiple.getColoTestResult().getCropImage_path();
+                        if (cropImage_path != null) PhotoUtil.deleteImage(cropImage_path);
+                        // 删除数据库记录
+                        MyApplication.DATABASE_INSTANCE.getColoTestResultDao().deleteById(history_multiple.getColo_id());
+                    }
+                    // 4.删除热力图像检测历史记录
+                    if (history_multiple.getThermal_id() != null && history_multiple.getThermalTestResult()!=null) {
+                        // 删除图像
+                        String path = history_multiple.getThermalTestResult().getThermalBitmap_path();
+                        if (path != null) PhotoUtil.deleteImage(path);
+                        // 删除数据库记录
+                        MyApplication.DATABASE_INSTANCE.getThermalTestResultDao().deleteById(history_multiple.getThermal_id());
+                    }
+                }
+                MyApplication.INSTANCE.setUpdateHistory(true);
+                callback.onDeleteSuccess();
+                pendingTasks.remove(taskId);
+            }catch (Exception e){
+                MyApplication.DATABASE_INSTANCE.endTransaction();
+                callback.onDeleteFailure(e);
+                pendingTasks.remove(taskId);
+            }
+        });
+        pendingTasks.put(taskId, future);
     }
 }

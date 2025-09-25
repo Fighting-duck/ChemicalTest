@@ -29,6 +29,7 @@ import com.lsy.chemicaltest_new.fragments.ConnectMultimeterFragment;
 import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;
 import com.lsy.chemicaltest_new.models.ElecViewModel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -206,6 +207,11 @@ public class ElectricalTestActivity extends BaseActivity{
         mViewModel.getLiveData_ElecTestResult().observe(this, elecTestResult -> {
             if (elecTestResult!=null)
                 Log.d(TAG, "elecTestResult:"+elecTestResult.toString());
+        });
+        mViewModel.getLiveData_confidenceInterval().observe(this, confidenceInterval -> {
+            if (confidenceInterval.length == 2){
+                mBinding.tvConfidenceInterval.setText(Arrays.toString(confidenceInterval));
+            }
         });
     }
 

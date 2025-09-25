@@ -13,18 +13,22 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Transaction;
 
+import com.github.mikephil.charting.data.Entry;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.HSV;
+import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import com.lsy.chemicaltest_new.utils.NumberUtils;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ColoViewModel extends AndroidViewModel {
@@ -38,6 +42,7 @@ public class ColoViewModel extends AndroidViewModel {
     MutableLiveData<HSV> mLiveData_hsv = new MutableLiveData<>();
     MutableLiveData<Float> mLiveData_CO = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_diseaseAnal = new MutableLiveData<>();
+    MutableLiveData<float[]> mLiveData_confidenceInterval = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
     public MutableLiveData<String> getLiveData_toast(){
@@ -70,6 +75,9 @@ public class ColoViewModel extends AndroidViewModel {
     }
     public MutableLiveData<Float> getLiveData_CO(){
         return mLiveData_CO;
+    }
+    public MutableLiveData<float[]> getLiveData_confidenceInterval(){
+        return mLiveData_confidenceInterval;
     }
     public MutableLiveData<String> getLiveData_diseaseAnal(){
         return mLiveData_diseaseAnal;
@@ -240,6 +248,7 @@ public class ColoViewModel extends AndroidViewModel {
             Float co = curve.calculateX_toY((float) blue);
             mLiveData_CO.setValue(NumberUtils.roundCO(co));
             noticeCO(co,curve);
+            calculateConfidenceInterval(curve, (float) blue);
         }
     }
 
@@ -334,6 +343,30 @@ public class ColoViewModel extends AndroidViewModel {
         Bitmap crop = mLiveData_cropImage.getValue();
         if (original != null && !original.isRecycled()) original.recycle();
         if (crop != null && !crop.isRecycled()) crop.recycle();
+    }
+    /***
+     * 计算置信区间
+     */
+    public void calculateConfidenceInterval(StandardCurve curve,Float bValue){
+        // 输入参数校验
+        if (curve == null || bValue == null) {
+            Log.w(TAG, "计算置信区间失败：标准曲线或b值为空");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        List<Point> pointList = StandardCurve.getPointList(curve.getPoint_set());
+        List<Entry> entries = Point.pointList_to_entryList(pointList);
+        CombinedChartUtils.LinearRegressionResult linearRegressionResult = CombinedChartUtils.build_FitLine(entries);
+        float[] interval_lgx = linearRegressionResult.inversePredictInterval(bValue);//逆预测,lgx值置信区间
+        if (interval_lgx == null || interval_lgx.length != 2) {
+            Log.w(TAG, "计算置信区间失败：逆预测结果格式不正确");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        float[] interval_x = new float[2];// X值置信区间
+        interval_x[0] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[0]));
+        interval_x[1] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[1]));
+        mLiveData_confidenceInterval.setValue(interval_x);
     }
 
     public boolean clearAll() {

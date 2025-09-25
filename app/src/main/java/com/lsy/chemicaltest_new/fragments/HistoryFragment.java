@@ -1,7 +1,9 @@
 package com.lsy.chemicaltest_new.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,7 +31,11 @@ import com.lsy.chemicaltest_new.adapters.HistoryAdapter;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentHistoryBinding;
 import com.lsy.chemicaltest_new.domain.History_multiple;
+import com.lsy.chemicaltest_new.models.HistoryPreviewViewModel;
 import com.lsy.chemicaltest_new.models.HistoryViewModel;
+import com.lsy.chemicaltest_new.utils.ExportUtils;
+import com.lsy.chemicaltest_new.utils.PermissionManager;
+import com.lsy.chemicaltest_new.utils.StorageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +54,7 @@ public class HistoryFragment extends Fragment {
     private List<String> mDateList = new ArrayList<>();
     private List<String> mDSampleList = new ArrayList<>();
     ExecutorService cachedThreadPool = Executors.newCachedThreadPool();//java线程池
-
+    private PermissionManager mPermissionManager;
     private final Handler handler = new Handler();
     private final Runnable searchRunnable = new Runnable() {
         @Override
@@ -132,20 +140,57 @@ public class HistoryFragment extends Fragment {
         mBinding = null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initUI() {
+        // 初始化 PermissionManager
+        mPermissionManager = new PermissionManager(
+                getActivity(),
+                new PermissionManager.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        List<History_multiple> historyList = mHistoryAdapter.getSelectedItems();
+                        if (!historyList.isEmpty()){
+                            for (History_multiple history : mHistoryAdapter.getSelectedItems()){
+                                //填充曲线数据 曲线名+曲线公式
+                                mViewModel.setPreviewHistory(history, new HistoryViewModel.CheckHistoryCallback() {
+                                    @Override
+                                    public void onUpdateSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onUpdateFailure(Exception e) {
+
+                                    }
+                                });
+                            }
+                            // 权限已授予，执行导出操作
+                            ExportUtils.exportHistoriesToExcel(mContext, mHistoryAdapter.getSelectedItems());
+                        }
+                    }
+                    @Override
+                    public void onPermissionDenied() {
+                        // 权限被拒绝，可以在这里处理
+                    }
+                },
+                R.string.toast_permission_write_storage_deny,
+                R.string.toast_permission_write_storage_deny,
+                R.string.permission_dialog_title,
+                R.string.permission_dialog_rational_writeStorage
+        );
         // 初始化历史记录列表
-        mHistoryAdapter = new HistoryAdapter();
+        mHistoryAdapter = new HistoryAdapter(mContext);
         mBinding.rvHistory.setLayoutManager(new LinearLayoutManager(mContext));
         mBinding.rvHistory.setAdapter(mHistoryAdapter);
-        mHistoryAdapter.setOnViewClickListener(history -> {
+        mHistoryAdapter.setEditClickListener(position -> {
+            History_multiple history_multiple = mHistoryAdapter.getCurrentList().get(position);
             //跳转到历史预览界面
             Intent intent = new Intent(mContext, HistoryPreviewActivity.class);
-
-            mViewModel.setPreviewHistory(history, new HistoryViewModel.CheckHistoryCallback() {
+            mViewModel.setPreviewHistory(history_multiple, new HistoryViewModel.CheckHistoryCallback() {
                 @Override
                 public void onUpdateSuccess() {
-                    Log.d(TAG, "预览历史："+history.toString());
-                    DataRepository.getInstance().setHistory_multiple(history);
+                    Log.d(TAG, "预览历史："+history_multiple.toString());
+                    DataRepository.getInstance().setHistory_multiple(history_multiple);
                     mContext.startActivity(intent);
                 }
 
@@ -154,6 +199,18 @@ public class HistoryFragment extends Fragment {
                     mViewModel.setToast(getString(R.string.toast_curve_loadData_fail));
                 }
             });
+        });
+        mHistoryAdapter.setOnMultiSelectListener((isMultiSelectMode,selectedCount) -> {
+            if (isMultiSelectMode){
+                Log.d(TAG+" MultiSelect", "打开多选模式");
+                mBinding.llMultiSelect.setVisibility(View.VISIBLE);
+                mBinding.tvBack.setVisibility(View.VISIBLE);
+            }
+            else {
+                Log.d(TAG+" MultiSelect", "关闭多选模式");
+                mBinding.llMultiSelect.setVisibility(View.GONE);
+                mBinding.tvBack.setVisibility(View.GONE);
+            }
         });
         //初始化时间下拉框列表   给下拉框创建适配器
         mSpinnerAdapter_data = new ArrayAdapter<String>(mContext, R.layout.spinner_selected_item, mDateList);
@@ -260,15 +317,19 @@ public class HistoryFragment extends Fragment {
                 mViewModel.setToast(null);
             }
         });
+        mBinding.btnDelete.setOnClickListener(this::onClick);
+        mBinding.btnExport.setOnClickListener(this::onClick);
+        mBinding.tvBack.setOnClickListener(this::onClick);
+
         mViewModel.getLiveData_histories().observe(getViewLifecycleOwner(),history_multiples -> {
             if (history_multiples != null && !history_multiples.isEmpty()) {
-                mBinding.tvHistoryTotalNUm.setText(String.valueOf(history_multiples.size()));
+                mBinding.tvHistoryTotalNUm.setText(String.valueOf(history_multiples.size()));//历史总数
                 mBinding.emptyTextView.setVisibility(View.GONE);
                 mBinding.rvHistory.setVisibility(View.VISIBLE);
-                mHistoryAdapter.update(history_multiples);
+                mHistoryAdapter.submitList(history_multiples);//列表显示数据
+                mHistoryAdapter.notifyDataSetChanged();
             }
             else {
-                mHistoryAdapter.clear();
                 Log.e(TAG, "No data available");
                 mBinding.emptyTextView.setVisibility(View.VISIBLE);
                 mBinding.rvHistory.setVisibility(View.GONE);
@@ -323,5 +384,54 @@ public class HistoryFragment extends Fragment {
             if (isAscend == null) return;
             mViewModel.reverseHistory();
         });
+    }
+
+    private void onClick(View view) {
+        int id = view.getId();
+        if (id == mBinding.btnDelete.getId()) {
+            //弹框提示是否删除
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(getString(R.string.dialog_deleteCurve_title));
+            builder.setMessage(getString(R.string.dialog_deleteCurve_message));
+            builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    List<History_multiple> deleteHistories = mHistoryAdapter.getSelectedItems();
+                    mHistoryAdapter.deleteSelectedItems();
+                    if (deleteHistories.isEmpty()) return;
+                    mViewModel.deleteHistories(deleteHistories, new HistoryPreviewViewModel.DeleteHistoryCallback() {
+                        @Override
+                        public void onDeleteSuccess() {
+                            mViewModel.setToast(getString(R.string.toast_delete_success));
+                        }
+
+                        @Override
+                        public void onDeleteFailure(Exception e) {
+                            e.printStackTrace();
+                            mViewModel.setToast(getString(R.string.toast_delete_fail));
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton(getString(R.string.dialog_negative), null);
+            builder.create().show();
+        }
+        else if (id == mBinding.btnExport.getId()){
+            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
+        }
+        else if (id == mBinding.tvBack.getId()) {
+            mHistoryAdapter.exitMultiSelectMode();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionManager.handleRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

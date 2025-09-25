@@ -3,6 +3,7 @@ package com.lsy.chemicaltest_new.domain;
 import static com.blankj.utilcode.util.StringUtils.getString;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -296,5 +297,16 @@ public class History_multiple implements Serializable {
         else result += ", temperature_elec=null";
         result += '}';
         return result;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) return false;
+
+        if (obj.getClass() != this.getClass()) return false;
+        else {
+            History_multiple history_multiple = (History_multiple) obj;
+            return this.id == history_multiple.getId();
+        }
     }
 }

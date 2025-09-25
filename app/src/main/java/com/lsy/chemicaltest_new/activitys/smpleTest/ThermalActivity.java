@@ -30,6 +30,7 @@ import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;
 import com.lsy.chemicaltest_new.models.ThermalViewModel;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -212,6 +213,11 @@ public class ThermalActivity extends BaseActivity implements EasyPermissions.Per
         });
         mViewModel.getLiveData_Temperature_Elec().observe(this, testResult->{
 
+        });
+        mViewModel.getLiveData_confidenceInterval().observe(this, confidenceInterval ->{
+            if (confidenceInterval!=null){
+                mBinding.tvConfidenceInterval.setText(Arrays.toString(confidenceInterval));
+            }
         });
     }
 

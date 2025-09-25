@@ -10,12 +10,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.room.Transaction;
 
+import com.github.mikephil.charting.data.Entry;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
+import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.TestValue;
+import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import com.lsy.chemicaltest_new.utils.NumberUtils;
 
@@ -34,6 +37,8 @@ public class ElecViewModel extends ViewModel {
     MutableLiveData<Float> mCOElec = new MutableLiveData<>();//电信号 浓度
     MutableLiveData<String> mDiseaseAnal = new MutableLiveData<>();//电信号 病害分析
     MediatorLiveData<ElecTestResult> mElecTestResult = new MediatorLiveData<>();//电信号检测结果综合
+
+    MutableLiveData<float[]> mLiveData_confidenceInterval = new MutableLiveData<>();//预测浓度置信区间[a,b]
     //其它
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
@@ -58,6 +63,9 @@ public class ElecViewModel extends ViewModel {
     }
     public MediatorLiveData<ElecTestResult> getLiveData_ElecTestResult() {
         return mElecTestResult;
+    }
+    public MutableLiveData<float[]> getLiveData_confidenceInterval(){
+        return mLiveData_confidenceInterval;
     }
     public MutableLiveData<String> getLiveData_toast(){
         return mLiveData_toast;
@@ -214,7 +222,8 @@ public class ElecViewModel extends ViewModel {
         if (curve != null && current!=null){
             Float co = curve.calculateX_toY(current.getValue());
             mCOElec.setValue(NumberUtils.roundCO(co));
-            noticeCO(co,curve);
+            noticeCO(co,curve); //    通知CO值是否属于正常范围
+            calculateConfidenceInterval(curve,current.getValue());// 计算浓度置信区间
         }
     }
     /***
@@ -246,6 +255,31 @@ public class ElecViewModel extends ViewModel {
            return diseaseAnal;
        }
         return null;
+    }
+
+    /***
+     * 计算置信区间
+     */
+    public void calculateConfidenceInterval(StandardCurve curve,Float current){
+        // 输入参数校验
+        if (curve == null || current == null) {
+            Log.w(TAG, "计算置信区间失败：标准曲线或电流值为空");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        List<Point> pointList = StandardCurve.getPointList(curve.getPoint_set());
+        List<Entry> entries = Point.pointList_to_entryList(pointList);
+        CombinedChartUtils.LinearRegressionResult linearRegressionResult = CombinedChartUtils.build_FitLine(entries);
+        float[] interval_lgx = linearRegressionResult.inversePredictInterval(current);//逆预测,lgx值置信区间
+        if (interval_lgx == null || interval_lgx.length != 2) {
+            Log.w(TAG, "计算置信区间失败：逆预测结果格式不正确");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        float[] interval_x = new float[2];// X值置信区间
+        interval_x[0] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[0]));
+        interval_x[1] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[1]));
+        mLiveData_confidenceInterval.setValue(interval_x);
     }
 
     @Transaction

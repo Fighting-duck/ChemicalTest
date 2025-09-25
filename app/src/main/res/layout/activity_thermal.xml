@@ -211,6 +211,23 @@
                     android:layout_weight="1"/>
             </LinearLayout>
             <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_confidenceInterval_predicted"
+                    style="@style/text_thirdTitle"/>
+                <TextView
+                    android:id="@+id/tv_confidenceInterval"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no"
+                    android:layout_marginStart="10dp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

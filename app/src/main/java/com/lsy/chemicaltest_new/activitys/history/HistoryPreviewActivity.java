@@ -28,21 +28,23 @@ import com.lsy.chemicaltest_new.fragments.ComprehensiveTestResultFragment;
 import com.lsy.chemicaltest_new.models.HistoryPreviewViewModel;
 import com.lsy.chemicaltest_new.utils.ExportUtils;
 import com.lsy.chemicaltest_new.databinding.ActivityHistoryPreviewBinding;
+import com.lsy.chemicaltest_new.utils.PermissionManager;
 import com.lsy.chemicaltest_new.utils.StorageUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class HistoryPreviewActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks{
+public class HistoryPreviewActivity extends BaseActivity{
     private static final String TAG = "HistoryPreviewActivity";
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 100;
-    private static final int MY_PERMISSIONS_REQUEST_MANAGE_STORAGE = 10;
     private ActivityHistoryPreviewBinding mBinding;
     private Context mContext;
     private HistoryPreviewViewModel mViewModel;
     private ComprehensiveTestResultFragment mFragment;
+
+    private PermissionManager mPermissionManager;
 
 
     @Override
@@ -77,7 +79,27 @@ public class HistoryPreviewActivity extends BaseActivity implements EasyPermissi
     }
     @SuppressLint("SetTextI18n")
     private void initUI() {
-
+        // 初始化 PermissionManager
+        mPermissionManager = new PermissionManager(
+                this,
+                new PermissionManager.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        List<History_multiple> historyMultiples = new ArrayList<>();
+                        historyMultiples.add(mViewModel.getHistory());
+                        // 权限已授予，执行导出操作
+                        ExportUtils.exportHistoriesToExcel(mContext,historyMultiples);
+                    }
+                    @Override
+                    public void onPermissionDenied() {
+                        // 权限被拒绝，可以在这里处理
+                    }
+                },
+                R.string.toast_permission_write_storage_deny,
+                R.string.toast_permission_write_storage_deny,
+                R.string.permission_dialog_title,
+                R.string.permission_dialog_rational_writeStorage
+        );
         mBinding.ivBack.setOnClickListener(view -> finish());
         mBinding.btnDelete.setOnClickListener(this::onClick);
         mBinding.ivExport.setOnClickListener(this::onClick);
@@ -134,90 +156,17 @@ public class HistoryPreviewActivity extends BaseActivity implements EasyPermissi
             builder.create().show();
         }
         else if (view.getId() == mBinding.ivExport.getId()) {
-            if (StorageUtils.hasEnoughSpace(50)){
-                requestPermissionsAndExport();
-            }
-            else
-                mViewModel.setToast(getString(R.string.toast_insufficientSspace));
+            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
         }
     }
-    //请求权限并导出
-    private void requestPermissionsAndExport() {
-        // 检查是否已拥有权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 10 及以上版本，使用分区存储
-            if (Environment.isExternalStorageManager()) {
-                // 已授予管理所有文件的权限
-                ExportUtils.exportHistoryToExcel(this,mViewModel.getLiveData_history().getValue());
-            } else {
-                // 请求管理所有文件的权限
-                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                startActivityForResult(intent, MY_PERMISSIONS_REQUEST_MANAGE_STORAGE);
-            }
-        } else {
-            // Android 10 以下版本，使用传统存储权限
-            if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // 权限已授予，执行导出操作
-                ExportUtils.exportHistoryToExcel(this,mViewModel.getLiveData_history().getValue());
-            } else {
-                // 请求权限
-                EasyPermissions.requestPermissions(
-                        this,
-                        getString(R.string.toast_permission_write_storage),  // 权限被拒绝,  // 权限请求的解释说明
-                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                );
-            }
-        }
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MY_PERMISSIONS_REQUEST_MANAGE_STORAGE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    // 权限已授予，执行导出操作
-                    ExportUtils.exportHistoryToExcel(this,mViewModel.getLiveData_history().getValue());
-                } else {
-                    // 权限被拒绝，提示用户
-                    Toast.makeText(this,
-                            getString(R.string.toast_permission_write_storage_deny),
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
+        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 使用 EasyPermissions 处理权限请求的结果
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        // 权限被授予
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            ExportUtils.exportHistoryToExcel(this,mViewModel.getLiveData_history().getValue());  // 执行导出操作
-        }
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-    // 权限被拒绝
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            Toast.makeText(this, getString(R.string.toast_permission_write_storage_deny), Toast.LENGTH_SHORT).show();
-            // 如果用户永久拒绝了权限，可以提示用户手动开启权限
-            if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-                new AppSettingsDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setRationale(getString(R.string.permission_dialog_rational_writeStorage))
-                        .setPositiveButton(getString(R.string.permission_dialog_positive))
-                        .setNegativeButton(getString(R.string.permission_dialog_negative))
-                        .build()
-                        .show();
-            }
-        }
+        mPermissionManager.handleRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

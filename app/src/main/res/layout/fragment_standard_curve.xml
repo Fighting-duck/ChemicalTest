@@ -294,7 +294,8 @@
             android:layout_height="wrap_content"
             android:minWidth="70dp"
             android:maxWidth="110dp"
-            android:background="@color/background_border_2"/>
+            android:background="@color/background_border_2"
+            android:layout_marginStart="5dp"/>
         <ImageView
             android:id="@+id/iv_notice_Corr"
             android:layout_width="15dp"
@@ -302,9 +303,30 @@
             android:contentDescription="@string/curve_CORR"
             android:src="@drawable/icon_notice_abnormal"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="5dp"
             android:visibility="gone"
             style="@style/text_thirdTitle"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/curve_MSE"
+            style="@style/text_thirdTitle"/>
+        <TextView
+            android:id="@+id/tv_mse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="70dp"
+            android:maxWidth="110dp"
+            android:background="@color/background_border_2"
+            android:layout_marginStart="5dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -362,7 +384,7 @@
         <EditText
             android:id="@+id/edt_y"
             android:background="@color/white"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="70dp"
@@ -384,5 +406,41 @@
             android:textSize="18sp"
             android:background="@color/white"
             android:layout_marginStart="10dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/curve_lgX"
+            android:layout_marginStart="20dp"/>
+        <TextView
+            android:id="@+id/tv_lgX_2"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="70dp"
+            android:maxWidth="120dp"
+            android:textSize="18sp"
+            android:background="@color/white"
+            android:layout_marginStart="10dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginTop="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/curve_ConfidenceInterval" />
+        <TextView
+            android:id="@+id/tv_ConfidenceInterval"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="70dp"
+            android:textSize="18sp"
+            android:background="@color/white" />
     </LinearLayout>
 </LinearLayout>

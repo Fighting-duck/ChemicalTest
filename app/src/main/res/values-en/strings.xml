@@ -89,7 +89,8 @@
     <string name="curve_GetTemperature">Get Temperature</string>
     <string name="curve_GetB">Get Blue Value</string>
     <string name="curve_point_add">Add</string>
-    <string name="curve_CORR">Correlation Coefficient:</string>
+    <string name="curve_CORR">R:</string>
+    <string name="curve_MSE">MSE:</string>
     <string name="curve_expression">Formula:</string>
     <string name="curve_description">Notes:</string>
     <string name="curve_calculate">Calculate</string>

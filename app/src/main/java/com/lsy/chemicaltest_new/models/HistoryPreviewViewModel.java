@@ -37,6 +37,10 @@ public class HistoryPreviewViewModel extends ViewModel {
         LiveDataUtils.safeUpdate(mLiveData_history, history);
     }
 
+    public History_multiple getHistory() {
+        return mLiveData_history.getValue();
+    }
+
     // 定义一个回调接口
     public interface DeleteHistoryCallback {
         void onDeleteSuccess();

@@ -55,21 +55,7 @@ public class CurveDetailDialog extends Dialog {
             tv_expression.setText(standardCurve.getFormula().toString());
             tv_description.setText(standardCurve.getDescription());
             CombinedChartUtils.setChart(chart);
-            List<Float> k_b_corr = CombinedChartUtils.buildChart(context,chart,standardCurve.getPointList(),standardCurve.getType(),standardCurve.getX_axis_unit());
-            /*//更新其Y轴与X轴
-            List<Point> pointList = standardCurve.getPointList();
-            if (k_b_corr != null && !k_b_corr.isEmpty()){
-                float finalYMax = k_b_corr.get(0)>0 ? pointList.get(pointList.size()-1).getY_value() : pointList.get(0).getY_value();
-                float finalYMax1 = finalYMax +  0.1F*finalYMax;
-                YAxis yAxis = chart.getAxisLeft();
-                yAxis.setAxisMaximum(finalYMax1);
-                XAxis xAxis = chart.getXAxis();
-                xAxis.setAxisMinimum(pointList.get(0).getX_value()- 0.1f*pointList.get(0).getX_value());
-                xAxis.setAxisMaximum(pointList.get(pointList.size() - 1).getX_value()+0.1f*pointList.get(pointList.size() - 1).getX_value());
-                // 刷新图表
-                chart.notifyDataSetChanged(); // 通知数据变化
-                chart.invalidate();
-            }*/
+            CombinedChartUtils.buildChart(context,chart,standardCurve.getPointList(),standardCurve.getType(),standardCurve.getX_axis_unit());
         }
 
     }

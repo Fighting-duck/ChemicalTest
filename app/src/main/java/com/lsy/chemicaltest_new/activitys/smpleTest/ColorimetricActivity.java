@@ -230,6 +230,11 @@ public class ColorimetricActivity extends BaseActivity {
                 Log.d(TAG, "update coloTestResult: "+result);
             }
         });
+        mViewModel.getLiveData_confidenceInterval().observe(this, confidenceInterval ->{
+            if (confidenceInterval!=null){
+                mBinding.tvConfidenceInterval.setText(Arrays.toString(confidenceInterval));
+            }
+        });
     }
 
     private void onCLick(View view) {

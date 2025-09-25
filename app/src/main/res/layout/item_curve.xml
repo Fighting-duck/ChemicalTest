@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:layout_marginTop="10dp">
+    android:padding="8dp"
+    android:background="@android:color/transparent">
     <LinearLayout
+        android:id="@+id/ll_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/background_border"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="5dp">
         <!-- 第一行：曲线名字、编辑按钮、删除按钮 -->
         <LinearLayout
             android:orientation="horizontal"
@@ -26,23 +27,15 @@
                 android:textSize="16sp"
                 style="@style/text_secondTitle"/>
 
-            <!-- 编辑按钮 -->
-            <TextView
-                android:id="@+id/tv_edit"
+            <!-- 单选按钮 -->
+            <android.widget.RadioButton
+                android:id="@+id/radio_btn"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/icon_edit"
                 android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"/>
-
-            <!-- 删除按钮 -->
-            <TextView
-                android:id="@+id/tv_delete"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/icon_delete_2"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"/>
+                android:button="@drawable/radio_check_selector"
+                android:layout_gravity="center_vertical"
+                android:checked="false"/>
         </LinearLayout>
 
         <!-- 第二行：曲线类型和检测样本 -->
@@ -131,10 +124,4 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <!-- 分割线 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/splitLine" />
-</LinearLayout>
+</FrameLayout>

@@ -43,8 +43,11 @@
         android:theme="@style/Theme.ChemicalTest_new"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activitys.smpleTest.CurveRelationshipActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitys.smpleTest.MeasureValueByMultimeterActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activitys.mine.AboutAppActivity"
             android:exported="false" />

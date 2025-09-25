@@ -41,6 +41,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     MutableLiveData<List<Point>> mLiveData_PointList = new MutableLiveData<>();
     MutableLiveData<Expression> mLiveData_Expression = new MutableLiveData<>();
     MutableLiveData<Float> mLiveData_CORR = new MutableLiveData<>();
+    MutableLiveData<Float> mLiveData_mse = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_description = new MutableLiveData<>();
     MediatorLiveData<StandardCurve> mLiveData_Curve = new MediatorLiveData<>();
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
@@ -85,6 +86,9 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     }
     public MutableLiveData<Float> getLiveData_CORR(){
         return mLiveData_CORR;
+    }
+    public MutableLiveData<Float> getLiveData_mse(){
+        return mLiveData_mse;
     }
     public MediatorLiveData<StandardCurve> getMediatorLiveData_Curve(){
         return mLiveData_Curve;
@@ -399,6 +403,10 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     public void set_curve_minCORR(Float CORR) {
         mLiveData_minCORR.setValue(CORR);
     }
+
+    public void setCurve_Mse(Float mse){
+        mLiveData_mse.setValue(mse);
+    }
     /***
      * 设置点的x坐标
      * @param x x坐标
@@ -409,7 +417,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (point == null){
             point = new Point();
         }
-        float lgX = (float) Math.log10(x);
+        float lgX = (float) Math.log10(x);//对x取对数
         point.setX_value(NumberUtils.roundCurve_lgX_avgY(lgX));//对x取对数
         mLiveData_Point.setValue(point);
     }
@@ -580,7 +588,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
      * @return y值
      */
     public Float calculateCo_toY(Float y){
-        Log.d(TAG, "计算y值："+y);
+        Log.d(TAG, "计算x值："+y);
         Expression expression = mLiveData_Expression.getValue();
         if (expression == null){
             return null;

@@ -1,11 +1,15 @@
 package com.lsy.chemicaltest_new.activitys.smpleTest;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -28,10 +32,16 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityCurveManageBinding;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.models.CurveManageViewModel;
+import com.lsy.chemicaltest_new.utils.ExportUtils;
+import com.lsy.chemicaltest_new.utils.PermissionManager;
+import com.lsy.chemicaltest_new.utils.StorageUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /***
  * 主要负责：
@@ -40,14 +50,17 @@ import java.util.List;
  * 支持曲线搜索和刷新
  * 处理曲线数据的保存和恢复
  */
-public class CurveManageActivity extends BaseActivity {
+public class CurveManageActivity extends BaseActivity{
     private static final String TAG = "CurveManageActivity";
     private static final String KEY_DATA = "key_data";
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 100;
+    private static final int MY_PERMISSIONS_REQUEST_MANAGE_STORAGE = 10;
     private ActivityCurveManageBinding mBinding;
     private Context mContext;
     private CurveManageViewModel mViewModel;
     private CurveAdapter mAdapter;
     private final Handler handler = new Handler();
+    private PermissionManager mPermissionManager;
     private final Runnable searchRunnable = new Runnable() {
         @Override
         public void run() {
@@ -126,9 +139,28 @@ public class CurveManageActivity extends BaseActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void initUI() {
+        // 初始化 PermissionManager
+        mPermissionManager = new PermissionManager(
+                this,
+                new PermissionManager.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        // 权限已授予，执行导出操作
+                        ExportUtils.exportCurvesToExcel(mContext, mAdapter.getSelectedItems());
+                    }
+                    @Override
+                    public void onPermissionDenied() {
+                        // 权限被拒绝，可以在这里处理
+                    }
+                },
+                R.string.toast_permission_write_storage_deny,
+                R.string.toast_permission_write_storage_deny,
+                R.string.permission_dialog_title,
+                R.string.permission_dialog_rational_writeStorage
+        );
         //初始化recycleView列表
         mBinding.rvCurveList.setLayoutManager(new LinearLayoutManager(mContext));
-        mAdapter = new CurveAdapter();
+        mAdapter = new CurveAdapter(mContext);
         mBinding.rvCurveList.setAdapter(mAdapter);
 
         mAdapter.setOnEditClickListener(position -> {
@@ -139,42 +171,25 @@ public class CurveManageActivity extends BaseActivity {
             Intent intent = new Intent(mContext, AlterCurveActivity.class);
             mContext.startActivity(intent);
         });
-        mAdapter.setOnDeleteClickListener(new CurveAdapter.OnDeleteClickListener() {
-            @Override
-            public void onDeleteClick(int position) {
-                StandardCurve curve = mAdapter.getCurrentList().get(position);
-                //弹框提示是否删除
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(getString(R.string.dialog_deleteCurve_title));
-                builder.setMessage(getString(R.string.dialog_deleteCurve_message));
-                builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mViewModel.deleteCurve(curve, new CurveManageViewModel.DeleteCallback() {
-                            @Override
-                            public void onDeleteCompleted() {
-                                mViewModel.setToast(getString(R.string.toast_delete_success));
-                            }
-
-                            @Override
-                            public void onDeleteFailed(Exception e) {
-                                e.printStackTrace();
-                                mViewModel.setToast(getString(R.string.toast_delete_fail));
-                            }
-                        });
-                    }
-                });
-                builder.setNegativeButton(getString(R.string.dialog_negative), null);
-                builder.create().show();
-
+        mAdapter.setOnMultiSelectListener((isMultiSelectMode, selectedCount) -> {
+            //mBinding.btnBatchDelete.setVisibility(isMultiSelectMode ? View.VISIBLE : View.GONE);
+            if (isMultiSelectMode){
+                Log.d(TAG+" MultiSelect", "打开多选模式");
+                mBinding.llMultiSelect.setVisibility(View.VISIBLE);
+                mBinding.tvBack.setVisibility(View.VISIBLE);
             }
+            else {
+                Log.d(TAG+" MultiSelect", "关闭多选模式");
+                mBinding.llMultiSelect.setVisibility(View.GONE);
+                mBinding.tvBack.setVisibility(View.GONE);
+            }
+
         });
-        mBinding.ivBack.setOnClickListener(view -> finish());
-        mBinding.ivAdd.setOnClickListener(v -> {
-            DataRepository.getInstance().setStandardCurve(null);//清楚数据仓库中的曲线
-            Intent intent = new Intent(mContext, AddCurveActivity.class);
-            mContext.startActivity(intent);
-        });
+        mBinding.ivBack.setOnClickListener(this::onClick);
+        mBinding.ivAdd.setOnClickListener(this::onClick);
+        mBinding.btnDelete.setOnClickListener(this::onClick);
+        mBinding.btnExport.setOnClickListener(this::onClick);
+        mBinding.tvBack.setOnClickListener(this::onClick);
         //设置下拉刷新布局的进度圆圈颜色
         mBinding.srlRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light,
                 android.R.color.holo_orange_light, android.R.color.holo_green_light);
@@ -237,6 +252,57 @@ public class CurveManageActivity extends BaseActivity {
         });
     }
 
+    private void onClick(View view) {
+        int id = view.getId();
+        if (id == mBinding.ivBack.getId()) {
+            finish();
+        }
+        else if (id == mBinding.ivAdd.getId()){
+            DataRepository.getInstance().setStandardCurve(null);//清楚数据仓库中的曲线
+            Intent intent = new Intent(mContext, AddCurveActivity.class);
+            mContext.startActivity(intent);
+
+        }
+        else if (id == mBinding.btnDelete.getId()) {
+            //弹框提示是否删除
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(getString(R.string.dialog_deleteCurve_title));
+            builder.setMessage(getString(R.string.dialog_deleteCurve_message));
+            builder.setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    List<StandardCurve> deleteCurves = mAdapter.getSelectedItems();
+                    mAdapter.deleteSelectedItems();
+                    if (deleteCurves.isEmpty()) return;
+                    mViewModel.deleteCurves(deleteCurves, new CurveManageViewModel.DeleteCallback() {
+                        @Override
+                        public void onDeleteCompleted() {
+                            mViewModel.setToast(getString(R.string.toast_delete_success));
+                        }
+
+                        @Override
+                        public void onDeleteFailed(Exception e) {
+                            e.printStackTrace();
+                            mViewModel.setToast(getString(R.string.toast_delete_fail));
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton(getString(R.string.dialog_negative), null);
+            builder.create().show();
+        }
+        else if (id == mBinding.btnExport.getId()) {
+            if (StorageUtils.hasEnoughSpace(50)){
+                mPermissionManager.checkAndRequestExportPermissions(mContext);
+            }
+            else
+                Toast.makeText(mContext, getString(R.string.toast_insufficientSspace), Toast.LENGTH_SHORT).show();
+        }
+        else if (id == mBinding.tvBack.getId()){
+            mAdapter.exitMultiSelectMode();
+        }
+    }
+
     //数据保存与恢复
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -261,4 +327,16 @@ public class CurveManageActivity extends BaseActivity {
             mAdapter.submitList(curves);
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionManager.handleRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 }

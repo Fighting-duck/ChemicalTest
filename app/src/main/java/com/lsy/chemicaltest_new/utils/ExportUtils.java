@@ -12,6 +12,8 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.database.SharePreferencesManager;
@@ -24,15 +26,20 @@ import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.Temperature_Elec;
+import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.domain.ThermalTestResult;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -43,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 /***
@@ -52,123 +60,114 @@ public class ExportUtils {
     private static final String TAG = "ExportUtils";
 
     /***
-     * 构建标准曲线excel
+     * 批量填充标准曲线数据
+     * @param curves 标准曲线
      * @return workbook
      */
-    public static HSSFWorkbook buildCurveExcel() {
-        // 创建工作簿
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 创建工作表
-        HSSFSheet sheet = workbook.createSheet("标准曲线");
+    public static HSSFWorkbook fillCurvesData(@NonNull List<StandardCurve> curves,@NonNull String experimenterName) {
+        // 参数校验
+        Objects.requireNonNull(curves, "Curves cannot be null");
+        Objects.requireNonNull(experimenterName, "experimenterName cannot be null");
 
-        HSSFRow row_1 = sheet.createRow(0);
-        row_1.createCell(0).setCellValue("基本信息：");
+        HSSFWorkbook workbook = new HSSFWorkbook();// 创建工作簿
+        HSSFSheet sheet = workbook.createSheet("标准曲线");// 创建工作表
+        Integer current_row = 0;
 
-        HSSFRow row_2 = sheet.createRow(1);
-        row_2.createCell(0).setCellValue("曲线名");
-        row_2.createCell(1).setCellValue("样本名");
-        row_2.createCell(2).setCellValue("检测类型");
-        row_2.createCell(3).setCellValue("x轴单位");
-        row_2.createCell(4).setCellValue("y轴单位");
-        row_2.createCell(5).setCellValue("最小浓度值");
-        row_2.createCell(6).setCellValue("最大浓度值");
-        row_2.createCell(7).setCellValue("最小拟合系数");
-        row_2.createCell(8).setCellValue("备注");
+        for (int i = 0; i < curves.size(); i++){
+            // 获取标准曲线信息
+            StandardCurve curve = curves.get(i);
+            List<Point> points = curve.getPointList();//获取点集信息
+            Expression formula = curve.getFormula();//获取公式信息
+            Sample sample = curve.getSample();//获取样本信息
 
-        HSSFRow row_3 = sheet.createRow(4);
-        row_3.createCell(0).setCellValue("核心信息：");
+            //1.1 曲线基本信息
+            HSSFRow row_1 = sheet.createRow(current_row);
+            row_1.createCell(0).setCellValue("基本信息：");
+            current_row++;
+            HSSFRow row_2 = sheet.createRow(current_row);
+            row_2.createCell(0).setCellValue("曲线名");
+            row_2.createCell(1).setCellValue("样本名");
+            row_2.createCell(2).setCellValue("检测类型");
+            row_2.createCell(3).setCellValue("x轴单位");
+            row_2.createCell(4).setCellValue("y轴单位");
+            row_2.createCell(5).setCellValue("最小浓度值");
+            row_2.createCell(6).setCellValue("最大浓度值");
+            row_2.createCell(7).setCellValue("最小拟合系数");
+            row_2.createCell(8).setCellValue("备注");
+            current_row++;
+            HSSFRow row_2_1 = sheet.createRow(current_row);
+            row_2_1.createCell(0).setCellValue(curve.getName());
+            row_2_1.createCell(1).setCellValue(sample.getName());
+            row_2_1.createCell(2).setCellValue(StandardCurve.getCurveType(curve.getType()));
+            row_2_1.createCell(3).setCellValue(curve.getX_axis_unit());
+            row_2_1.createCell(4).setCellValue(curve.getY_axis_unit());
+            row_2_1.createCell(5).setCellValue(curve.getMin_CO());
+            row_2_1.createCell(6).setCellValue(curve.getMax_CO());
+            row_2_1.createCell(7).setCellValue(curve.getMinCorr());
+            row_2_1.createCell(8).setCellValue(curve.getDescription());
+            current_row++;
 
-        HSSFRow row_4 = sheet.createRow(5);
-        row_4.createCell(0).setCellValue("拟合系数");
-        row_4.createCell(1).setCellValue("K值");
-        row_4.createCell(2).setCellValue("B值");
-        row_4.createCell(3).setCellValue("标准曲线公式");
+            //1.2 曲线核心信息
+            HSSFRow row_3 = sheet.createRow(current_row);
+            row_3.createCell(0).setCellValue("核心信息：");
+            current_row++;
+            HSSFRow row_4 = sheet.createRow(current_row);
+            row_4.createCell(0).setCellValue("拟合系数");
+            row_4.createCell(1).setCellValue("K值");
+            row_4.createCell(2).setCellValue("B值");
+            row_4.createCell(3).setCellValue("标准曲线公式");
+            current_row++;
+            HSSFRow row_4_1 = sheet.createRow(current_row);
+            row_4_1.createCell(0).setCellValue(curve.getCORR());
+            row_4_1.createCell(1).setCellValue(formula.getK());
+            row_4_1.createCell(2).setCellValue(formula.getB());
+            row_4_1.createCell(3).setCellValue(formula.toString());
+            current_row++;
 
+            //1.3 曲线散点数据
+            HSSFRow row_5 = sheet.createRow(current_row);
+            row_5.createCell(0).setCellValue("散点集：");
+            current_row++;
+            HSSFRow row_6 = sheet.createRow(current_row);
+            row_6.createCell(0).setCellValue("序号");
+            current_row++;
+            HSSFRow row_7 = sheet.createRow(current_row);
+            row_7.createCell(0).setCellValue("点");
 
-        HSSFRow row_5 = sheet.createRow(8);
-        row_5.createCell(0).setCellValue("散点集：");
-
-        HSSFRow row_6 = sheet.createRow(9);
-        row_6.createCell(0).setCellValue("序号");
-        row_6.createCell(1).setCellValue("x");
-        row_6.createCell(2).setCellValue("y");
-
+            for (int j = 0; j < points.size(); j++) {
+                row_6.createCell(j+1).setCellValue(j+1);//序号
+                row_7.createCell(j+1).setCellValue(points.get(j).getX_value()+","+points.get(j).getY_value());// 点(x,y)
+            }
+            current_row = current_row + 2;
+        }
+        // 添加实验员信息
+        current_row++;
+        HSSFRow row_experimenterName = sheet.createRow(current_row);
+        row_experimenterName.createCell(0).setCellValue("实验员：");
+        row_experimenterName.createCell(1).setCellValue(experimenterName);
+        current_row++;
+        HSSFRow row_dateTime = sheet.createRow(current_row);
+        row_dateTime.createCell(0).setCellValue("日期：");
+        row_dateTime.createCell(1).setCellValue(TimeUtil.getCurrentDateTime());
         return workbook;
     }
 
     /***
-     * 填充标准曲线数据
-     * @param curve_workbook workbook
-     * @param curve 标准曲线
-     * @return workbook
-     */
-    public static HSSFWorkbook fillCurveData(HSSFWorkbook curve_workbook,StandardCurve curve,String experimenterName) {
-        if (curve == null) return null;
-        HSSFSheet sheet = curve_workbook.getSheetAt(0);
-
-        //获取点集信息
-        List<Point> points = curve.getPointList();
-        //获取公式信息
-        Expression formula = curve.getFormula();
-        //获取样本信息
-        Sample sample = curve.getSample();
-
-        HSSFRow row_title1 = sheet.createRow(2);
-        row_title1.createCell(0).setCellValue(curve.getName());
-        row_title1.createCell(1).setCellValue(sample.getName());
-        row_title1.createCell(2).setCellValue(StandardCurve.getCurveType(curve.getType()));
-        row_title1.createCell(3).setCellValue(curve.getX_axis_unit());
-        row_title1.createCell(4).setCellValue(curve.getY_axis_unit());
-        row_title1.createCell(5).setCellValue(curve.getMin_CO());
-        row_title1.createCell(6).setCellValue(curve.getMax_CO());
-        row_title1.createCell(7).setCellValue(curve.getMinCorr());
-        row_title1.createCell(8).setCellValue(curve.getDescription());
-
-        HSSFRow row_title2 = sheet.createRow(6);
-        row_title2.createCell(0).setCellValue(curve.getCORR());
-        row_title2.createCell(1).setCellValue(formula.getK());
-        row_title2.createCell(2).setCellValue(formula.getB());
-        row_title2.createCell(3).setCellValue(formula.toString());
-
-        for (int i = 0; i < points.size(); i++) {
-            HSSFRow row_data = sheet.createRow(i+10);
-            row_data.createCell(0).setCellValue(i+1);
-            row_data.createCell(1).setCellValue(points.get(i).getX_value());
-            row_data.createCell(2).setCellValue(points.get(i).getY_value());
-        }
-
-        HSSFRow lastRow = sheet.createRow(10 + points.size());
-        lastRow.createCell(0).setCellValue("#");
-        lastRow.createCell(1).setCellValue("#");
-        lastRow.createCell(2).setCellValue("#");
-
-        HSSFRow row = sheet.createRow(12 + points.size());
-        row.createCell(0).setCellValue("实验员：");
-        row.createCell(1).setCellValue(experimenterName);
-
-/*//        List<Experimenter> experimenters = MyApplication.DATABASE_INSTANCE.getExperimenterDao().getAll();
-        if (experimenters!=null && !experimenters.isEmpty()){
-            HSSFRow row = sheet.createRow(12 + points.size());
-            row.createCell(0).setCellValue("实验员：");
-            row.createCell(1).setCellValue(experimenters.get(0).getName());
-        }*/
-        return curve_workbook;
-    }
-
-    /***
-     * 导出标准曲线数据为excel文件
+     * 批量导出标准曲线数据为excel文件
      * @param context 上下文
-     * @param curve 标准曲线
+     * @param curves 标准曲线
      */
-    public static void exportCurve(Context context,StandardCurve curve) {
+    public static void exportCurvesToExcel(@NonNull Context context, @NonNull List<StandardCurve> curves) {
+        // 参数校验
+        Objects.requireNonNull(context, "context cannot be null");
+        Objects.requireNonNull(curves, "curves cannot be null");
+
         Executors.newSingleThreadExecutor().execute(() -> {
-            if (curve == null) return;
-            //创建工作簿excel
-            HSSFWorkbook workbook = buildCurveExcel();
-            //填充数据
+            // 提取实验员信息
             SharePreferencesManager sharePreferencesManager = new SharePreferencesManager(context);
             String experimenterName = sharePreferencesManager.getUserName();
-            HSSFWorkbook curve_workbook = fillCurveData(workbook,curve,experimenterName);
+            // 创建并填充工作簿excel
+            HSSFWorkbook curve_workbook = fillCurvesData(curves, experimenterName);
             // 保存 Excel 文件
             try {
                 //构造文件名
@@ -193,218 +192,278 @@ public class ExportUtils {
             }
         });
     }
-
     /***
-     * 构建历史记录excel
-     * @param header 表头
-     * @return workbook
+     *  批量将history导出为excel表
+     * @param context 上下文对象
+     * @param histories 历史记录
      */
-    public static HSSFWorkbook buildHistoryExcel(String header) {
+    public static void exportHistoriesToExcel(@NonNull Context context, @NonNull List<History_multiple> histories) {
+        // 参数校验
+        Objects.requireNonNull(context, "context cannot be null");
+        Objects.requireNonNull(histories, "histories cannot be null");
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // 提取实验员信息
+            SharePreferencesManager sharePreferencesManager = new SharePreferencesManager(context);
+            String experimenterName = sharePreferencesManager.getUserName();
+            // 创建并填充工作簿excel
+            HSSFWorkbook curve_workbook = fillHistoriesData(histories, experimenterName);
+            // 保存 Excel 文件
+            try {
+                //构造文件名
+                String fileName = "样品检测-历史记录_" + System.currentTimeMillis() + ".xlsx"; // 默认PNG格式
+                // 创建文件夹路径
+                File file = new File(StorageUtils.getSaveTextPath(), fileName);
+                FileOutputStream fileOut = new FileOutputStream(file);
+                curve_workbook.write(fileOut);
+                fileOut.close();
+                curve_workbook.close();
+                runOnUiThread(()->{
+                    showFilePathErrorDialog(context,file.getAbsolutePath());
+                });
+
+                Log.d("ExportUtils", "数据已成功导出到 " + file.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(()->{
+                    Toast.makeText(context, "导出数据时出错", android.widget.Toast.LENGTH_SHORT).show();
+                });
+
+            }
+        });
+    }
+
+    private static HSSFWorkbook fillHistoriesData(List<History_multiple> histories, String experimenterName) {
         // 创建工作簿
         HSSFWorkbook workbook = new HSSFWorkbook();
+        int current_row = 0;
         // 创建工作表
         HSSFSheet sheet = workbook.createSheet("历史记录");
+        sheet.setHorizontallyCenter(true);
+        for (int i = 0; i < histories.size(); i++){
+            // 获取历史记录
+            History_multiple history_multiple = histories.get(i);
+            ElecTestResult elec_result = history_multiple.getElecTestResult();
+            ColoTestResult colo_result = history_multiple.getColoTestResult();
+            Temperature_Elec temperature_elec = history_multiple.getTemperature_elec();
+            ThermalTestResult thermal_result = history_multiple.getThermalTestResult();
 
-        // 创建表头
-        // 定义合并区域（起始行索引、结束行索引、起始列索引、结束列索引）
-        CellRangeAddress mergedRegion = new CellRangeAddress(0, 0, 0, 8);
-        // 合并单元格
-        int mergedRegionIndex = sheet.addMergedRegion(mergedRegion);
-        // 获取合并后的单元格 表头
-        HSSFRow headerRow = sheet.createRow(0);
-        Cell cell = headerRow.createCell(0);
-        cell.setCellValue(header);
-        // 创建样式
-  /*      HSSFCellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);//设置单元格的水平对齐类型
-        style.setVerticalAlignment(VerticalAlignment.CENTER);//设置单元格的竖直对齐类型
-        style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());//设置前景色填充颜色
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);//设置为 1 将使用前景色填充单元格
-        // 获取合并区域的第一个单元格并设置样式
-        CellRangeAddress region = sheet.getMergedRegion(mergedRegionIndex);
-        int firstRow = region.getFirstRow();
-        int firstCol = region.getFirstColumn();
-        Cell firstCell = sheet.getRow(firstRow).getCell(firstCol);
-        firstCell.setCellStyle(style);*/
+            //1.1 创建表头
+            CellRangeAddress mergedRegion = new CellRangeAddress(i, i, 0, 8);// 合并单元格（起始行索引、结束行索引、起始列索引、结束列索引）
+            sheet.addMergedRegion(mergedRegion);// 合并单元格
+            // 获取合并后的单元格 表头
+            HSSFRow headerRow = sheet.createRow(current_row);
+            Cell cell = headerRow.createCell(0);
+            cell.setCellValue(history_multiple.getHistoryName());
+            current_row++;
 
-        Row Row_title1 = sheet.createRow(1);
-        Row_title1.createCell(0).setCellValue("保存时间");
-        Row_title1.createCell(1).setCellValue("样品名称");
-        Row_title1.createCell(2).setCellValue("可信度");
-        Row_title1.createCell(3).setCellValue("备注");
+            //1.2 基本信息
+            Row row_1 = sheet.createRow(current_row);
+            row_1.createCell(1).setCellValue("保存时间");
+            row_1.createCell(2).setCellValue("样品名称");
+            row_1.createCell(3).setCellValue("可信度");
+            row_1.createCell(4).setCellValue("备注");
+            current_row++;
+            HSSFRow row_1_1 = sheet.createRow(current_row);
+            row_1_1.createCell(1).setCellValue(history_multiple.getSaveTime());
+            row_1_1.createCell(2).setCellValue(history_multiple.getSampleName());
+            if (history_multiple.getCredibility()!=null)
+                row_1_1.createCell(3).setCellValue(history_multiple.getCredibility());
+            if (history_multiple.getRemarks() != null)
+                row_1_1.createCell(4).setCellValue(history_multiple.getRemarks());
+            current_row++;
 
-        Row Row_title2 = sheet.createRow(4);
-        Row_title2.createCell(0).setCellValue("电信号检查结果：");
+            //1.3 电信号检查结果
+            if (elec_result != null){
+                Row row_2 = sheet.createRow(current_row);
+                row_2.createCell(0).setCellValue("电信号检查结果：");
+                current_row++;
+                //1.3.1 基本信息
+                Row row_3 = sheet.createRow(current_row);
+                row_3.createCell(1).setCellValue("检测时间");
+                row_3.createCell(2).setCellValue("标准曲线名");
+                row_3.createCell(3).setCellValue("标准曲线公式");
+                row_3.createCell(4).setCellValue("万用表设备信息");
+                current_row++;
+                HSSFRow row_3_1 = sheet.createRow(current_row);
+                row_3_1.createCell(1).setCellValue(elec_result.getDateTime());
+                if (elec_result.getStandardCurve() != null){
+                    row_3_1.createCell(2).setCellValue(elec_result.getStandardCurve().getName());
+                    if (elec_result.getStandardCurve().getFormula() != null)
+                        row_3_1.createCell(3).setCellValue(elec_result.getStandardCurve().getFormula().toString());
+                }
+                if (elec_result.getBleDeviceInfo() != null)
+                    row_3_1.createCell(4).setCellValue(
+                            showBleDeviceInfo(elec_result.getBleDeviceInfo()));
+                current_row++;
+                //1.3.2 测量值信息
+                Row row_4 = sheet.createRow(current_row);
+                Row row_5 = sheet.createRow(++current_row);
+                row_4.createCell(1).setCellValue("14次测量值:");
+                row_5.createCell(1).setCellValue("14次测量时间:");
+                if (elec_result.getFourteen_measurements_list()!=null && elec_result.getFourteen_times_list()!=null) {
+                    List<String> strList = ElecTestResult.getPointList(elec_result.getFourteen_measurements_list());
+                    List<String> strTimeList = ElecTestResult.getPointList(elec_result.getFourteen_times_list());
+                    for (int j = 0; j < strList.size(); j++) {
+                        row_4.createCell(j + 2).setCellValue(strList.get(j));
+                        row_5.createCell(j + 2).setCellValue(strTimeList.get(j));
+                    }
+                }
+                current_row++;
+                //1.3.3 实验结果信息
+                Row row_6 = sheet.createRow(current_row);
+                row_6.createCell(1).setCellValue("最大值");
+                row_6.createCell(2).setCellValue("对应浓度");
+                row_6.createCell(3).setCellValue("病害分析");
+                current_row++;
+                Row row_6_1 = sheet.createRow(current_row);
+                if (elec_result.getMaxValue_4() != null)
+                    row_6_1.createCell(1).setCellValue(elec_result.getMaxValue_4());
+                if (elec_result.getDetectionCo() != null)
+                    row_6_1.createCell(2).setCellValue(elec_result.getDetectionCo());
+                if (elec_result.getDiseaseAnal() != null)
+                    row_6_1.createCell(3).setCellValue(elec_result.getDiseaseAnal());
+                current_row++;
+            }
 
-        Row Row_title3 = sheet.createRow(5);
-        Row_title3.createCell(0).setCellValue("检测时间");
-        Row_title3.createCell(1).setCellValue("标准曲线名");
-        Row_title3.createCell(2).setCellValue("标准曲线公式");
-        Row_title3.createCell(3).setCellValue("万用表设备信息");
-        Row_title3.createCell(4).setCellValue("14次测量值");
-        Row_title3.createCell(5).setCellValue("14次测量时间");
-        Row_title3.createCell(6).setCellValue("最大值");
-        Row_title3.createCell(7).setCellValue("对应浓度");
-        Row_title3.createCell(8).setCellValue("病害分析");
+            //1.4 比色图像检测结果
+            if (colo_result != null){
+                Row row_4 = sheet.createRow(current_row);
+                row_4.createCell(0).setCellValue("比色图像检测结果：");
+                current_row++;
+                // 1.4.1 基本信息
+                Row row_5 = sheet.createRow(current_row);
+                row_5.createCell(1).setCellValue("检测时间");
+                row_5.createCell(2).setCellValue("标准曲线名");
+                row_5.createCell(3).setCellValue("标准曲线公式");
+                row_5.createCell(4).setCellValue("原始图片路径");
+                row_5.createCell(5).setCellValue("截图路径");
+                current_row++;
+                HSSFRow row_5_1 = sheet.createRow(current_row);
+                row_5_1.createCell(1).setCellValue(colo_result.getDateTime());
+                if (colo_result.getStandardCurve() != null){
+                    row_5_1.createCell(2).setCellValue(colo_result.getStandardCurve().getName());
+                    if (colo_result.getStandardCurve().getFormula() != null)
+                        row_5_1.createCell(3).setCellValue(colo_result.getStandardCurve().getFormula().toString());
+                }
+                if (colo_result.getOriginalImage_path() != null)
+                    row_5_1.createCell(4).setCellValue(colo_result.getOriginalImage_path());
+                if (colo_result.getCropImage_path() != null)
+                    row_5_1.createCell(5).setCellValue(colo_result.getCropImage_path());
+                current_row++;
+                // 1.4.2 检测结果信息
+                Row row_6 = sheet.createRow(current_row);
+                row_6.createCell(1).setCellValue("校准后的颜色值");
+                row_6.createCell(2).setCellValue("HSV值");
+                row_6.createCell(3).setCellValue("对应浓度");
+                row_6.createCell(4).setCellValue("病害分析");
+                current_row++;
+                Row row_6_1 = sheet.createRow(current_row);
+                if (colo_result.getCorrectedColor() != null)
+                    row_6_1.createCell(1).setCellValue(colo_result.getCorrectedColor());
+                if (colo_result.getHSV_value() != null)
+                    row_6_1.createCell(2).setCellValue(colo_result.getHSV_value());
+                if (colo_result.getDetectionCo() != null)
+                    row_6_1.createCell(3).setCellValue(colo_result.getDetectionCo());
+                if (colo_result.getDiseaseAnal() != null)
+                    row_6_1.createCell(4).setCellValue(colo_result.getDiseaseAnal());
+                current_row++;
+            }
 
-        Row Row_title4 = sheet.createRow(8);
-        Row_title4.createCell(0).setCellValue("比色图像检测结果");
+            //1.5 万用表测温度检测结果
+            if (temperature_elec != null){
+                Row row_6 = sheet.createRow(current_row);
+                row_6.createCell(0).setCellValue("万用表测温度检测结果:");
+                current_row++;
+                // 1.5.1 基本信息
+                Row row_7 = sheet.createRow(current_row);
+                row_7.createCell(1).setCellValue("检测时间");
+                row_7.createCell(2).setCellValue("标准曲线名");
+                row_7.createCell(3).setCellValue("标准曲线公式");
+                row_7.createCell(4).setCellValue("万用表设备信息");
+                current_row++;
+                HSSFRow row_7_1 = sheet.createRow(current_row);
+                row_7_1.createCell(1).setCellValue(temperature_elec.getDateTime());
+                if (temperature_elec.getStandardCurve() != null){
+                    row_7_1.createCell(2).setCellValue(temperature_elec.getStandardCurve().getName());
+                    if (temperature_elec.getStandardCurve().getFormula() != null)
+                        row_7_1.createCell(3).setCellValue(temperature_elec.getStandardCurve().getFormula().toString());
+                }
+                if (temperature_elec.getBleDeviceInfo() != null)
+                    row_7_1.createCell(4).setCellValue(showBleDeviceInfo(temperature_elec.getBleDeviceInfo()));
+                current_row++;
+                // 1.5.2 检测结果信息
+                Row row_8 = sheet.createRow(current_row);
+                row_8.createCell(1).setCellValue("温度");
+                row_8.createCell(2).setCellValue("对应浓度");
+                row_8.createCell(3).setCellValue("病害分析");
+                current_row++;
+                Row row_8_1 = sheet.createRow(current_row);
+                if (temperature_elec.getTemperature() != null)
+                    row_8_1.createCell(1).setCellValue(temperature_elec.getTemperature());
+                if (temperature_elec.getDetectionCo() != null)
+                    row_8_1.createCell(2).setCellValue(temperature_elec.getDetectionCo());
+                if (temperature_elec.getDiseaseAnal() != null)
+                    row_8_1.createCell(3).setCellValue(temperature_elec.getDiseaseAnal());
+                current_row++;
+            }
 
-        Row Row_title5 = sheet.createRow(9);
-        Row_title5.createCell(0).setCellValue("检测时间");
-        Row_title5.createCell(1).setCellValue("标准曲线名");
-        Row_title5.createCell(2).setCellValue("标准曲线公式");
-        Row_title5.createCell(3).setCellValue("原始图片路径");
-        Row_title5.createCell(4).setCellValue("截图路径");
-        Row_title5.createCell(5).setCellValue("校准后的颜色值");
-        Row_title5.createCell(6).setCellValue("HSV值");
-        Row_title5.createCell(7).setCellValue("对应浓度");
-        Row_title5.createCell(8).setCellValue("病害分析");
-
-        Row Row_title6 = sheet.createRow(12);
-        Row_title6.createCell(0).setCellValue("万用表测温度检测结果");
-
-        Row Row_title7 = sheet.createRow(13);
-        Row_title7.createCell(0).setCellValue("检测时间");
-        Row_title7.createCell(1).setCellValue("标准曲线名");
-        Row_title7.createCell(2).setCellValue("标准曲线公式");
-        Row_title7.createCell(3).setCellValue("万用表设备信息");
-        Row_title7.createCell(4).setCellValue("温度");
-        Row_title7.createCell(5).setCellValue("对应浓度");
-        Row_title7.createCell(6).setCellValue("病害分析");
-
-        Row Row_title8 = sheet.createRow(16);
-        Row_title8.createCell(0).setCellValue("光热图像检测结果");
-
-        Row Row_title9 = sheet.createRow(17);
-        Row_title9.createCell(0).setCellValue("检测时间");
-        Row_title9.createCell(1).setCellValue("标准曲线名");
-        Row_title9.createCell(2).setCellValue("标准曲线公式");
-        Row_title9.createCell(3).setCellValue("光热图片路径");
-        Row_title9.createCell(4).setCellValue("中心温度");
-        Row_title9.createCell(5).setCellValue("对应浓度");
-        Row_title9.createCell(6).setCellValue("病害分析");
-
+            //1.6 光热图像检测结果
+            if (thermal_result != null){
+                Row row_8 = sheet.createRow(current_row);
+                row_8.createCell(0).setCellValue("光热图像检测结果:");
+                current_row++;
+                // 1.6.1 基本信息
+                Row row_9 = sheet.createRow(current_row);
+                row_9.createCell(1).setCellValue("检测时间");
+                row_9.createCell(2).setCellValue("标准曲线名");
+                row_9.createCell(3).setCellValue("标准曲线公式");
+                row_9.createCell(4).setCellValue("光热图片路径");
+                current_row++;
+                HSSFRow row_9_1 = sheet.createRow(current_row);
+                row_9_1.createCell(1).setCellValue(thermal_result.getDateTime());
+                if (thermal_result.getStandardCurve() != null){
+                    row_9_1.createCell(2).setCellValue(thermal_result.getStandardCurve().getName());
+                    if (thermal_result.getStandardCurve().getFormula() != null)
+                        row_9_1.createCell(3).setCellValue(thermal_result.getStandardCurve().getFormula().toString());
+                }
+                if (thermal_result.getThermalBitmap_path() != null)
+                    row_9_1.createCell(4).setCellValue(thermal_result.getThermalBitmap_path());
+                current_row++;
+                // 1.6.2 检测结果信息
+                Row row_10 = sheet.createRow(current_row);
+                row_10.createCell(1).setCellValue("中心温度");
+                row_10.createCell(2).setCellValue("对应浓度");
+                row_10.createCell(3).setCellValue("病害分析");
+                current_row++;
+                Row row_10_1 = sheet.createRow(current_row);
+                if (thermal_result.getCentralTemperature() != null)
+                    row_10_1.createCell(1).setCellValue(thermal_result.getCentralTemperature());
+                if (thermal_result.getDetectionCo() != null)
+                    row_10_1.createCell(2).setCellValue(thermal_result.getDetectionCo());
+                if (thermal_result.getDiseaseAnal() != null)
+                    row_10_1.createCell(3).setCellValue(thermal_result.getDiseaseAnal());
+                current_row++;
+            }
+            current_row++;
+        }
+        current_row++;
+        // 添加实验员信息
+        HSSFRow row_experimenterName = sheet.createRow(current_row);
+        row_experimenterName.createCell(0).setCellValue("实验员：");
+        row_experimenterName.createCell(1).setCellValue(experimenterName);
+        current_row++;
+        HSSFRow row_dateTime = sheet.createRow(current_row);
+        row_dateTime.createCell(0).setCellValue("导出日期：");
+        row_dateTime.createCell(1).setCellValue(TimeUtil.getCurrentDateTime());
         return workbook;
     }
-
     /***
-     *  填充历史记录excel
-     * @param history_workbook workbook
-     * @param history_multiple 历史记录
-     * @return workbook
+     * 打印万用表信息
+     * @param bleDeviceInfo 万用表信息
+     * @return 万用表信息
      */
-    public static HSSFWorkbook fillHistoryData(HSSFWorkbook history_workbook,History_multiple history_multiple,String experimenterName) {
-        if (history_multiple == null) return null;
-        HSSFSheet sheet = history_workbook.getSheetAt(0);
 
-        //获取历史信息
-        ElecTestResult elec_result = history_multiple.getElecTestResult();
-        ColoTestResult colo_result = history_multiple.getColoTestResult();
-        Temperature_Elec temperature_elec = history_multiple.getTemperature_elec();
-        ThermalTestResult thermal_result = history_multiple.getThermalTestResult();
-
-        HSSFRow row_title1 = sheet.createRow(2);
-        row_title1.createCell(0).setCellValue(history_multiple.getSaveTime());
-        row_title1.createCell(1).setCellValue(history_multiple.getSampleName());
-        if (history_multiple.getCredibility()!=null)
-            row_title1.createCell(2).setCellValue(history_multiple.getCredibility());
-        if (history_multiple.getRemarks() != null)
-            row_title1.createCell(3).setCellValue(history_multiple.getRemarks());
-
-        if (elec_result != null){
-            HSSFRow row = sheet.createRow(6);
-            row.createCell(0).setCellValue(elec_result.getDateTime());
-            if (elec_result.getStandardCurve() != null){
-                row.createCell(1).setCellValue(elec_result.getStandardCurve().getName());
-                if (elec_result.getStandardCurve().getFormula() != null)
-                    row.createCell(2).setCellValue(elec_result.getStandardCurve().getFormula().toString());
-            }
-            if (elec_result.getBleDeviceInfo() != null)
-                row.createCell(3).setCellValue(
-                        showBleDeviceInfo(elec_result.getBleDeviceInfo()));
-            if (elec_result.getFourteen_measurements_list() != null)
-                row.createCell(4).setCellValue(elec_result.getFourteen_measurements_list());
-            if (elec_result.getFourteen_times_list() != null)
-                row.createCell(5).setCellValue(elec_result.getFourteen_times_list());
-            if (elec_result.getMaxValue_4() != null)
-                row.createCell(6).setCellValue(elec_result.getMaxValue_4());
-            if (elec_result.getDetectionCo() != null)
-                row.createCell(7).setCellValue(elec_result.getDetectionCo());
-            if (elec_result.getDiseaseAnal() != null)
-                row.createCell(8).setCellValue(elec_result.getDiseaseAnal());
-        }
-
-        if (colo_result != null){
-            HSSFRow row = sheet.createRow(10);
-            row.createCell(0).setCellValue(colo_result.getDateTime());
-            if (colo_result.getStandardCurve() != null){
-                row.createCell(1).setCellValue(colo_result.getStandardCurve().getName());
-                if (colo_result.getStandardCurve().getFormula() != null)
-                    row.createCell(2).setCellValue(colo_result.getStandardCurve().getFormula().toString());
-            }
-            if (colo_result.getOriginalImage_path() != null)
-                row.createCell(3).setCellValue(colo_result.getOriginalImage_path());
-            if (colo_result.getCropImage_path() != null)
-                row.createCell(4).setCellValue(colo_result.getCropImage_path());
-            if (colo_result.getCorrectedColor() != null)
-                row.createCell(5).setCellValue(colo_result.getCorrectedColor());
-            if (colo_result.getHSV_value() != null)
-                row.createCell(6).setCellValue(colo_result.getHSV_value());
-            if (colo_result.getDetectionCo() != null)
-                row.createCell(7).setCellValue(colo_result.getDetectionCo());
-            if (colo_result.getDiseaseAnal() != null)
-                row.createCell(8).setCellValue(colo_result.getDiseaseAnal());
-        }
-
-        if (temperature_elec != null){
-            HSSFRow row = sheet.createRow(14);
-            row.createCell(0).setCellValue(temperature_elec.getDateTime());
-            if (temperature_elec.getStandardCurve() != null){
-                row.createCell(1).setCellValue(temperature_elec.getStandardCurve().getName());
-                if (temperature_elec.getStandardCurve().getFormula() != null)
-                    row.createCell(2).setCellValue(temperature_elec.getStandardCurve().getFormula().toString());
-            }
-            if (temperature_elec.getBleDeviceInfo() != null)
-                row.createCell(3).setCellValue(showBleDeviceInfo(temperature_elec.getBleDeviceInfo()));
-            if (temperature_elec.getTemperature() != null)
-                row.createCell(4).setCellValue(temperature_elec.getTemperature());
-            if (temperature_elec.getDetectionCo() != null)
-                row.createCell(5).setCellValue(temperature_elec.getDetectionCo());
-            if (temperature_elec.getDiseaseAnal() != null)
-                row.createCell(6).setCellValue(temperature_elec.getDiseaseAnal());
-        }
-
-        if (thermal_result != null){
-            HSSFRow row = sheet.createRow(18);
-            row.createCell(0).setCellValue(thermal_result.getDateTime());
-            if (thermal_result.getStandardCurve() != null){
-                row.createCell(1).setCellValue(thermal_result.getStandardCurve().getName());
-                if (thermal_result.getStandardCurve().getFormula() != null)
-                    row.createCell(2).setCellValue(thermal_result.getStandardCurve().getFormula().toString());
-            }
-            if (thermal_result.getThermalBitmap_path() != null)
-                row.createCell(3).setCellValue(thermal_result.getThermalBitmap_path());
-            if (thermal_result.getCentralTemperature() != null)
-                row.createCell(4).setCellValue(thermal_result.getCentralTemperature());
-            if (thermal_result.getDetectionCo() != null)
-                row.createCell(5).setCellValue(thermal_result.getDetectionCo());
-            if (thermal_result.getDiseaseAnal() != null)
-                row.createCell(6).setCellValue(thermal_result.getDiseaseAnal());
-        }
-
-        HSSFRow row = sheet.createRow(20);
-        row.createCell(0).setCellValue("实验员：");
-        row.createCell(1).setCellValue(experimenterName);
-
-       /* List<Experimenter> experimenters = MyApplication.DATABASE_INSTANCE.getExperimenterDao().getAll();
-        if (experimenters!=null && !experimenters.isEmpty()){
-            HSSFRow row = sheet.createRow(20);
-            row.createCell(0).setCellValue("实验员：");
-            row.createCell(1).setCellValue(experimenters.get(0).getName());
-        }*/
-        return history_workbook;
-    }
     private static String showBleDeviceInfo(BleDeviceInfo bleDeviceInfo){
         if (bleDeviceInfo!=null){
             return getString(R.string.historyPreview_gear)+"("+bleDeviceInfo.getGear()+")"+
@@ -414,36 +473,11 @@ public class ExportUtils {
             return null;
     }
 
-    /***
-     *  将history导出为excel表
+    /**
+     * 向用户显示导出文件路径
      * @param context 上下文对象
-     * @param history 历史记录
+     * @param filePath 文件路径
      */
-    public static void exportHistoryToExcel(Context context, History_multiple history){
-        if (history == null) return;
-        //创建工作簿excel
-        HSSFWorkbook workbook = buildHistoryExcel(history.getHistoryName());
-        //填充数据
-        SharePreferencesManager sharePreferencesManager = new SharePreferencesManager(context);
-        String experimenterName = sharePreferencesManager.getUserName();
-        HSSFWorkbook history_workbook = fillHistoryData(workbook,history,experimenterName);
-        // 保存 Excel 文件
-        try {
-            //构造文件名
-            String fileName = "样品检测-历史记录_" + System.currentTimeMillis() + ".xlsx"; // 默认PNG格式
-            // 创建文件夹路径
-            File file = new File(StorageUtils.getSaveTextPath(), fileName);
-            FileOutputStream fileOut = new FileOutputStream(file);
-            history_workbook.write(fileOut);
-            fileOut.close();
-            history_workbook.close();
-            showFilePathErrorDialog(context,file.getAbsolutePath());
-            Log.d("ExportUtils", "数据已成功导出到 " + file.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "导出数据时出错", android.widget.Toast.LENGTH_SHORT).show();
-        }
-    }
     private static void showFilePathErrorDialog(Context context,String filePath) {
         new AlertDialog.Builder(context)
                 .setTitle("文件路径")
@@ -465,8 +499,13 @@ public class ExportUtils {
      * @return 曲线对象
      * @throws IOException IO异常
      */
-    public static StandardCurve  readCurveExcel(Context context, Uri uri ) throws IOException {
-        //检查uri
+    public static StandardCurve  readCurveExcel(@NonNull Context context, @NonNull Uri uri,@NonNull StandardCurve curve) throws IOException {
+        //1. 参数校验
+        Objects.requireNonNull(context, "context cannot be null");
+        Objects.requireNonNull(uri, "uri cannot be null");
+        Objects.requireNonNull(curve, "curve cannot be null");
+
+        //2. 检查uri
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         if (inputStream == null) {
             Toast.makeText(context, "无法打开文件！", Toast.LENGTH_SHORT).show();
@@ -484,28 +523,38 @@ public class ExportUtils {
             Log.e("ExcelReader", "不支持的文件类型");
             return null;
         }
+        //3. 从工作簿获取直线信息
         Sheet sheet = workbook.getSheetAt(0);
 
-        StandardCurve curve = new StandardCurve();
-        //获取直线基本信息
+        //3.1 获取直线基本信息
         Row basicInfoRow = sheet.getRow(2);
-        if (basicInfoRow != null) {
-            //获取曲线名
-            String name = basicInfoRow.getCell(0).getStringCellValue();
+        if (basicInfoRow != null){
+            //3.1.1 检查曲线名和样品名是否存在
+            String name = basicInfoRow.getCell(0).getStringCellValue();//获取曲线名
             Log.d(TAG, "name: " + name);
             if (isExistCurve(name)){
-                Toast.makeText(context, "曲线名已存在！", Toast.LENGTH_SHORT).show();
-                return null;
+                Toast.makeText(context, "曲线名已存在！仅导入散点！", Toast.LENGTH_SHORT).show();
+                //获取曲线点集
+                List<Point> pointList = getPointListToSheet(context,sheet);
+                if (pointList!=null && !pointList.isEmpty())
+                    curve.setPointList(pointList);
+                else Toast.makeText(context, "散点集为空！", Toast.LENGTH_SHORT).show();
+                return curve;
             }
-            curve.setName(name);
-            //获取样品名
-            String sampleName = basicInfoRow.getCell(1).getStringCellValue();
+            String sampleName = basicInfoRow.getCell(1).getStringCellValue();//获取样品名
             Log.d(TAG, "sampleName: " + sampleName);
             Sample sample = MyApplication.DATABASE_INSTANCE.getSampleDao().findBy_name(sampleName);
             if (sample==null){
-                Toast.makeText(context, "样品名不存在！", Toast.LENGTH_SHORT).show();
-                return null;
+                Toast.makeText(context, "样品名不存在！仅导入散点！", Toast.LENGTH_SHORT).show();
+                //获取曲线点集
+                List<Point> pointList = getPointListToSheet(context,sheet);
+                if (pointList!=null && !pointList.isEmpty())
+                    curve.setPointList(pointList);
+                else Toast.makeText(context, "散点集为空！", Toast.LENGTH_SHORT).show();
+                return curve;
             }
+            //3.1.2 若曲线名不重复，样品名存在，则导入曲线全部基本信息
+            curve.setName(name);
             curve.setSample(sample);
             curve.setSample_id(sample.getId());
             //获取曲线类型
@@ -546,6 +595,15 @@ public class ExportUtils {
             curve.setDescription(basicInfoRow.getCell(8).getStringCellValue());
             Log.d(TAG, "description: " + curve.getDescription());
         }
+        //3.2 获取点集信息
+        List<Point> pointList = getPointListToSheet(context,sheet);
+        if (pointList!=null && !pointList.isEmpty())
+            curve.setPointList(pointList);
+        else Toast.makeText(context, "散点集为空！", Toast.LENGTH_SHORT).show();
+        inputStream.close();
+        return curve;
+    }
+    private static List<Point> getPointListToSheet(Context context,Sheet sheet){
         //获取点集信息
         //1. 先判断有多少个点
         int pointCount = 0;
@@ -572,6 +630,7 @@ public class ExportUtils {
                 break;
             }
         }
+        if (pointCount == 0) return null;
         //2. 获取点集信息
         List<Point> pointList = new ArrayList<>();
         //获取当前时间
@@ -592,9 +651,7 @@ public class ExportUtils {
                 pointList.add(point);
             }
         }
-        curve.setPointList(pointList);
-        inputStream.close();
-        return curve;
+        return pointList;
     }
     private static String getFileExtensionFromUri(Uri uri, Context context) {
         String mimeType = context.getContentResolver().getType(uri);// 获取文件的 MIME 类型
@@ -615,4 +672,6 @@ public class ExportUtils {
         StandardCurve curves = MyApplication.DATABASE_INSTANCE.getStandardCurveDao().findByName(curveName);
         return curves!=null;
     }
+
+
 }

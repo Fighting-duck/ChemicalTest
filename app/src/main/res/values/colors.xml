@@ -17,7 +17,7 @@
     <color name="line_thermal">#EB2F96</color>
     <!--全局-->
     <!--布局背景颜色-->
-    <color name="background">#EDF1F7</color>
+    <color name="background">#F7F7F7</color>
     <!--顶部导航栏颜色-->
     <color name="top_nav_background">#E0F0EF</color>
     <color name="split_lines">#FFDDDDDD</color>
@@ -54,4 +54,12 @@
     <color name="btn_press_false">#C3E5E6</color>
     <color name="btn_disabled">#BDBDBD</color>
     <color name="btn_ripple">#A84040</color>
+
+    <!--单选按钮样式-->
+    <color name="radio_button_checked">#EEB173</color>
+    <color name="radio_button_unchecked">#EDF1F7</color>
+
+    <!--列表项被选中样式颜色-->
+    <color name="item_selected">#EBEBEB</color>
+    <color name="item_unselected">#FFFFFF</color>
 </resources>

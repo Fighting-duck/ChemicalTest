@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.room.Transaction;
 
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.domain.Expression;
@@ -38,6 +39,7 @@ public class CurveManageViewModel extends ViewModel {
     public  MutableLiveData<List<StandardCurve>> getLiveData_showCurves() {
         return liveData_showCurves;
     }
+
     public void setToast(String prompt){
         LiveDataUtils.safeUpdate(mLiveData_toast,prompt);
     }
@@ -135,49 +137,50 @@ public class CurveManageViewModel extends ViewModel {
         void onDeleteFailed(Exception e);//报错
     }
     /**
-     * 删除标准曲线（线程安全 + 数据库事务）
-     * @param curve 要删除的曲线（不可为null）
+     * 批量删除标准曲线（线程安全 + 数据库事务）
+     * @param deleteCurves 要删除的曲线（不可为null）
      * @param callback 结果回调（不可为null）
      */
-    public void deleteCurve(@NonNull StandardCurve curve,@NonNull DeleteCallback callback){
+    @Transaction
+    public void deleteCurves(List<StandardCurve> deleteCurves, DeleteCallback callback) {
         // 参数校验
-        Objects.requireNonNull(curve, "Curve cannot be null");
+        Objects.requireNonNull(deleteCurves, "Curve cannot be null");
         Objects.requireNonNull(callback, "Callback cannot be null");
 
         final UUID taskId = UUID.randomUUID();
         Future<?> future = MyApplication.DB_EXECUTOR.submit(() -> {
             try{
-                //1. 查看该曲线是否在检测实验中用过
-                List<History_multiple> histories = MyApplication.DATABASE_INSTANCE.getHistory_multipleDao().findByCurveId(curve.getId());
-                if (histories!=null && !histories.isEmpty()){
-                    // 2.用过则将validity设为0 curve.setValidity(0);
-                    Log.d("deleteCurve", "update curveId=" + curve+" 's validity=0.");
-                    MyApplication.DATABASE_INSTANCE.getStandardCurveDao().updateValidity(curve.getId(),0);
-                }
-                else {
-                    // 2.没用过则删除
-                    Log.d("deleteCurve", "delete curveId=" + curve);
-                    // 硬删除（带事务）
-                    MyApplication.DATABASE_INSTANCE.runInTransaction(() -> {
-                        // 先删除关联点
-                        List<Point> points = curve.getPointList();
-                        if (points != null && !points.isEmpty()) {
-                            MyApplication.DATABASE_INSTANCE.getPointDao()
-                                    .delete(points.toArray(new Point[0]));
-                        }
-                        // 再删除曲线
-                        MyApplication.DATABASE_INSTANCE.getStandardCurveDao()
-                                .deleteById(curve.getId());
-                    });
-                }
-
-                // 3.更新UI数据（主线程）
                 List<StandardCurve> curves = liveData_showCurves.getValue();
-                if (curves!=null && !curves.isEmpty()){
-                    curves.removeIf(curveToRemove -> curveToRemove.getId() == curve.getId());
-                    liveData_showCurves.postValue(curves);
+                for (StandardCurve curve : deleteCurves){
+                    //1. 查看该曲线是否在检测实验中用过
+                    List<History_multiple> histories = MyApplication.DATABASE_INSTANCE.getHistory_multipleDao().findByCurveId(curve.getId());
+                    if (histories!=null && !histories.isEmpty()){
+                        // 2.用过则将validity设为0 curve.setValidity(0);
+                        Log.d("deleteCurve", "update curveId=" + curve+" 's validity=0.");
+                        MyApplication.DATABASE_INSTANCE.getStandardCurveDao().updateValidity(curve.getId(),0);
+                    }
+                    else {
+                        // 2.没用过则删除
+                        Log.d("deleteCurve", "delete curveId=" + curve);
+                        // 硬删除（带事务）
+                        MyApplication.DATABASE_INSTANCE.runInTransaction(() -> {
+                            // 先删除关联点
+                            List<Point> points = curve.getPointList();
+                            if (points != null && !points.isEmpty()) {
+                                MyApplication.DATABASE_INSTANCE.getPointDao()
+                                        .delete(points.toArray(new Point[0]));
+                            }
+                            // 再删除曲线
+                            MyApplication.DATABASE_INSTANCE.getStandardCurveDao()
+                                    .deleteById(curve.getId());
+                        });
+                    }
+                    // 3.更新UI数据（主线程）
+                    if (curves!=null && !curves.isEmpty()){
+                        curves.removeIf(curveToRemove -> curveToRemove.getId() == curve.getId());
+                    }
                 }
-
+                liveData_showCurves.postValue(curves);
                 // 成功回调
                 new Handler(Looper.getMainLooper()).post(callback::onDeleteCompleted);
                 pendingTasks.remove(taskId); // 任务完成时移除
@@ -188,6 +191,8 @@ public class CurveManageViewModel extends ViewModel {
         });
         pendingTasks.put(taskId, future);
     }
+
+
 
     @Override
     protected void onCleared() {
@@ -206,4 +211,6 @@ public class CurveManageViewModel extends ViewModel {
         });
         pendingTasks.clear();
     }
+
+
 }

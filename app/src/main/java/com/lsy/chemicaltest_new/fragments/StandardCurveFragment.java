@@ -50,6 +50,7 @@ import com.lsy.chemicaltest_new.domain.dialog.PhotoPickerBottomSheet;
 import com.lsy.chemicaltest_new.models.StandardCurveViewModel;
 import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 import com.lsy.chemicaltest_new.utils.ImageProcessor;
+import com.lsy.chemicaltest_new.utils.NumberUtils;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class StandardCurveFragment extends Fragment {
     private ImageProcessor mImageProcessor;
     private ActivityResultLauncher<Intent> mMeasureValueActivityLauncher;
     private ActivityResultLauncher<Intent> bitmapResultLauncher;
+    private CombinedChartUtils.LinearRegressionResult mRegressionResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -242,11 +244,29 @@ public class StandardCurveFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 String str_y = s.toString();
+
+                // 只有一个负号，设置为默认值
+                if (str_y.equals("-")) {
+                    mBinding.tvX.setText(""); // 清空之前的计算结果
+                    mBinding.tvLgX2.setText("");
+                    mBinding.tvConfidenceInterval.setText("");
+                    return;
+                }
+
                 if (!str_y.isEmpty()) {
-                    Float result = mViewModel.calculateCo_toY(Float.parseFloat(str_y));
+                    Float y = Float.parseFloat(str_y);
+                    Float result = mViewModel.calculateCo_toY(y);//x
                     Log.d(TAG, "y:"+str_y+" x:"+result);
-                    if (result != null)
-                        mBinding.tvX.setText(String.valueOf(result));
+                    if (result != null && mRegressionResult != null){
+                        mBinding.tvX.setText(String.valueOf(NumberUtils.roundCurve_lgX_avgY(result)));
+                        mBinding.tvLgX2.setText(String.valueOf(NumberUtils.roundCurve_lgX_avgY((float) Math.log10(result))));
+                        float[] x_interval = mRegressionResult.inversePredictInterval(y);//[x1,x2]
+                        mBinding.tvConfidenceInterval.setText("["+
+                                NumberUtils.roundCurve_lgX_avgY(x_interval[0])+
+                                " ， "+
+                                NumberUtils.roundCurve_lgX_avgY(x_interval[1])+
+                                "]");
+                    }
                     else
                         mBinding.tvX.setText("");
                 }else mBinding.tvX.setText("");
@@ -399,11 +419,13 @@ public class StandardCurveFragment extends Fragment {
         });
         mViewModel.getLiveData_pointList().observe(getViewLifecycleOwner(), pointList -> {
             String x_unit = getString(R.string.unit_lg_c) + mViewModel.getLiveData_xUnit().getValue();//x轴单位
-            List<Float> k_b_corr = CombinedChartUtils.buildChart(mContext, mBinding.ccChart,pointList, mViewModel.getCurveType(), x_unit);
-            Log.d(TAG, "k_b_corr:"+k_b_corr.toString());
+            mRegressionResult = CombinedChartUtils.buildChart(mContext, mBinding.ccChart,pointList, mViewModel.getCurveType(), x_unit);
+            Log.d(TAG, "regressionResult:"+mRegressionResult.toString());
             if (pointList.size()>=2 && mIsAutoCalculate){
-                mViewModel.set_curve_CORR(k_b_corr.get(2)*100);
-                mViewModel.setExpression(new Expression(k_b_corr.get(0),k_b_corr.get(1)));
+                mViewModel.set_curve_CORR(NumberUtils.roundCurve_k_b_r(mRegressionResult.correlationCoefficient()*100));//设置相关系数
+                mViewModel.setCurve_Mse(NumberUtils.roundCurve_k_b_r(mRegressionResult.getMse()));
+                mViewModel.setExpression(new Expression(NumberUtils.roundCurve_k_b_r(mRegressionResult.getK()),
+                        NumberUtils.roundCurve_k_b_r(mRegressionResult.getB())));//设置曲线方程
             }
             mPointListAdapter.update(pointList);
         });
@@ -430,6 +452,12 @@ public class StandardCurveFragment extends Fragment {
                     mBinding.ivNoticeCorr.setImageResource(R.drawable.icon_notice_abnormal);
                 }
             }
+        });
+        mViewModel.getLiveData_mse().observe(getViewLifecycleOwner(), mse -> {
+            if (mse == null)
+                mBinding.tvMse.setText(getString(R.string.default_no));
+            else
+                mBinding.tvMse.setText(String.valueOf(mse));
         });
     }
 
@@ -627,13 +655,14 @@ public class StandardCurveFragment extends Fragment {
     }
 
    public void fillCurve(StandardCurve curve , Boolean isAutoCalculate){
-       mIsAutoCalculate = isAutoCalculate;
+       //mIsAutoCalculate = isAutoCalculate;
        Log.d(TAG, "fillCurve: "+ curve);
        mViewModel.setCurve(curve);
-       mIsAutoCalculate = true;
+       //mIsAutoCalculate = true;
    }
 
    public StandardCurve getCurve(){
-       return mViewModel.getCurve();
+        StandardCurve curve = mViewModel.getCurve();
+       return new StandardCurve(curve);
    }
 }

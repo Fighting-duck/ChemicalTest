@@ -1,17 +1,11 @@
 package com.lsy.chemicaltest_new.activitys.smpleTest;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.Manifest;
+
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -24,21 +18,20 @@ import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.fragments.StandardCurveFragment;
 import com.lsy.chemicaltest_new.models.AlterCurveViewModel;
 import com.lsy.chemicaltest_new.utils.ExportUtils;
+import com.lsy.chemicaltest_new.utils.PermissionManager;
 import com.lsy.chemicaltest_new.utils.StorageUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
-
-public class AlterCurveActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks{
+public class AlterCurveActivity extends BaseActivity {
     private static final String TAG = "AlterCurveActivity";
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 100;
-    private static final int MY_PERMISSIONS_REQUEST_MANAGE_STORAGE = 10;
+
     private ActivityAlterCurveBinding mBinding;
     private Context mContext;
     private AlterCurveViewModel mViewModel;
     StandardCurveFragment mFragment;
+    private PermissionManager mPermissionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +75,27 @@ public class AlterCurveActivity extends BaseActivity implements EasyPermissions.
     }
 
     private void initUI() {
+        // 初始化 PermissionManager
+        mPermissionManager = new PermissionManager(
+                this,
+                new PermissionManager.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        List<StandardCurve> curveList = new ArrayList<>();
+                        curveList.add(mViewModel.getOldCurve());
+                        // 权限已授予，执行导出操作
+                        ExportUtils.exportCurvesToExcel(mContext, curveList);
+                    }
+                    @Override
+                    public void onPermissionDenied() {
+                        // 权限被拒绝，可以在这里处理
+                    }
+                },
+                R.string.toast_permission_write_storage_deny,
+                R.string.toast_permission_write_storage_deny,
+                R.string.permission_dialog_title,
+                R.string.permission_dialog_rational_writeStorage
+        );
         mViewModel.getLiveData_toast().observe(this,toast->{
             if (toast != null){
                 Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
@@ -118,88 +132,8 @@ public class AlterCurveActivity extends BaseActivity implements EasyPermissions.
             finish();
         }
         else if (view.getId() == mBinding.btnExport.getId()){
-            if (StorageUtils.hasEnoughSpace(50)){
-                requestPermissionsAndExport();
-            }
-            else
-                Toast.makeText(mContext, getString(R.string.toast_insufficientSspace), Toast.LENGTH_SHORT).show();
-        }
-    }
-    //请求权限并导出
-    private void requestPermissionsAndExport() {
-        // 检查是否已拥有权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 10 及以上版本，使用分区存储
-            if (Environment.isExternalStorageManager()) {
-                // 已授予管理所有文件的权限
-                ExportUtils.exportCurve(this,mViewModel.getOldCurve());
-            } else {
-                // 请求管理所有文件的权限
-                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                startActivityForResult(intent, MY_PERMISSIONS_REQUEST_MANAGE_STORAGE);
-            }
-        } else {
-            // Android 10 以下版本，使用传统存储权限
-            if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // 权限已授予，执行导出操作
-                ExportUtils.exportCurve(this,mViewModel.getOldCurve());
-            } else {
-                // 请求权限
-                EasyPermissions.requestPermissions(
-                        this,
-                        getString(R.string.toast_permission_write_storage),  // 权限请求的解释说明
-                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                );
-            }
+            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MY_PERMISSIONS_REQUEST_MANAGE_STORAGE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    // 权限已授予，执行导出操作
-                    ExportUtils.exportCurve(this,mViewModel.getOldCurve());
-                } else {
-                    // 权限被拒绝，提示用户
-                    Toast.makeText(this, getString(R.string.toast_permission_write_storage_deny), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 使用 EasyPermissions 处理权限请求的结果
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        // 权限被授予
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            ExportUtils.exportCurve(this,mViewModel.getOldCurve());  // 执行导出操作
-        }
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        // 权限被拒绝
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            Toast.makeText(this, getString(R.string.toast_permission_write_storage_deny), Toast.LENGTH_SHORT).show();
-            // 如果用户永久拒绝了权限，可以提示用户手动开启权限
-            if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-                new AppSettingsDialog.Builder(this)
-                        .setTitle(getString(R.string.permission_dialog_title))
-                        .setRationale(getString(R.string.permission_dialog_rational_writeStorage))
-                        .setPositiveButton(getString(R.string.permission_dialog_positive))
-                        .setNegativeButton(getString(R.string.permission_dialog_negative))
-                        .build()
-                        .show();
-            }
-        }
-    }
 }

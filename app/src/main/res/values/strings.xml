@@ -19,6 +19,7 @@
     <string name="text_center_temperature">中心点温度:</string>
     <string name="text_disease_analysis">病害分析:</string>
     <string name="text_disease_analysis_2">病害分析</string>
+    <string name="text_confidenceInterval_predicted">预测浓度置信区间(95%):</string>
     <string name="text_selectCurve">选择标准曲线</string>
     <string name="elec">电信号</string>
     <string name="colo">比色图像</string>
@@ -90,13 +91,15 @@
     <string name="curve_GetTemperature">从标样获取温度值</string>
     <string name="curve_GetB">从标样获取Blue值</string>
     <string name="curve_point_add">添加</string>
-    <string name="curve_CORR">相关系数:</string>
+    <string name="curve_CORR">R:</string>
+    <string name="curve_MSE">MSE:</string>
     <string name="curve_expression">表达式:</string>
     <string name="curve_description">备注:</string>
     <string name="curve_calculate">计算</string>
     <string name="curve_lgX">lg X:</string>
     <string name="curve_avgY">avg Y:</string>
     <string name="curve_X">X:</string>
+    <string name="curve_ConfidenceInterval">预测值lgX置信区间(95%)：</string>
     <!--修改标准曲线-->
     <string name="title_alter_standard_curve">修改标准曲线</string>
     <string name="curve_delete">删除</string>
@@ -117,6 +120,9 @@
     <string name="sample_editing">修改中…</string>
     <string name="sample_totalNum">样品数:</string>
     <string name="sample_deleteDialog_title">是否删除该图片?</string>
+    <string name="sample_relationship_mlr">三模式关系MLR</string>
+    <!--三模式关系-->
+    <string name="title_threeModeRelationship">三模式关系</string>
     <!---标准曲线管理-->
     <string name="title_standardCurve">标准曲线</string>
     <string name="curveManage_noText">暂无标准曲线</string>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 1. 选中状态：橘黄色填充圆 + 白色对勾 -->
+    <item android:state_checked="true">
+        <vector android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <!-- 橘黄色填充圆 -->
+            <path
+                android:fillColor="@color/radio_button_checked"
+            android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+
+            <!-- 白色对勾 -->
+            <!-- 适配后的 SVG 对勾（原 SVG 路径按 24/1024 比例缩放） -->
+            <path
+                android:fillColor="@android:color/white"
+                android:pathData="M10.27068,19.00000002C10.06194,19.00000002,9.8532,18.90116,9.69456,18.70554L5.23922,13.21172C4.92026,12.81842,4.92026,12.18214,5.23922,11.78884C5.55817,11.39554,6.07418,11.39554,6.39313,11.78884L10.84847,17.28473C11.16743,17.67802,11.16743,18.3143,10.84847,18.7076C10.68816,18.90322,10.47942,19.00000002,10.27068,19.00000002Z"/>
+
+            <!-- 第二条路径（右侧离圆边间距≈2.8dp，与左侧对称） -->
+            <path
+                android:fillColor="@android:color/white"
+            android:pathData="M10.27064,18.99996C10.0619,18.99996,9.85316,18.90112,9.69452,18.7055C9.37556,18.3122,9.37556,17.67592,9.69452,17.28262L17.2,7.8C17.51895,7.4067,18.035,7.4067,18.35395,7.8C18.6729,8.1933,18.6729,8.8296,18.35395,9.2229L10.84843,18.7055C10.68812,18.90318,10.47938,18.99996,10.27064,18.99996Z"/>
+        </vector>
+    </item>
+
+    <!-- 2. 未选中状态：灰色填充圆 -->
+    <item android:state_checked="false">
+        <vector android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <!-- 灰色填充圆（无描边） -->
+            <path
+                android:fillColor="@color/radio_button_unchecked"
+            android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+        </vector>
+    </item>
+</selector>
+

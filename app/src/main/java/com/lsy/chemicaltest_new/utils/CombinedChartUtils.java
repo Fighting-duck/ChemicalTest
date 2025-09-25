@@ -24,6 +24,8 @@ import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 
+import org.apache.commons.math3.distribution.TDistribution;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -189,7 +191,7 @@ public class CombinedChartUtils {
     }
 
 
-    //传入一条直线，根据其类型选择线条颜色，若直线公式为空，则最小二乘法拟合该曲线，不为空，直接使用公式，最后在联合图中显示直线图和散点图
+/*    //传入一条直线，根据其类型选择线条颜色，若直线公式为空，则最小二乘法拟合该曲线，不为空，直接使用公式，最后在联合图中显示直线图和散点图
     public static List<Float> buildChart(Context context, StandardCurve standardCurve, CombinedChart combinedChart) {
         List<Point> pointList = standardCurve.getPointList();
         if (pointList == null) return null;
@@ -247,9 +249,9 @@ public class CombinedChartUtils {
         // 刷新图表
         combinedChart.invalidate();
         return k_b_corr;
-    }
+    }*/
     //传入一条直线，根据其类型选择线条颜色，若直线公式为空，则最小二乘法拟合该曲线，不为空，直接使用公式，最后在联合图中显示直线图和散点图
-    public static List<Float> buildChart(Context context, CombinedChart combinedChart, List<Point> pointList, Integer type, String x_unit) {
+/*    public static List<Float> buildChart(Context context, CombinedChart combinedChart, List<Point> pointList, Integer type, String x_unit) {
         if (pointList == null || type>3 || type<0) return null;
         CombinedData combinedData = new CombinedData();//联合图数据
         ScatterData scatterData = new ScatterData();//散点图数据
@@ -284,7 +286,43 @@ public class CombinedChartUtils {
         calculateAndSetAxisRange(combinedChart, pointList);
         combinedChart.invalidate();
         return k_b_corr;
+    }*/
+public static LinearRegressionResult buildChart(Context context, CombinedChart combinedChart, List<Point> pointList, Integer type, String x_unit) {
+    if (pointList == null || type>3 || type<0) return null;
+    CombinedData combinedData = new CombinedData();//联合图数据
+    ScatterData scatterData = new ScatterData();//散点图数据
+    LineData lineData = new LineData();//直线图数据
+    // 将 ScatterData 和 LineData 添加到 CombinedData
+    combinedData.setData(scatterData);
+    combinedData.setData(lineData);
+    // 设置联合图表数据到 CombinedChart
+    combinedChart.setData(combinedData);
+    LinearRegressionResult regressionResult = null;
+    int sc_color = ContextCompat.getColor(context, StandardCurve.getCurveColor(type));
+    int lc_color = ContextCompat.getColor(context, R.color.purple_200);
+    //pointList转EntryList
+    List<Entry> entryList = Point.pointList_to_entryList(pointList);
+    if (!entryList.isEmpty()) {
+        update_SC_Chart(scatterData, entryList, sc_color);//创建散点图
+        float minX = entryList.get(0).getX();
+        float maxX = entryList.get(entryList.size() - 1).getX();
+        regressionResult = build_FitLine(entryList);
+        List<Entry> entryList_two = build_EntryList(regressionResult.getK(), regressionResult.getB(), minX, maxX);
+        update_LC_Chart(lineData, entryList_two, lc_color);
+
     }
+
+    //添加描述
+    Description description = combinedChart.getDescription();
+    description.setEnabled(true);//是否可用
+    description.setText(x_unit);
+    description.setTextColor(Color.BLACK);//字体颜色
+    description.setTextSize(12f);//字体大小
+    // 刷新图表
+    calculateAndSetAxisRange(combinedChart, pointList);
+    combinedChart.invalidate();
+    return regressionResult;
+}
 
     /***
      * 利用标准曲线创建散点图
@@ -333,6 +371,108 @@ public class CombinedChartUtils {
     }
 
     /***
+     * 线性回归返回结果
+     */
+    public static class LinearRegressionResult {
+        private float k, b, mse, xMean, sxx;//斜率，截距，均方误差，x均值，x方差
+        private int n;//数据点数量
+
+        public LinearRegressionResult(float k, float b, float mse, float xMean, float sxx, int n) {
+            this.k = k;
+            this.b = b;
+            this.mse = mse;
+            this.xMean = xMean;
+            this.sxx = sxx;
+            this.n = n;
+        }
+
+        /**
+         * 计算某 x 处的预测值 95% 置信区间
+         */
+        public float[] predictInterval(float x) {
+            float yPred = k * x + b;
+            float sep = (float) Math.sqrt(mse * (1 + 1.0 / n + Math.pow(x - xMean, 2) / sxx));
+            TDistribution tDist = new TDistribution(n - 2);
+            float tCritical = (float) tDist.inverseCumulativeProbability(0.975); // 95%置信区间
+            float margin = tCritical * sep;
+            return new float[]{yPred - margin, yPred + margin};
+        }
+        /**
+         * 特殊场景：根据y值反推x的可能范围（95%置信区间）
+         */
+        public float[] inversePredictInterval(float y) {
+            // 从y反推x的估计值
+            float xEst = (y - b) / k;
+
+            // 计算反推的标准误差（基于回归模型的误差传递）
+            float seInverse = (float) Math.sqrt(
+                    (mse / (k * k)) * (1 + 1.0 / n + Math.pow(xEst - xMean, 2) / sxx)
+            );
+
+            TDistribution tDist = new TDistribution(n - 2);
+            float tCritical = (float) tDist.inverseCumulativeProbability(0.975); // 95%置信区间
+            float margin = tCritical * seInverse;
+            return new float[]{xEst - margin, xEst + margin};
+        }
+        /**
+         * 计算 Pearson 相关系数 r
+         */
+        public float correlationCoefficient() {
+            float syy = mse * (n - 2) + k * k * sxx;
+            return (float) ((k * Math.sqrt(sxx)) / Math.sqrt(syy));
+        }
+
+        public float getK() {
+            return k;
+        }
+
+        public void setK(float k) {
+            this.k = k;
+        }
+
+        public float getB() {
+            return b;
+        }
+
+        public void setB(float b) {
+            this.b = b;
+        }
+
+        public float getMse() {
+            return mse;
+        }
+
+        public void setMse(float mse) {
+            this.mse = mse;
+        }
+
+        public float getxMean() {
+            return xMean;
+        }
+
+        public void setxMean(float xMean) {
+            this.xMean = xMean;
+        }
+
+        public float getSxx() {
+            return sxx;
+        }
+
+        public void setSxx(float sxx) {
+            this.sxx = sxx;
+        }
+
+        public int getN() {
+            return n;
+        }
+
+        public void setN(int n) {
+            this.n = n;
+        }
+    }
+
+
+    /***
      * 使用最小二乘法来拟合直线 直线方程Y=kX + b
      * N:数据点数量
      * 斜率 k 的计算公式为：k = (N * Σ(xy) - Σx * Σy) / (N * Σ(x^2) - (Σx)^2)
@@ -340,7 +480,7 @@ public class CombinedChartUtils {
      * @param  entries 散点数据集
      * @return (k,b,corr)
      */
-    @SuppressLint({"SetTextI18n","DefaultLocale"})
+/*    @SuppressLint({"SetTextI18n","DefaultLocale"})
     public static List<Float> build_FitLine(List<Entry> entries){
         final int N = entries.size();
         float sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 =0;
@@ -368,6 +508,43 @@ public class CombinedChartUtils {
         result.add(NumberUtils.roundCurve_k_b_r( b));
         result.add(NumberUtils.roundCurve_k_b_r( r));
         return result;
+    }*/
+
+    @SuppressLint({"SetTextI18n","DefaultLocale"})
+    public static LinearRegressionResult build_FitLine(List<Entry> entries){
+        final int N = entries.size();
+        float sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        for (Entry entry : entries) {
+            float x = entry.getX();
+            float y = entry.getY();
+            sumX += x;
+            sumY += y;
+            sumXY += x * y;
+            sumX2 += x * x;
+        }
+        float xMean = sumX / N;
+        float yMean = sumY / N;
+        // 计算斜率和截距
+        final float denominator = (N * sumX2) - (sumX * sumX);
+        float k = (N * sumXY - sumX * sumY) / denominator;
+        float b = yMean - k * xMean;
+        //计算残差平方和SSE和均方误差MSE
+        float sse = 0;
+        for (Entry entry : entries) {
+            float x = entry.getX();
+            float y = entry.getY();
+            float yPred = k * x + b;//预测值
+            sse += (float) Math.pow(y - yPred, 2);
+        }
+        float mse = sse / (N - 2);
+
+        //计算Sxx
+        float sxx = 0;
+        for (Entry entry : entries) {
+            float x = entry.getX();
+            sxx += (float) Math.pow(x - xMean, 2);
+        }
+        return new LinearRegressionResult(k, b, mse, xMean, sxx, N);
     }
 
     /**

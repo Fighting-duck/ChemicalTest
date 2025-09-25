@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 public class AddCurveViewModel extends ViewModel{
     // 用于取消正在进行的任务
     private final ConcurrentHashMap<UUID, Future<?>> pendingTasks = new ConcurrentHashMap<>();
+
     public enum SaveState {
         LOADING,
         SUCCESS,

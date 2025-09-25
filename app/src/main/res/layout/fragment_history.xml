@@ -85,6 +85,12 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp">
         <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:background="@drawable/icon_back_2"
+            android:visibility="gone"/>
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -123,5 +129,26 @@
             android:text="@string/history_noText"
             android:textSize="18sp"
             android:layout_gravity="center" />
+        <LinearLayout
+            android:id="@+id/ll_multiSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="30dp"
+            android:visibility="gone">
+            <android.widget.Button
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/curve_delete"
+                style="@style/ButtonStyle.Primary"/>
+            <android.widget.Button
+                android:id="@+id/btn_export"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/curve_export"
+                android:layout_marginStart="20dp"
+                style="@style/ButtonStyle.Primary"/>
+        </LinearLayout>
     </FrameLayout>
 </LinearLayout>

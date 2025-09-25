@@ -13,17 +13,21 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Transaction;
 
+import com.github.mikephil.charting.data.Entry;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
+import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.Temperature_Elec;
 import com.lsy.chemicaltest_new.domain.ThermalTestResult;
+import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import com.lsy.chemicaltest_new.utils.NumberUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class ThermalViewModel extends AndroidViewModel {
     private static final String TAG = "ThermalViewModel";
@@ -35,6 +39,7 @@ public class ThermalViewModel extends AndroidViewModel {
     private MutableLiveData<Float> mLiveData_centralTemperature = new MutableLiveData<>();// 中心温度
     private MutableLiveData<Float> mLiveData_CO = new MutableLiveData<>();// 浓度
     private MutableLiveData<String> mLiveData_diseaseAnal = new MutableLiveData<>();// 病害分析
+    MutableLiveData<float[]> mLiveData_confidenceInterval = new MutableLiveData<>();
     private MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_notice = new MutableLiveData<>();
 
@@ -69,7 +74,9 @@ public class ThermalViewModel extends AndroidViewModel {
     public MutableLiveData<String> getLiveData_diseaseAnal() {
         return mLiveData_diseaseAnal;
     }
-
+    public MutableLiveData<float[]> getLiveData_confidenceInterval(){
+        return mLiveData_confidenceInterval;
+    }
     public MutableLiveData<String> getLiveData_notice(){
         return mLiveData_notice;
     }
@@ -228,6 +235,7 @@ public class ThermalViewModel extends AndroidViewModel {
             Float co = curve.calculateX_toY(temperature);
             mLiveData_CO.setValue(NumberUtils.roundCO(co));
             noticeCO(co,curve);
+            calculateConfidenceInterval(curve, temperature);
         }
     }
     //病害分析
@@ -310,7 +318,10 @@ public class ThermalViewModel extends AndroidViewModel {
     }
     public void setStandardCurve(StandardCurve standardCurve) {
         mLiveData_curve.setValue(standardCurve);
-        calculate_DegreeCO(); // 计算出当前温度对应的浓度
+        Float temperature = mLiveData_centralTemperature.getValue();
+        if (temperature!=null){
+            calculateCO(temperature); // 计算出当前温度对应的浓度
+        }
     }
     /***
      * 使用温度算浓度
@@ -322,10 +333,36 @@ public class ThermalViewModel extends AndroidViewModel {
         if (curve != null && temperature!=null){
             Float CO = curve.calculateX_toY(temperature);
             mLiveData_CO.setValue(CO);
+            calculateConfidenceInterval(curve,temperature);
             // 病害分析
             startDiseaseAnal();
             //noticeCO(CO,curve,1);
         }
+    }
+
+    /***
+     * 计算置信区间
+     */
+    public void calculateConfidenceInterval(StandardCurve curve,Float temperature){
+        // 输入参数校验
+        if (curve == null || temperature == null) {
+            Log.w(TAG, "计算置信区间失败：标准曲线或温度值为空");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        List<Point> pointList = StandardCurve.getPointList(curve.getPoint_set());
+        List<Entry> entries = Point.pointList_to_entryList(pointList);
+        CombinedChartUtils.LinearRegressionResult linearRegressionResult = CombinedChartUtils.build_FitLine(entries);
+        float[] interval_lgx = linearRegressionResult.inversePredictInterval(temperature);//逆预测,lgx值置信区间
+        if (interval_lgx == null || interval_lgx.length != 2) {
+            Log.w(TAG, "计算置信区间失败：逆预测结果格式不正确");
+            mLiveData_confidenceInterval.setValue(null);
+            return;
+        }
+        float[] interval_x = new float[2];// X值置信区间
+        interval_x[0] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[0]));
+        interval_x[1] = NumberUtils.roundCurve_lgX_avgY((float) Math.pow(10,interval_lgx[1]));
+        mLiveData_confidenceInterval.setValue(interval_x);
     }
 
     /***

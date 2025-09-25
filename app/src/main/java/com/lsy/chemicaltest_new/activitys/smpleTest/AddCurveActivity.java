@@ -123,10 +123,12 @@ public class AddCurveActivity extends BaseActivity {
                             Log.d(TAG, "selectedFileUri: " + selectedFileUri.toString());
                             // 读取文件内容
                             try {
-                                StandardCurve curve = ExportUtils.readCurveExcel(mContext,selectedFileUri);
-                                Log.d(TAG, "curve: " + curve);
-                                if (curve != null)
-                                    mFragment.fillCurve(curve,true);
+                                StandardCurve oldCurve = mFragment.getCurve();
+                                Log.d(TAG, "oldCurve: " + oldCurve);
+                                StandardCurve exportCurve = ExportUtils.readCurveExcel(mContext,selectedFileUri,oldCurve);
+                                Log.d(TAG, "newCurve: " + exportCurve);
+                                if (exportCurve != null)
+                                    mFragment.fillCurve(exportCurve,true);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
