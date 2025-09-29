@@ -1,9 +1,8 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
+package com.lsy.chemicaltest_new.activitys.smpleTest.test;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -27,7 +26,6 @@ import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityColorimetricBinding;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.HSV;
-import com.lsy.chemicaltest_new.domain.RGB;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.dialog.CurveDetailDialog;
 import com.lsy.chemicaltest_new.fragments.SelectCurveFragment;

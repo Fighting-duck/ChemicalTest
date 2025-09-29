@@ -1,4 +1,4 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
+package com.lsy.chemicaltest_new.activitys.smpleTest.test;
 
 import android.app.Activity;
 import android.content.Context;

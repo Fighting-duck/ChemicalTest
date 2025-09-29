@@ -1,16 +1,12 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
+package com.lsy.chemicaltest_new.activitys.smpleTest.manage;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -33,7 +28,6 @@ import com.lsy.chemicaltest_new.databinding.ActivityAddCurveBinding;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.fragments.StandardCurveFragment;
 import com.lsy.chemicaltest_new.models.AddCurveViewModel;
-import com.lsy.chemicaltest_new.models.CurveManageViewModel;
 import com.lsy.chemicaltest_new.utils.ExportUtils;
 
 import java.io.IOException;

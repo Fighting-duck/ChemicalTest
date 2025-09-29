@@ -1,6 +1,4 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.lsy.chemicaltest_new.activitys.smpleTest.test;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
-import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityCropImageBinding;
 import com.lsy.chemicaltest_new.utils.ImageProcessor;
 

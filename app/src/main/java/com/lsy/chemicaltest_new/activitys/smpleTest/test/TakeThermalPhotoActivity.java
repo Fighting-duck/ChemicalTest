@@ -1,13 +1,7 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
+package com.lsy.chemicaltest_new.activitys.smpleTest.test;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,15 +18,11 @@ import com.flir.flironesdk.Device;
 import com.flir.flironesdk.Frame;
 import com.flir.flironesdk.FrameProcessor;
 import com.flir.flironesdk.RenderedImage;
-import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.ActivityTakeThermalPhotoBinding;
-import com.lsy.chemicaltest_new.models.ThermalViewModel;
 import com.lsy.chemicaltest_new.utils.CustomDevice;
-import com.lsy.chemicaltest_new.utils.FrameSaver;
-import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

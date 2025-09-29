@@ -1,15 +1,11 @@
-package com.lsy.chemicaltest_new.activitys.smpleTest;
+package com.lsy.chemicaltest_new.activitys.smpleTest.manage;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -20,11 +16,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
 import com.lsy.chemicaltest_new.adapters.CurveAdapter;
@@ -36,12 +30,8 @@ import com.lsy.chemicaltest_new.utils.ExportUtils;
 import com.lsy.chemicaltest_new.utils.PermissionManager;
 import com.lsy.chemicaltest_new.utils.StorageUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
 
 /***
  * 主要负责：
@@ -175,12 +165,12 @@ public class CurveManageActivity extends BaseActivity{
             //mBinding.btnBatchDelete.setVisibility(isMultiSelectMode ? View.VISIBLE : View.GONE);
             if (isMultiSelectMode){
                 Log.d(TAG+" MultiSelect", "打开多选模式");
-                mBinding.llMultiSelect.setVisibility(View.VISIBLE);
+                mBinding.llCurveMultiSelect.setVisibility(View.VISIBLE);
                 mBinding.tvBack.setVisibility(View.VISIBLE);
             }
             else {
                 Log.d(TAG+" MultiSelect", "关闭多选模式");
-                mBinding.llMultiSelect.setVisibility(View.GONE);
+                mBinding.llCurveMultiSelect.setVisibility(View.GONE);
                 mBinding.tvBack.setVisibility(View.GONE);
             }
 
