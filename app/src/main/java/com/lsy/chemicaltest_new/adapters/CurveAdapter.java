@@ -77,11 +77,13 @@ public class CurveAdapter  extends ListAdapter<StandardCurve, CurveAdapter.ViewH
             radio_btn = itemView.findViewById(R.id.radio_btn);
         }
 
+        @SuppressLint("SetTextI18n")
         void bind(StandardCurve item) {
             tv_name.setText(item.getName());
             tv_curveType.setText(item.getCurveType());
-            tv_formula.setText(item.getFormula().toString());
-            tv_corr.setText(String.valueOf(item.getCORR()+"%"));
+            if (item.getFormula() != null)
+                tv_formula.setText(item.getFormula().toString());
+            tv_corr.setText(item.getCORR() + "%");
             tv_sample.setText(item.getSample().getName());
         }
 
@@ -136,15 +138,6 @@ public class CurveAdapter  extends ListAdapter<StandardCurve, CurveAdapter.ViewH
             selectItem(position);
             return true;
         });
-        // 单选按钮点击
-        holder.radio_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (multiSelectHelper.isMultiSelectMode()) {
-                    selectItem(position);
-                }
-            }
-        });
         // 点击进入编辑模式
         holder.ll_main.setOnClickListener(v -> {
             if (multiSelectHelper.isMultiSelectMode()) {
@@ -153,6 +146,12 @@ public class CurveAdapter  extends ListAdapter<StandardCurve, CurveAdapter.ViewH
             }
             else {
                 if (editClickListener != null) editClickListener.onEditClick(position);
+            }
+        });
+        // 单选按钮点击
+        holder.radio_btn.setOnClickListener(v -> {
+            if (multiSelectHelper.isMultiSelectMode()) {
+                selectItem(position);
             }
         });
     }
@@ -167,6 +166,7 @@ public class CurveAdapter  extends ListAdapter<StandardCurve, CurveAdapter.ViewH
     /**
      * 退出多选模式
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void exitMultiSelectMode() {
         multiSelectHelper.clearSelection();
         notifyDataSetChanged();

@@ -43,10 +43,13 @@
         android:theme="@style/Theme.ChemicalTest_new"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activitys.smpleTest.manage.CorrectCurveActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitys.smpleTest.CurveRelationshipActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.MeasureValueByMultimeterActivity"
+            android:name=".activitys.smpleTest.test.MeasureValueByMultimeterActivity"
             android:exported="false" />
         <activity
             android:name=".activitys.mine.AboutAppActivity"
@@ -58,20 +61,20 @@
             android:name=".activitys.mine.CurveSettingActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.CurveManageActivity"
+            android:name=".activitys.smpleTest.manage.CurveManageActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.SamplesManageActivity"
+            android:name=".activitys.smpleTest.manage.SamplesManageActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".activitys.history.HistoryPreviewActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.AlterCurveActivity"
+            android:name=".activitys.smpleTest.manage.AlterCurveActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.AddCurveActivity"
+            android:name=".activitys.smpleTest.manage.AddCurveActivity"
             android:exported="false" /> <!-- 屏幕竖向锁定 -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -87,10 +90,10 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".activitys.smpleTest.CropActivity"
+            android:name=".activitys.smpleTest.test.CropActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.TakeThermalPhotoActivity"
+            android:name=".activitys.smpleTest.test.TakeThermalPhotoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:launchMode="singleTask"
@@ -105,13 +108,13 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name=".activitys.smpleTest.ThermalActivity"
+            android:name=".activitys.smpleTest.test.ThermalActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.ColorimetricActivity"
+            android:name=".activitys.smpleTest.test.ColorimetricActivity"
             android:exported="false" />
         <activity
-            android:name=".activitys.smpleTest.ElectricalTestActivity"
+            android:name=".activitys.smpleTest.test.ElectricalTestActivity"
             android:exported="false" />
         <activity
             android:name=".activitys.BottomNavigationActivity"

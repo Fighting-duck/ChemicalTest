@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".activitys.smpleTest.CurveManageActivity">
+    tools:context=".activitys.smpleTest.manage.CurveManageActivity">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -118,7 +118,7 @@
                 android:textSize="18sp"
                 android:layout_gravity="center" />
             <LinearLayout
-                android:id="@+id/ll_multiSelect"
+                android:id="@+id/ll_curve_multiSelect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"

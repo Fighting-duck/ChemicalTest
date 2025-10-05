@@ -74,6 +74,7 @@
     <!--导入标准曲线-->
     <string name="title_add_standard_curve">导入标准曲线</string>
     <string name="curve_import">导入</string>
+    <string name="curve_correct">校准</string>
     <string name="curve_type">类型:</string>
     <string name="curve_type_prompt">请选择曲线检测类型</string>
     <string name="curve_sample">样品:</string>
@@ -104,6 +105,24 @@
     <string name="title_alter_standard_curve">修改标准曲线</string>
     <string name="curve_delete">删除</string>
     <string name="curve_export">导出</string>
+    <!--校准标准曲线-->
+    <string name="title_correct_standard_curve">校准标准曲线</string>
+    <string name="correctCurve_sequenceNumber">序号</string>
+    <string name="correctCurve_CO">浓度X</string>
+    <string name="correctCurve_Y">Y值</string>
+    <string name="correctCurve_TestY">测量的Y值</string>
+    <string name="correctCurve_Test">测量</string>
+    <string name="correctCurve_oldChart">oldChart</string>
+    <string name="correctCurve_newChart">newChart</string>
+    <string name="correctCurve_Chart">Chart</string>
+    <string name="correctCurve_K">K</string>
+    <string name="correctCurve_B">B</string>
+    <string name="correctCurve_R">R</string>
+    <string name="correctCurve_R_2">R²</string>
+    <string name="correctCurve_MSE">MSE</string>
+    <string name="correctCurve_Expression">表达式</string>
+    <string name="correctCurve_newExpression">new 表达式 :</string>
+    <string name="correctCurve_isAlter">建议是否修改:</string>
     <!--添加样品-->
     <string name="title_add_sample">添加样品</string>
     <string name="addSample_name_hint">请输入样品名</string>
@@ -296,6 +315,9 @@
     <!-- 删除直线 -->
     <string name="dialog_deleteCurve_title">删除直线</string>
     <string name="dialog_deleteCurve_message">是否删除该直线?</string>
+    <!-- 删除点 -->
+    <string name="dialog_deletePoint_title">删除点</string>
+    <string name="dialog_deletePoint_message">是否删除该点?</string>
     <!-- 保存实验 -->
     <string name="dialog_save_title">提示</string>
     <string name="dialog_save_message">确认保存吗?</string>

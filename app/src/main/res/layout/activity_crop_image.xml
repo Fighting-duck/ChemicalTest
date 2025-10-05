@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activitys.smpleTest.CropActivity">
+    tools:context=".activitys.smpleTest.test.CropActivity">
     <!-- Image Cropper fill the remaining available height -->
     <com.theartofdev.edmodo.cropper.CropImageView
         xmlns:custom="http://schemas.android.com/apk/res-auto"

@@ -6,12 +6,16 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 // 多选模式辅助类
 public class MultiSelectHelper {
+    //内部接口
     public interface OnMultiSelectListener {
         void onMultiSelectChanged(boolean isMultiSelectMode, int selectedCount);
     }
     private final CopyOnWriteArraySet<Integer> selectedPositions = new CopyOnWriteArraySet<>();//多选模式下选中项
-    private static OnMultiSelectListener multiSelectListener;//多选模式监听器
+    private OnMultiSelectListener multiSelectListener;//多选模式监听器
     private boolean isMultiSelectMode = false;//多选模式
+
+    public MultiSelectHelper() {
+    }
     // 将用户选择的项加入多选模式
     public void toggleSelection(int position) {
         if (selectedPositions.contains(position)) {

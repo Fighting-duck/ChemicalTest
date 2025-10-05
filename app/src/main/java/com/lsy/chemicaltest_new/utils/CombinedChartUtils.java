@@ -422,6 +422,16 @@ public static LinearRegressionResult buildChart(Context context, CombinedChart c
             return (float) ((k * Math.sqrt(sxx)) / Math.sqrt(syy));
         }
 
+        /**
+         * 计算 Pearson 决定系数 R^2
+         */
+        public float coefficientOfDetermination() {
+            // 先计算相关系数r
+            float r = correlationCoefficient();
+            // 返回r的平方，即R²
+            return r * r;
+        }
+
         public float getK() {
             return k;
         }

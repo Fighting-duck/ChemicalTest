@@ -20,11 +20,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
-import com.lsy.chemicaltest_new.activitys.smpleTest.ColorimetricActivity;
-import com.lsy.chemicaltest_new.activitys.smpleTest.CurveManageActivity;
-import com.lsy.chemicaltest_new.activitys.smpleTest.ElectricalTestActivity;
-import com.lsy.chemicaltest_new.activitys.smpleTest.SamplesManageActivity;
-import com.lsy.chemicaltest_new.activitys.smpleTest.ThermalActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.test.ColorimetricActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.manage.CurveManageActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.test.ElectricalTestActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.manage.SamplesManageActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.test.ThermalActivity;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentSamplesTestBinding;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;

@@ -1,7 +1,9 @@
 package com.lsy.chemicaltest_new.domain.dialog;
 
 import static com.blankj.utilcode.util.SnackbarUtils.dismiss;
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.widget.Button;
@@ -24,6 +26,7 @@ import java.util.List;
 public class CurveDetailDialog extends Dialog {
     private CombinedData mCombinedData = new CombinedData();//联合图数据
 
+    @SuppressLint("SetTextI18n")
     public CurveDetailDialog(Context context, StandardCurve standardCurve) {
         super(context);
         setContentView(R.layout.curve_details_dialog_layout);
@@ -55,7 +58,7 @@ public class CurveDetailDialog extends Dialog {
             tv_expression.setText(standardCurve.getFormula().toString());
             tv_description.setText(standardCurve.getDescription());
             CombinedChartUtils.setChart(chart);
-            CombinedChartUtils.buildChart(context,chart,standardCurve.getPointList(),standardCurve.getType(),standardCurve.getX_axis_unit());
+            CombinedChartUtils.buildChart(context,chart,standardCurve.getPointList(),standardCurve.getType(),getString(R.string.unit_lg_c)+standardCurve.getX_axis_unit());
         }
 
     }

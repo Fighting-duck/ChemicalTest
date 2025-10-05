@@ -119,7 +119,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"/>
-
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
@@ -129,8 +128,9 @@
             android:text="@string/history_noText"
             android:textSize="18sp"
             android:layout_gravity="center" />
+
         <LinearLayout
-            android:id="@+id/ll_multiSelect"
+            android:id="@+id/ll_history_multiSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"

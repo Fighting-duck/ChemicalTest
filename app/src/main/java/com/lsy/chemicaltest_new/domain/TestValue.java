@@ -21,6 +21,8 @@ public class TestValue implements Parcelable {
         this.value = value;
         this.unit = unit;
     }
+    public TestValue() {
+    }
     public String getTestTime() {
         return testTime;
     }

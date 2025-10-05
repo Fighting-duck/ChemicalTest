@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -117,21 +118,27 @@ public class AlterCurveActivity extends BaseActivity {
         mBinding.ivSave.setOnClickListener(this::onClick);
         mBinding.ivBack.setOnClickListener(this::onClick);
         mBinding.btnExport.setOnClickListener(this::onClick);
+        mBinding.btnCorrect.setOnClickListener(this::onClick);
     }
 
     private void onClick(View view){
-        if (view.getId() == mBinding.ivSave.getId()){
+        int id = view.getId();
+        if (id == mBinding.ivSave.getId()){
             StandardCurve newCurve = mFragment.getCurve();
             Log.d(TAG, "onClick: " + newCurve);
             if (newCurve != null){
                 mViewModel.AlterStandardCurve(newCurve);
             }
         }
-        else if (view.getId() == mBinding.ivBack.getId()){
+        else if (id == mBinding.ivBack.getId()){
             finish();
         }
-        else if (view.getId() == mBinding.btnExport.getId()){
+        else if (id == mBinding.btnExport.getId()){
             mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
+        }
+        else if (id == mBinding.btnCorrect.getId()){
+            Intent intent = new Intent(mContext, CorrectCurveActivity.class);
+            startActivity(intent);
         }
     }
 

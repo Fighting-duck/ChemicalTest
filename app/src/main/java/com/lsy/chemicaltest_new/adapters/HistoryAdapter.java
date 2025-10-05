@@ -127,6 +127,7 @@ public class HistoryAdapter extends ListAdapter<History_multiple,HistoryAdapter.
         public String getX_axis_unit(int curve_id){
             return MyApplication.DATABASE_INSTANCE.getStandardCurveDao().find_XUint_ById(curve_id);
         }
+        @SuppressLint("UseCompatLoadingForDrawables")
         void updateSelectionStyle(boolean isMultiSelectMode, boolean isSelected, Context  context) {
             // 更新背景样式
             if (isMultiSelectMode && isSelected){
@@ -204,6 +205,7 @@ public class HistoryAdapter extends ListAdapter<History_multiple,HistoryAdapter.
     /**
      * 退出多选模式
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void exitMultiSelectMode() {
         multiSelectHelper.clearSelection();
         notifyDataSetChanged();

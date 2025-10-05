@@ -55,7 +55,7 @@ public class StandardCurve implements Cloneable, Parcelable {
     @ColumnInfo(name = "CORR")
     private Float CORR; // data的线性拟合系数----相关系数
     @ColumnInfo(name = "expression")
-    private String expression;//函数表达式
+    private String expression;//函数表达式 k,b
     @ColumnInfo(name = "x_axis_unit")
     private String x_axis_unit; // 浓度单位---x轴单位
     @ColumnInfo(name = "y_axis_unit")

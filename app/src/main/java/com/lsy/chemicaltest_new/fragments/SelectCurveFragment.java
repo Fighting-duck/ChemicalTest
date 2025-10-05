@@ -1,5 +1,7 @@
 package com.lsy.chemicaltest_new.fragments;
 
+import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -130,7 +132,7 @@ public class SelectCurveFragment extends DialogFragment {
             mCurveNameAdapter.notifyDataSetChanged();
         });
         mViewModel.getLiveData_selectCurve().observe(getViewLifecycleOwner(), standardCurve -> {
-            CombinedChartUtils.buildChart(mContext,mBinding.ccChart,standardCurve.getPointList(), standardCurve.getType(),standardCurve.getX_axis_unit());
+            CombinedChartUtils.buildChart(mContext,mBinding.ccChart,standardCurve.getPointList(), standardCurve.getType(),getString(R.string.unit_lg_c)+standardCurve.getX_axis_unit());
             mBinding.tvCorr.setText(String.valueOf(standardCurve.getCORR()));
             mBinding.tvFunction.setText(standardCurve.getFormula().toString());
         });

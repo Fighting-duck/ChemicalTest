@@ -203,12 +203,12 @@ public class HistoryFragment extends Fragment {
         mHistoryAdapter.setOnMultiSelectListener((isMultiSelectMode,selectedCount) -> {
             if (isMultiSelectMode){
                 Log.d(TAG+" MultiSelect", "打开多选模式");
-                mBinding.llMultiSelect.setVisibility(View.VISIBLE);
+                mBinding.llHistoryMultiSelect.setVisibility(View.VISIBLE);
                 mBinding.tvBack.setVisibility(View.VISIBLE);
             }
             else {
                 Log.d(TAG+" MultiSelect", "关闭多选模式");
-                mBinding.llMultiSelect.setVisibility(View.GONE);
+                mBinding.llHistoryMultiSelect.setVisibility(View.GONE);
                 mBinding.tvBack.setVisibility(View.GONE);
             }
         });
