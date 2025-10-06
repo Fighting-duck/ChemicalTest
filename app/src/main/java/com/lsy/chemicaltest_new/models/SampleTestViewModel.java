@@ -4,7 +4,6 @@ import static com.lsy.chemicaltest_new.utils.DynamicStringUtils.getString;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,20 +16,15 @@ import androidx.room.Transaction;
 
 import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
-import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.ColoTestResult;
 import com.lsy.chemicaltest_new.domain.ElecTestResult;
 import com.lsy.chemicaltest_new.domain.History_multiple;
-import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.Temperature_Elec;
 import com.lsy.chemicaltest_new.domain.ThermalTestResult;
+import com.lsy.chemicaltest_new.implement.MultiHistoryDataImpl;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
-import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -204,84 +198,22 @@ public class SampleTestViewModel extends ViewModel {
         Log.d(TAG,"Saving task started: "+taskId);
         Future<?> future = MyApplication.DB_EXECUTOR.submit(() -> {
             try{
-                // 1.创建历史记录对象
-                History_multiple history_multiple = new History_multiple();
-                // 2.保存实验结果并获取相关信息
-                StringBuilder sampleIdsBuilder = new StringBuilder();
-                StringBuilder curveIdsBuilder = new StringBuilder();
-                //String sampleIds = "";
-                Integer elec_id = null,elec_degree_id=null,colo_id = null,thermal_id = null;
-                // 2.1保存电信号检测结果
-                if (elec_result != null) {
-                    elec_id = saveElec(elec_result);
-                    Optional.ofNullable(elec_result.getStandardCurve())
-                            .map(StandardCurve::getSample_id)
-                            .ifPresent(sampleId -> {
-                                appendSampleId(sampleIdsBuilder, sampleId.toString());
-                            });
-                    Optional.ofNullable(elec_result.getStandardCurve())
-                            .map(StandardCurve::getId)
-                            .ifPresent(curveId -> {
-                                appendSampleId(curveIdsBuilder, curveId.toString());
-                            });
-                }
-                // 2.2保存万用表测温度检测结果
-                if (elec_degree != null){
-                    elec_degree_id = saveElecDegree(elec_degree);
-                    Optional.ofNullable(elec_degree.getStandardCurve())
-                            .map(StandardCurve::getSample_id)
-                            .ifPresent(sampleId -> {
-                                appendSampleId(sampleIdsBuilder, sampleId.toString());
-                            });
-                    Optional.ofNullable(elec_degree.getStandardCurve())
-                            .map(StandardCurve::getId)
-                            .ifPresent(curveId -> {
-                                appendSampleId(curveIdsBuilder, curveId.toString());
-                            });
-                }
-                // 2.3保存比色实验结果
-                if (colo_result != null) {
-                    colo_id = saveColo(context, colo_result);
-                    Optional.ofNullable(colo_result.getStandardCurve())
-                            .map(StandardCurve::getSample_id)
-                            .ifPresent(sampleId -> {
-                                appendSampleId(sampleIdsBuilder, sampleId.toString());
-                            });
-                    Optional.ofNullable(colo_result.getStandardCurve())
-                            .map(StandardCurve::getId)
-                            .ifPresent(curveId -> {
-                                appendSampleId(curveIdsBuilder, curveId.toString());
-                            });
-                }
-                // 2.4保存光热实验结果
-                if (thermal_result != null) {
-                    thermal_id = saveThermal(context, thermal_result);
-                    Optional.ofNullable(thermal_result.getStandardCurve())
-                            .map(StandardCurve::getSample_id)
-                            .ifPresent(sampleId -> {
-                                appendSampleId(sampleIdsBuilder, sampleId.toString());
-                            });
-                }
-                // 3.设置历史记录对象属性
-                history_multiple.setSaveTime(getCurrentFormattedTime());
-                history_multiple.setSample_ids(sampleIdsBuilder.toString());
-                history_multiple.setCurve_ids(curveIdsBuilder.toString());
-                history_multiple.setElec_id(elec_id);
-                history_multiple.setDegree_id(elec_degree_id);
-                history_multiple.setColo_id(colo_id);
-                history_multiple.setThermal_id(thermal_id);
+                // 1.整理各实验结果
+                History_multiple history = new History_multiple();
+                history.setElecTestResult(elec_result);
+                history.setTemperature_elec(elec_degree);
+                history.setColoTestResult(colo_result);
+                history.setThermalTestResult(thermal_result);
                 Float credibility = mLiveData_credibility.getValue();
                 if (credibility != null) {
-                    history_multiple.setCredibility(credibility);
+                    history.setCredibility(credibility);
                 }
                 if (remarks != null) {
-                    history_multiple.setRemarks(remarks);
+                    history.setRemarks(remarks);
                 }
-
-                // 4.保存历史记录
-                MyApplication.DATABASE_INSTANCE.getHistory_multipleDao().add(history_multiple);
-
-                // 5.设置保存状态并通知观察者
+                // 2.保存各实验结果到数据库
+                MultiHistoryDataImpl.getInstance().saveHistory(context,history);
+                // 3.设置保存状态并通知观察者
                 if (mLiveData_saveState.getValue() == SaveState.LOADING) {
                     synchronized (mLiveData_saveState) {
                         LiveDataUtils.safeUpdate(mLiveData_saveState, SaveState.SUCCESS);
@@ -306,154 +238,7 @@ public class SampleTestViewModel extends ViewModel {
             pendingTasks.put(taskId, future);
         }
     }
-    /***
-     * 安全追加样本ID
-     * @param builder 样本ID字符串构建器
-     * @param sampleId 样本ID
-     */
-    private void appendSampleId(StringBuilder builder, String sampleId) {
-        if (builder.length() > 0) {
-            builder.append(",");
-        }
-        builder.append(sampleId);
-    }
 
-    /**
-     * 获取当前格式化时间
-     * @return 当前格式化时间
-     */
-    private String getCurrentFormattedTime() {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return sdf.format(new Date());
-    }
-
-    /***
-     * 保存万用表设备信息
-     * @param bleDeviceInfo 万用表设备信息
-     * @return 保存成功返回数据库ID，失败返回null
-     */
-    private Integer saveDeviceInfo(BleDeviceInfo bleDeviceInfo){
-        if (bleDeviceInfo == null) return null;
-        try {
-            // 查询是否有相同蓝牙设备信息
-            BleDeviceInfo bleDeviceInfo1 = MyApplication.DATABASE_INSTANCE.getBleDeviceInfoDao().findByGear(bleDeviceInfo.getGear());
-            if (bleDeviceInfo1!=null){
-                return bleDeviceInfo1.getId();
-            }
-            // 如果没有找到，就插入新设备信息
-            Long deviceInfo_id = MyApplication.DATABASE_INSTANCE.getBleDeviceInfoDao().add(bleDeviceInfo);
-            return Math.toIntExact(deviceInfo_id);
-        }catch (Exception e){
-            e.printStackTrace();
-            Log.d(TAG, "保存设备信息失败:"+e);
-            return null;
-        }
-    }
-
-    /***
-     * 保存万用表测温度实验结果
-     * @param result 万用表测温度实验结果
-     * @return 保存成功返回数据库ID，失败返回null
-     */
-    private Integer saveElecDegree(Temperature_Elec result) {
-        if (result == null) return null;
-        try {
-            //1. 保存蓝牙设备信息
-            Integer bleDeviceInfo_id = saveDeviceInfo(result.getBleDeviceInfo());
-            result.setBleDeviceInfo_id(bleDeviceInfo_id);
-            Log.d(TAG, "电信号保存结果："+result.toString());
-            //2. 保存检测结果
-            Long id = MyApplication.DATABASE_INSTANCE.getElecTemperatureDao().add(result);
-            return Math.toIntExact(id);
-        }catch (Exception e){
-            Log.d(TAG, "保存温度结果失败:"+e);
-            return null;
-        }
-
-    }
-
-    /***
-     * 保存实验结果并获取相关信息
-     * @param result 电化学结果
-     * @return 保存后的电化学结果在数据库中id
-     */
-    @Transaction
-    @SuppressLint("SimpleDateFormat")
-    public Integer saveElec(ElecTestResult result){
-        if (result == null) return  null;
-        try {
-            //1. 保存蓝牙设备信息
-            Integer bleDeviceInfo_id = saveDeviceInfo(result.getBleDeviceInfo());
-            result.setBleDeviceInfo_id(bleDeviceInfo_id);
-            Log.d(TAG, "电信号保存结果："+result.toString());
-            //2. 保存检测结果
-            Long id = MyApplication.DATABASE_INSTANCE.getElecTestResultDao().add(result);
-            return Math.toIntExact(id);
-        }catch (Exception e){
-            Log.d(TAG, "保存电信号结果失败:"+e);
-            return null;
-        }
-    }
-    /***
-     * 保存实验结果并获取相关信息
-     * @param result 比色结果
-     * @return 保存后的比色结果在数据库中id
-     */
-    @Transaction
-    @SuppressLint("SimpleDateFormat")
-    public Integer saveColo(Context context,ColoTestResult result) {
-        if (result == null) return  null;
-
-        Bitmap originalBitmap = null;
-        Bitmap cropBitmap = null;
-        try {
-            // 1. 保存原图片和裁剪图片到本地
-            originalBitmap = result.getOriginalImage();
-            cropBitmap = result.getCropImage();
-            // 1.1保存原图
-            if (MyApplication.INSTANCE.getIsSaveColoOriginalImage() && originalBitmap != null) {
-                String originalPath = PhotoUtil.saveBitmapToFile(context, originalBitmap, "coloTest_original_");
-                result.setOriginalImage_path(originalPath);
-            }
-            // 1.2保存裁剪图片
-            if (cropBitmap != null) {
-                String cropPath = PhotoUtil.saveBitmapToFile(context, cropBitmap, "coloTest_crop_");
-                result.setCropImage_path(cropPath);
-            }
-            // 2. 保存 ColoTestResult 到本地
-            Long id = MyApplication.DATABASE_INSTANCE.getColoTestResultDao().add(result);
-            return Math.toIntExact(id);
-        }catch (Exception e) {
-            Log.d(TAG, "保存比色结果失败:" + e);
-            return null;
-        }
-    }
-    /***
-     * 保存实验结果并获取相关信息
-     * @param result 光热图像分析结果
-     * @return 保存后的光热图像分析结果在数据库中id
-     */
-    @Transaction
-    @SuppressLint("SimpleDateFormat")
-    public Integer saveThermal(Context context,ThermalTestResult result){
-        if (result == null) return  null;
-
-        Bitmap thermalBitmap = null;
-        try {
-            //1.保存光热图像
-            thermalBitmap = result.getThermalBitmap();
-            if (thermalBitmap == null) return null;
-            String path = PhotoUtil.saveBitmapToFile(context,thermalBitmap,"thermal_");
-            if (path==null) return null;
-            //2. 保存结果
-            result.setThermalBitmap_path(path);
-            Long id = MyApplication.DATABASE_INSTANCE.getThermalTestResultDao().add(result);
-            return  Math.toIntExact(id);
-        }catch (Exception e){
-            Log.d(TAG, "保存光热图像分析结果失败:"+e);
-            return null;
-        }
-    }
 
     public void setHistoryMultiple(History_multiple history_multiple) {
         mLiveData_history.setValue(history_multiple);

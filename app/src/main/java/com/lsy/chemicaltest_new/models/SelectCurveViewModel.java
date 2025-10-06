@@ -9,6 +9,7 @@ import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.implement.StandardCurveDataImpl;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ public class SelectCurveViewModel extends ViewModel {
     private final MutableLiveData<List<StandardCurve>> mLiveData_showCurves = new MutableLiveData<>();//在spinner中展示的curve
     private final MutableLiveData<StandardCurve> mLiveData_selectCurve = new MutableLiveData<>();//在spinner中选折的curve
     private MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
-
     public LiveData<List<StandardCurve>> getLiveData_showCurves() {
         return mLiveData_showCurves;
     }
@@ -84,7 +84,7 @@ public class SelectCurveViewModel extends ViewModel {
         Sample sample = MyApplication.DATABASE_INSTANCE.getSampleDao().findById(selectCurve.getSample_id());
         selectCurve.setSample(sample);
         //获取pointList
-        List<Point> pointList = StandardCurve.getPointList(selectCurve.getPoint_set());
+        List<Point> pointList = StandardCurveDataImpl.getInstance().getPointList(selectCurve.getPoint_set());
         selectCurve.setPointList(pointList);
         //构造expression
         String str_expression = selectCurve.getExpression();

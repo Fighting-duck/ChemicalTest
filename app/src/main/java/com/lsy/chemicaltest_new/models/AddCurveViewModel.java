@@ -15,6 +15,7 @@ import com.lsy.chemicaltest_new.MyApplication;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.implement.StandardCurveDataImpl;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public class AddCurveViewModel extends ViewModel{
     private void saveWithRetry(StandardCurve curve, List<Point> pointList, int retryCount) {
         try {
             // 1.保存点数据
-            List<Long> pointIds = savePoints(pointList);
+            List<Long> pointIds = StandardCurveDataImpl.getInstance().savePoints(pointList);
             if (pointIds == null || pointIds.size() != pointList.size()) {
                 throw new IllegalStateException("保存点失败");
             }
@@ -131,21 +132,6 @@ public class AddCurveViewModel extends ViewModel{
             setToast(mContext.getString(R.string.toast_save_fail_exception));
             mLiveData_saveState.postValue(SaveState.ERROR);
         }
-    }
-    /***
-     * 在数据库中保存曲线的point
-     * @return 所有point的id
-     */
-    public List<Long> savePoints(List<Point> pointList) {
-        long[] ids = MyApplication.DATABASE_INSTANCE.getPointDao().insertAllWithRollback(pointList);
-
-        // 将基本类型long数组转换为包装类型Long列表
-        List<Long> result = new ArrayList<>(ids.length);
-        for (long id : ids) {
-            result.add(id); // 自动装箱从long转换为Long
-        }
-
-        return result;
     }
 
     @Override

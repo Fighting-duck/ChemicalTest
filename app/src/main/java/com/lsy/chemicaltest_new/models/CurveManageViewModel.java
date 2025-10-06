@@ -10,21 +10,18 @@ import androidx.lifecycle.ViewModel;
 import androidx.room.Transaction;
 
 import com.lsy.chemicaltest_new.MyApplication;
-import com.lsy.chemicaltest_new.domain.Expression;
 import com.lsy.chemicaltest_new.domain.History_multiple;
 import com.lsy.chemicaltest_new.domain.Point;
-import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
+import com.lsy.chemicaltest_new.implement.StandardCurveDataImpl;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class CurveManageViewModel extends ViewModel {
     private static final String TAG = "CurveManageViewModel";
@@ -77,7 +74,7 @@ public class CurveManageViewModel extends ViewModel {
 
                 // 3. 遍历标准曲线，为每个曲线加载关联数据
                 for (StandardCurve curve : curves){
-                    completeCurve(curve);
+                    StandardCurveDataImpl.getInstance().completeCurve(curve);
                 }
 
                 // 3.更新LiveData
@@ -97,39 +94,7 @@ public class CurveManageViewModel extends ViewModel {
     public void setCurves(List<StandardCurve> curves){
         liveData_showCurves.setValue(curves);
     }
-    /**
-     * 为标准曲线加载关联数据(并行加载)
-     * @param curve 要加载数据的曲线（不可为null）
-     */
-    public void completeCurve(StandardCurve curve) {
-        if (curve == null) return;
-        try {
-            // 并行加载关联数据
-            CompletableFuture<Sample> sampleFuture = CompletableFuture.supplyAsync(
-                    () -> MyApplication.DATABASE_INSTANCE.getSampleDao().findById(curve.getSample_id()),
-                    MyApplication.DB_EXECUTOR
-            );
 
-            CompletableFuture<List<Point>> pointsFuture = CompletableFuture.supplyAsync(
-                    () -> StandardCurve.getPointList(curve.getPoint_set()),
-                    MyApplication.DB_EXECUTOR
-            );
-
-            CompletableFuture<Expression> expressionFuture = CompletableFuture.supplyAsync(
-                    () -> Expression.buildExpression(curve.getExpression()),
-                    MyApplication.DB_EXECUTOR
-            );
-
-            // 等待所有结果（带超时）
-            curve.setSample(sampleFuture.get(1, TimeUnit.SECONDS));
-            curve.setPointList(pointsFuture.get(1, TimeUnit.SECONDS));
-            curve.setFormula(expressionFuture.get(1, TimeUnit.SECONDS));
-
-        } catch (Exception e) {
-            Log.w(TAG, "Complete curve failed: " + e.getMessage());
-        }
-
-    }
 
 
     public interface DeleteCallback {
@@ -151,36 +116,8 @@ public class CurveManageViewModel extends ViewModel {
         Future<?> future = MyApplication.DB_EXECUTOR.submit(() -> {
             try{
                 List<StandardCurve> curves = liveData_showCurves.getValue();
-                for (StandardCurve curve : deleteCurves){
-                    //1. 查看该曲线是否在检测实验中用过
-                    List<History_multiple> histories = MyApplication.DATABASE_INSTANCE.getHistory_multipleDao().findByCurveId(curve.getId());
-                    if (histories!=null && !histories.isEmpty()){
-                        // 2.用过则将validity设为0 curve.setValidity(0);
-                        Log.d("deleteCurve", "update curveId=" + curve+" 's validity=0.");
-                        MyApplication.DATABASE_INSTANCE.getStandardCurveDao().updateValidity(curve.getId(),0);
-                    }
-                    else {
-                        // 2.没用过则删除
-                        Log.d("deleteCurve", "delete curveId=" + curve);
-                        // 硬删除（带事务）
-                        MyApplication.DATABASE_INSTANCE.runInTransaction(() -> {
-                            // 先删除关联点
-                            List<Point> points = curve.getPointList();
-                            if (points != null && !points.isEmpty()) {
-                                MyApplication.DATABASE_INSTANCE.getPointDao()
-                                        .delete(points.toArray(new Point[0]));
-                            }
-                            // 再删除曲线
-                            MyApplication.DATABASE_INSTANCE.getStandardCurveDao()
-                                    .deleteById(curve.getId());
-                        });
-                    }
-                    // 3.更新UI数据（主线程）
-                    if (curves!=null && !curves.isEmpty()){
-                        curves.removeIf(curveToRemove -> curveToRemove.getId() == curve.getId());
-                    }
-                }
-                liveData_showCurves.postValue(curves);
+                List<StandardCurve> newCurves = StandardCurveDataImpl.getInstance().deleteCurves(curves,deleteCurves);
+                liveData_showCurves.postValue(newCurves);
                 // 成功回调
                 new Handler(Looper.getMainLooper()).post(callback::onDeleteCompleted);
                 pendingTasks.remove(taskId); // 任务完成时移除

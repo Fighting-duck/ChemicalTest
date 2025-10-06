@@ -91,8 +91,6 @@ public class AlterCurveActivity extends BaseActivity {
                         // 权限被拒绝，可以在这里处理
                     }
                 },
-                R.string.toast_permission_write_storage_deny,
-                R.string.toast_permission_write_storage_deny,
                 R.string.permission_dialog_title,
                 R.string.permission_dialog_rational_writeStorage
         );
@@ -134,7 +132,7 @@ public class AlterCurveActivity extends BaseActivity {
             finish();
         }
         else if (id == mBinding.btnExport.getId()){
-            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
+            mPermissionManager.checkAndRequestExportPermissions();// 请求权限并导出
         }
         else if (id == mBinding.btnCorrect.getId()){
             Intent intent = new Intent(mContext, CorrectCurveActivity.class);

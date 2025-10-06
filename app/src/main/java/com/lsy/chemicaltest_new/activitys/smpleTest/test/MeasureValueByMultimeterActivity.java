@@ -23,6 +23,7 @@ import com.lsy.chemicaltest_new.databinding.ActivityMeasureValueByMultimeterBind
 import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
 import com.lsy.chemicaltest_new.domain.TestValue;
 import com.lsy.chemicaltest_new.fragments.ConnectMultimeterFragment;
+import com.lsy.chemicaltest_new.interfaces.OnFragmentMultimeterListener;
 import com.lsy.chemicaltest_new.models.MeasureValueByMultimeterViewModel;
 import com.lsy.chemicaltest_new.utils.TimeUtil;
 
@@ -122,7 +123,7 @@ public class MeasureValueByMultimeterActivity extends AppCompatActivity {
         mBinding.ivSave.setOnClickListener(this::onCLick);
 
         //监听万用表数据
-        mFragment.setOnMeasureValueListener(new ConnectMultimeterFragment.OnFragmentMultimeterListener() {
+        mFragment.setOnMeasureValueListener(new OnFragmentMultimeterListener() {
             @Override
             //检测万用表实时数据变化
             public void onMeasureValue(TestValue testValue) {

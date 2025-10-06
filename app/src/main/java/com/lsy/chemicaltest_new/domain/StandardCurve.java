@@ -196,33 +196,6 @@ public class StandardCurve implements Cloneable, Parcelable {
         return TYPE.get(type);
     }
 
-    public static List<Point> getPointList(String point_list) {
-        //1.字符串转化为List
-        // 去除首尾的方括号
-        String trimmedInput = point_list.substring(1, point_list.length() - 1);
-        // 按逗号分隔字符串
-        String[] items = trimmedInput.split(",");
-        // 将每个分隔后的字符串转换为整数，并收集到列表中
-        List<Integer> points_ids = new ArrayList<>();
-        for (String item : items) {
-            // 去除每个元素周围的空白字符
-            String trimmedItem = item.trim();
-            // 将字符串转换为整数
-            Integer number = Integer.parseInt(trimmedItem);
-            // 添加到结果列表中
-            points_ids.add(number);
-        }
-        //2.循环读取数据库得到point
-        List<Point> points = new ArrayList<>();
-        for (Integer point_id : points_ids) {
-            // 查询数据库
-            Point point = MyApplication.DATABASE_INSTANCE.getPointDao().findById(point_id);
-            points.add(point);
-        }
-        //3.返回pointList
-        return points;
-    }
-
     public StandardCurve(){}
     // 私有构造函数，防止外部直接创建对象
     private StandardCurve(StandardCurveBuilder builder) {

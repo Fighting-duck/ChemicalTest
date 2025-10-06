@@ -42,6 +42,9 @@ public interface History_multipleDao {
      * @return 返回值为空，则没有用过，反之有
      */
     @Query("SELECT * FROM history_table " +
-            "WHERE curve_ids LIKE '%' || :curveId || '%'")
+            "WHERE curve_ids LIKE :curveId || ',%' " +  // 匹配开头
+            "OR curve_ids LIKE '%,' || :curveId || ',%' " +  // 匹配中间
+            "OR curve_ids LIKE '%,' || :curveId " +  // 匹配结尾
+            "OR curve_ids = :curveId")  // 仅包含当前ID
     List<History_multiple> findByCurveId(Integer curveId);
 }

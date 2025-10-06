@@ -1,9 +1,8 @@
 package com.lsy.chemicaltest_new.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,34 +23,24 @@ import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.adapters.DeviceAdapter;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentConnectMultimeterBinding;
-import com.lsy.chemicaltest_new.domain.BleDeviceInfo;
-import com.lsy.chemicaltest_new.domain.TestValue;
+import com.lsy.chemicaltest_new.interfaces.OnFragmentMultimeterListener;
 import com.lsy.chemicaltest_new.models.ConnectMultimeterViewModel;
 import com.lsy.chemicaltest_new.utils.BleUtil;
 import com.lsy.chemicaltest_new.utils.LineChartUtil;
+import com.lsy.chemicaltest_new.utils.PermissionManager;
 import com.lsy.chemicaltest_new.utils.TimeUtil;
 
 import java.util.List;
 
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
-import pub.devrel.easypermissions.PermissionRequest;
-
 /**
  * 使用蓝牙连接万用表，并获取数据
  */
-public class ConnectMultimeterFragment extends Fragment implements EasyPermissions.PermissionCallbacks  {
+public class ConnectMultimeterFragment extends Fragment  {
     private static final String TAG = "ConnectMultimeterFragment";
     // 当前对话框显示模式
     public enum ShowModel {
         ELEC,    // 测量电信号
         TEMPERATURE,    // 测量温度
-    }
-    // 定义接口
-    public interface OnFragmentMultimeterListener {
-        void onMeasureValue(TestValue testValue);//获取实时测量值
-        void onDeviceInfo(BleDeviceInfo bleDeviceInfo);//获取当前设备信息
     }
     private OnFragmentMultimeterListener mListener;
     private FragmentConnectMultimeterBinding mBinding;
@@ -63,6 +52,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
     private Handler mHandler = new Handler();
     private final static int RC_BLE_PERMISSIONS  = 1000;
     private DeviceAdapter mDeviceAdapter;
+    private PermissionManager permissionManager;
 
     // 设置监听器 监听曲线选择变化
     public void setOnMeasureValueListener(OnFragmentMultimeterListener listener) {
@@ -101,15 +91,40 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         }
         mContext = getContext();
         mViewModel = new ViewModelProvider(this).get(ConnectMultimeterViewModel.class);
+        // 初始化蓝牙工具类
+        if (getActivity() != null)
+            mBleUtil = new BleUtil(getActivity(),mViewModel);
+        else
+            mViewModel.setToast(getString(R.string.toast_system_fail));
+        // 权限管理器初始化和权限请求
+        permissionManager = new PermissionManager(
+                getActivity(),
+                new PermissionManager.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        onBluetoothPermissionsGranted();
+                    }
+
+                    @Override
+                    public void onPermissionDenied() {
+                        // 权限被拒绝
+
+                    }
+                },
+                R.string.permission_dialog_title,
+                R.string.permission_dialog_needBleAndLocation
+        );
+        // 检查蓝牙权限
+        permissionManager.checkBluetoothPermissions();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mBinding = FragmentConnectMultimeterBinding.inflate(getLayoutInflater());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //mBinding = FragmentConnectMultimeterBinding.inflate(getLayoutInflater());
+        mBinding = FragmentConnectMultimeterBinding.inflate(inflater, container, false);
         mActivity = getActivity();
+        // 初始化适配器DeviceAdapter
         if (mActivity != null){
-            mBleUtil = new BleUtil(mActivity,mViewModel);
             mDeviceAdapter = new DeviceAdapter();
             mBinding.rvDevices.setAdapter(mDeviceAdapter);
         }
@@ -229,6 +244,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         mViewModel.getLiveData_BleDeviceList().observe(this, bleDevices -> {
             if (bleDevices == null){
                 mDeviceAdapter.clear();
+                mBinding.pbStartScan.setVisibility(View.VISIBLE);
             }
             else{
                 Log.d(TAG, "onViewCreated: 刷新设备列表"+bleDevices.size());
@@ -257,7 +273,6 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         Log.d(TAG, "startBleScanning: ");
         mViewModel.clearDevices();//清空设备列表
         mBleUtil.startScan();
-        mBinding.pbStartScan.setVisibility(View.VISIBLE);
         // 10秒后停止扫描指示器
         mHandler.postDelayed(() -> {
             if (!isAdded()) return;//先检查Fragment是否已附着到Activity
@@ -274,7 +289,7 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         int id = view.getId();
         if (id ==mBinding.btnTestConnect.getId()){
             // TODO : BLE测试连接
-            checkBluetoothPermissions();
+            permissionManager.checkBluetoothPermissions();
         }else if (id ==mBinding.btnDisConnect.getId()){
             // TODO : BLE断开连接
             mBleUtil.stopNotify();
@@ -287,65 +302,6 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
         }
 
     }
-
-    /**
-     * 检查蓝牙相关权限
-     */
-    private void checkBluetoothPermissions() {
-        // 需要请求的权限列表
-        String[] perms;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 12+ 需要 BLUETOOTH_SCAN 和 BLUETOOTH_CONNECT
-            perms = new String[]{
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_FINE_LOCATION // 部分设备仍需定位
-            };
-        } else {
-            // 旧版本只需要定位权限
-            perms = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
-        }
-
-        if (EasyPermissions.hasPermissions(mContext, perms)) {
-            // 已有权限
-            onBluetoothPermissionsGranted();
-        } else {
-            // 请求权限
-            requestBluetoothPermissions();
-        }
-    }
-    /**
-     * 请求权限（带权限解释）
-     */
-    @AfterPermissionGranted(RC_BLE_PERMISSIONS)
-    private void requestBluetoothPermissions() {
-        String[] perms;
-        String rationale;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            perms = new String[]{
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            };
-            rationale = getString(R.string.permission_dialog_needBleAndLocation);
-        } else {
-            perms = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
-            rationale = getString(R.string.permission_dialog_needLocation);
-        }
-
-        if (EasyPermissions.hasPermissions(mContext, perms)) {
-            onBluetoothPermissionsGranted();
-        } else {
-            EasyPermissions.requestPermissions(
-                    new PermissionRequest.Builder(this, RC_BLE_PERMISSIONS, perms)
-                            .setRationale(rationale)
-                            .setPositiveButtonText(getString(R.string.permission_dialog_positive_continue))
-                            .setNegativeButtonText(getString(R.string.permission_dialog_negative))
-                            .build());
-        }
-    }
-
     /**
      * 权限全部授予后的操作
      */
@@ -357,32 +313,15 @@ public class ConnectMultimeterFragment extends Fragment implements EasyPermissio
             startBleScanning();
         }
     }
-    // ================ EasyPermissions 回调 ================
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        permissionManager.handleActivityResult(requestCode);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        if (requestCode == RC_BLE_PERMISSIONS) {
-            Log.d(TAG, "用户授予了部分权限: " + perms);
-        }
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Log.w(TAG, "用户拒绝了权限: " + perms);
-        mViewModel.setToast(getString(R.string.toast_permission_deny));
-
-        // 检查是否永久拒绝
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this)
-                    .setTitle(getString(R.string.permission_dialog_title_needPermission))
-                    .setRationale(getString(R.string.permission_dialog_toSetting))
-                    .build()
-                    .show();
-        }
+        permissionManager.handleRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

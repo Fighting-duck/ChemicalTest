@@ -25,6 +25,7 @@ import com.lsy.chemicaltest_new.activitys.BaseActivity;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.domain.History_multiple;
 import com.lsy.chemicaltest_new.fragments.ComprehensiveTestResultFragment;
+import com.lsy.chemicaltest_new.interfaces.DeleteCallback;
 import com.lsy.chemicaltest_new.models.HistoryPreviewViewModel;
 import com.lsy.chemicaltest_new.utils.ExportUtils;
 import com.lsy.chemicaltest_new.databinding.ActivityHistoryPreviewBinding;
@@ -95,8 +96,6 @@ public class HistoryPreviewActivity extends BaseActivity{
                         // 权限被拒绝，可以在这里处理
                     }
                 },
-                R.string.toast_permission_write_storage_deny,
-                R.string.toast_permission_write_storage_deny,
                 R.string.permission_dialog_title,
                 R.string.permission_dialog_rational_writeStorage
         );
@@ -133,7 +132,7 @@ public class HistoryPreviewActivity extends BaseActivity{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mBinding.btnDelete.setEnabled(false);
-                    mViewModel.deleteHistory(new HistoryPreviewViewModel.DeleteHistoryCallback() {
+                    mViewModel.deleteHistory(new DeleteCallback() {
                         @Override
                         public void onDeleteSuccess() {
                             mViewModel.setToast(getString(R.string.toast_delete_success));
@@ -156,13 +155,13 @@ public class HistoryPreviewActivity extends BaseActivity{
             builder.create().show();
         }
         else if (view.getId() == mBinding.ivExport.getId()) {
-            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
+            mPermissionManager.checkAndRequestExportPermissions();// 请求权限并导出
         }
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
+        mPermissionManager.handleActivityResult(requestCode);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

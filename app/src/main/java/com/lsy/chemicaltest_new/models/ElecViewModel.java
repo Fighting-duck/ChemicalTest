@@ -18,6 +18,7 @@ import com.lsy.chemicaltest_new.domain.ElecTestResult;
 import com.lsy.chemicaltest_new.domain.Point;
 import com.lsy.chemicaltest_new.domain.StandardCurve;
 import com.lsy.chemicaltest_new.domain.TestValue;
+import com.lsy.chemicaltest_new.implement.StandardCurveDataImpl;
 import com.lsy.chemicaltest_new.utils.CombinedChartUtils;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
 import com.lsy.chemicaltest_new.utils.NumberUtils;
@@ -267,7 +268,7 @@ public class ElecViewModel extends ViewModel {
             mLiveData_confidenceInterval.setValue(null);
             return;
         }
-        List<Point> pointList = StandardCurve.getPointList(curve.getPoint_set());
+        List<Point> pointList = StandardCurveDataImpl.getInstance().getPointList(curve.getPoint_set());
         List<Entry> entries = Point.pointList_to_entryList(pointList);
         CombinedChartUtils.LinearRegressionResult linearRegressionResult = CombinedChartUtils.build_FitLine(entries);
         float[] interval_lgx = linearRegressionResult.inversePredictInterval(current);//逆预测,lgx值置信区间

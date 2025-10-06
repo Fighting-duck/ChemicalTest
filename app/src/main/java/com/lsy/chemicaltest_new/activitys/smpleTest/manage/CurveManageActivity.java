@@ -143,8 +143,6 @@ public class CurveManageActivity extends BaseActivity{
                         // 权限被拒绝，可以在这里处理
                     }
                 },
-                R.string.toast_permission_write_storage_deny,
-                R.string.toast_permission_write_storage_deny,
                 R.string.permission_dialog_title,
                 R.string.permission_dialog_rational_writeStorage
         );
@@ -283,7 +281,7 @@ public class CurveManageActivity extends BaseActivity{
         }
         else if (id == mBinding.btnExport.getId()) {
             if (StorageUtils.hasEnoughSpace(50)){
-                mPermissionManager.checkAndRequestExportPermissions(mContext);
+                mPermissionManager.checkAndRequestExportPermissions();
             }
             else
                 Toast.makeText(mContext, getString(R.string.toast_insufficientSspace), Toast.LENGTH_SHORT).show();
@@ -321,7 +319,7 @@ public class CurveManageActivity extends BaseActivity{
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
+        mPermissionManager.handleActivityResult(requestCode);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

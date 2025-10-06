@@ -270,6 +270,8 @@
     </string-array>
     <!--文件提供者-->
     <string name="file_provider_authority">com.lsy.chemicaltest_new.file.provider</string>
+    <string name="file_FileName_userGuide">userGuide_2025_7_20.pdf</string>
+    <string name="file_FileName_curveImportExample">standCurve_import_example.xlsx</string>
     <!--弹框-->
     <string name="dialog_positive">Confirm</string>
     <string name="dialog_negative">Cancel</string>

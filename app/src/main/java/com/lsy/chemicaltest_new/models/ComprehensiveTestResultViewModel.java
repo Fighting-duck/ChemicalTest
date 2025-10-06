@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel;
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.domain.History_multiple;
 import com.lsy.chemicaltest_new.utils.LiveDataUtils;
-
+/**
+ * 综合测试结果
+ */
 public class ComprehensiveTestResultViewModel extends ViewModel {
     MutableLiveData<History_multiple> mLiveData_history = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();

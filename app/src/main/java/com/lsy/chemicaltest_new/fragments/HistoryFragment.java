@@ -31,11 +31,12 @@ import com.lsy.chemicaltest_new.adapters.HistoryAdapter;
 import com.lsy.chemicaltest_new.database.DataRepository;
 import com.lsy.chemicaltest_new.databinding.FragmentHistoryBinding;
 import com.lsy.chemicaltest_new.domain.History_multiple;
-import com.lsy.chemicaltest_new.models.HistoryPreviewViewModel;
+import com.lsy.chemicaltest_new.implement.MultiHistoryDataImpl;
+import com.lsy.chemicaltest_new.interfaces.DeleteCallback;
+import com.lsy.chemicaltest_new.interfaces.UpdateCallback;
 import com.lsy.chemicaltest_new.models.HistoryViewModel;
 import com.lsy.chemicaltest_new.utils.ExportUtils;
 import com.lsy.chemicaltest_new.utils.PermissionManager;
-import com.lsy.chemicaltest_new.utils.StorageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,14 +62,14 @@ public class HistoryFragment extends Fragment {
         public void run() {
             String filter = mBinding.etSearchCurve.getText().toString();
             if (filter.isEmpty()){
-                mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
+                mViewModel.updateHistoriesByDateAndSample(new UpdateCallback() {
                     @Override
-                    public void onUpdateCompleted() {
+                    public void onUpdateSuccess() {
                         mViewModel.setToast(getString(R.string.toast_refresh_success));
                     }
 
                     @Override
-                    public void onUpdateFailed(Exception e) {
+                    public void onUpdateFailure(Exception e) {
                         e.printStackTrace();
                         mViewModel.setToast(getString(R.string.toast_refresh_fail));
                     }
@@ -101,14 +102,14 @@ public class HistoryFragment extends Fragment {
         Log.d(TAG, "onResume");
         if(MyApplication.INSTANCE.isUpdateHistory()){
             //初始化历史记录 和 日期列表
-            mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
+            mViewModel.updateHistoriesByDateAndSample(new UpdateCallback() {
                 @Override
-                public void onUpdateCompleted() {
+                public void onUpdateSuccess() {
 
                 }
 
                 @Override
-                public void onUpdateFailed(Exception e) {
+                public void onUpdateFailure(Exception e) {
                     e.printStackTrace();
                     mViewModel.setToast(getString(R.string.toast_history_get_fail));
                 }
@@ -152,7 +153,7 @@ public class HistoryFragment extends Fragment {
                         if (!historyList.isEmpty()){
                             for (History_multiple history : mHistoryAdapter.getSelectedItems()){
                                 //填充曲线数据 曲线名+曲线公式
-                                mViewModel.setPreviewHistory(history, new HistoryViewModel.CheckHistoryCallback() {
+                                MultiHistoryDataImpl.getInstance().fillPreviewHistory_curve(history, new UpdateCallback() {
                                     @Override
                                     public void onUpdateSuccess() {
 
@@ -173,8 +174,6 @@ public class HistoryFragment extends Fragment {
                         // 权限被拒绝，可以在这里处理
                     }
                 },
-                R.string.toast_permission_write_storage_deny,
-                R.string.toast_permission_write_storage_deny,
                 R.string.permission_dialog_title,
                 R.string.permission_dialog_rational_writeStorage
         );
@@ -186,7 +185,7 @@ public class HistoryFragment extends Fragment {
             History_multiple history_multiple = mHistoryAdapter.getCurrentList().get(position);
             //跳转到历史预览界面
             Intent intent = new Intent(mContext, HistoryPreviewActivity.class);
-            mViewModel.setPreviewHistory(history_multiple, new HistoryViewModel.CheckHistoryCallback() {
+            MultiHistoryDataImpl.getInstance().fillPreviewHistory_curve(history_multiple, new UpdateCallback() {
                 @Override
                 public void onUpdateSuccess() {
                     Log.d(TAG, "预览历史："+history_multiple.toString());
@@ -225,15 +224,15 @@ public class HistoryFragment extends Fragment {
                 android.R.color.holo_orange_light, android.R.color.holo_green_light);
         //给refreshLayout设置下拉刷新监听器
         mBinding.srlRefreshLayout.setOnRefreshListener(() -> {
-            mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
+            mViewModel.updateHistoriesByDateAndSample(new UpdateCallback() {
                 @Override
-                public void onUpdateCompleted() {
+                public void onUpdateSuccess() {
                     mBinding.srlRefreshLayout.setRefreshing(false);
                     mViewModel.setToast(getString(R.string.toast_update_success));
                 }
 
                 @Override
-                public void onUpdateFailed(Exception e) {
+                public void onUpdateFailure(Exception e) {
                     e.printStackTrace();
                     mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
@@ -352,14 +351,14 @@ public class HistoryFragment extends Fragment {
         });
         mViewModel.getLiveData_currentDate().observe(getViewLifecycleOwner(), data -> {
             Log.d(TAG, "currentDate: " + data);
-            mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
+            mViewModel.updateHistoriesByDateAndSample(new UpdateCallback() {
                 @Override
-                public void onUpdateCompleted() {
+                public void onUpdateSuccess() {
                     //mViewModel.setToast(getString(R.string.toast_update_success));
                 }
 
                 @Override
-                public void onUpdateFailed(Exception e) {
+                public void onUpdateFailure(Exception e) {
                     e.printStackTrace();
                     //mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
@@ -367,14 +366,14 @@ public class HistoryFragment extends Fragment {
         });
         mViewModel.getLiveData_currentSampleId().observe(getViewLifecycleOwner(), sample -> {
             Log.d(TAG, "currentSampleId: " + sample);
-            mViewModel.updateHistoriesByDateAndSample(new HistoryViewModel.UpdateCallback() {
+            mViewModel.updateHistoriesByDateAndSample(new UpdateCallback() {
                 @Override
-                public void onUpdateCompleted() {
+                public void onUpdateSuccess() {
                     //mViewModel.setToast(getString(R.string.toast_update_success));
                 }
 
                 @Override
-                public void onUpdateFailed(Exception e) {
+                public void onUpdateFailure(Exception e) {
                     e.printStackTrace();
                     //mViewModel.setToast(getString(R.string.toast_update_fail));
                 }
@@ -399,7 +398,7 @@ public class HistoryFragment extends Fragment {
                     List<History_multiple> deleteHistories = mHistoryAdapter.getSelectedItems();
                     mHistoryAdapter.deleteSelectedItems();
                     if (deleteHistories.isEmpty()) return;
-                    mViewModel.deleteHistories(deleteHistories, new HistoryPreviewViewModel.DeleteHistoryCallback() {
+                    mViewModel.deleteHistories(deleteHistories, new DeleteCallback() {
                         @Override
                         public void onDeleteSuccess() {
                             mViewModel.setToast(getString(R.string.toast_delete_success));
@@ -417,7 +416,7 @@ public class HistoryFragment extends Fragment {
             builder.create().show();
         }
         else if (id == mBinding.btnExport.getId()){
-            mPermissionManager.checkAndRequestExportPermissions(mContext);// 请求权限并导出
+            mPermissionManager.checkAndRequestExportPermissions();// 请求权限并导出
         }
         else if (id == mBinding.tvBack.getId()) {
             mHistoryAdapter.exitMultiSelectMode();
@@ -427,7 +426,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPermissionManager.handleActivityResult(requestCode, resultCode, data);
+        mPermissionManager.handleActivityResult(requestCode);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
