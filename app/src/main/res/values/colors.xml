@@ -54,6 +54,7 @@
     <color name="btn_press_false">#C3E5E6</color>
     <color name="btn_disabled">#BDBDBD</color>
     <color name="btn_ripple">#A84040</color>
+    <color name="btn_addPoints">#31AEFE</color>
 
     <!--单选按钮样式-->
     <color name="radio_button_checked">#EEB173</color>

@@ -21,11 +21,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.lsy.chemicaltest_new.R;
 import com.lsy.chemicaltest_new.activitys.BaseActivity;
+import com.lsy.chemicaltest_new.activitys.smpleTest.CurveRelationshipActivity;
 import com.lsy.chemicaltest_new.adapters.SampleAdapter;
 import com.lsy.chemicaltest_new.databinding.ActivitySamplesManageBinding;
 import com.lsy.chemicaltest_new.domain.Sample;
 import com.lsy.chemicaltest_new.domain.dialog.PhotoPickerBottomSheet;
 import com.lsy.chemicaltest_new.domain.imageView.GestureImageView;
+import com.lsy.chemicaltest_new.models.CurveRelationshipViewModel;
 import com.lsy.chemicaltest_new.models.SampleManageViewModel;
 import com.lsy.chemicaltest_new.utils.ImageProcessor;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
@@ -327,6 +329,14 @@ public class SamplesManageActivity extends BaseActivity {
             if (mAdapter != null) {
                 Sample sample = mAdapter.getCurrentList().get(position);
                 PhotoUtil.viewLargeImage(mContext, sample.getImage());
+            }
+        });
+        mAdapter.setOnRelationshipClickListener(position -> {
+            if (mAdapter != null) {
+                /*Sample sample = mAdapter.getCurrentList().get(position);
+                Intent intent = new Intent(mContext, CurveRelationshipActivity.class);
+                intent.putExtra("sampleID", sample.getId());
+                startActivity(intent);*/
             }
         });
         //设置下拉刷新布局的进度圆圈颜色

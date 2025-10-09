@@ -336,22 +336,6 @@
                         android:padding="5dp"/>
                 </TableRow>
             </TableLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10"
-                android:visibility="gone">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/correctCurve_isAlter"/>
-                <TextView
-                    android:id="@+id/tv_isAlter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_no" />
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

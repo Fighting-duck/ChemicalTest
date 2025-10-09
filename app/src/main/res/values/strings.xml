@@ -55,7 +55,6 @@
     <string name="measureValue_returnResults">返回数据</string>
     <string name="measureValue_prompt_elec">档位请选择“直流电流档”(DCmA或DCuA)</string>
     <string name="measureValue_prompt_temperature">档位请选择温度档(℃/℉)</string>
-
     <string name="text_current_gear">当前挡位:</string>
     <string name="text_mileage">里程:</string>
     <string name="text_RealTime_value">实时测量值:</string>
@@ -88,6 +87,8 @@
     <string name="curve_min_CORR">最小相关系数:</string>
     <string name="curve_input_point">输入散点(至少两个)</string>
     <string name="curve_y_number">y值数量:</string>
+    <string name="curve_add_yNumber">添加Y值:</string>
+    <string name="curve_alter_yNumber">修改Y值:</string>
     <string name="curve_GetCurrent">从标样获取电流值</string>
     <string name="curve_GetTemperature">从标样获取温度值</string>
     <string name="curve_GetB">从标样获取Blue值</string>
@@ -99,7 +100,8 @@
     <string name="curve_calculate">计算</string>
     <string name="curve_lgX">lg X:</string>
     <string name="curve_avgY">avg Y:</string>
-    <string name="curve_X">X:</string>
+    <string name="curve_X">X(浓度):</string>
+    <string name="curve_Y">Y:</string>
     <string name="curve_ConfidenceInterval">预测值lgX置信区间(95%)：</string>
     <!--修改标准曲线-->
     <string name="title_alter_standard_curve">修改标准曲线</string>
@@ -121,8 +123,6 @@
     <string name="correctCurve_R_2">R²</string>
     <string name="correctCurve_MSE">MSE</string>
     <string name="correctCurve_Expression">表达式</string>
-    <string name="correctCurve_newExpression">new 表达式 :</string>
-    <string name="correctCurve_isAlter">建议是否修改:</string>
     <!--添加样品-->
     <string name="title_add_sample">添加样品</string>
     <string name="addSample_name_hint">请输入样品名</string>
@@ -264,7 +264,7 @@
     <string name="default_no">---</string>
     <string name="default_color">#---</string>
     <string name="default_point_number">1</string>
-    <string name="default_float_number_0">0</string>
+    <string name="default_float_number_0">0.0</string>
     <string name="default_float_number_1">0</string>
     <string name="default_min_CO">0.0</string>
     <string name="default_max_CO">10.0</string>

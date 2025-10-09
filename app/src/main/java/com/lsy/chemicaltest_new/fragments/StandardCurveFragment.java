@@ -2,7 +2,11 @@ package com.lsy.chemicaltest_new.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static com.google.android.material.internal.ViewUtils.hideKeyboard;
+
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,9 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +60,7 @@ import com.lsy.chemicaltest_new.utils.NumberUtils;
 import com.lsy.chemicaltest_new.utils.PhotoUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -116,9 +123,8 @@ public class StandardCurveFragment extends Fragment {
      * @param floatResult 测量值
      */
     public void controlResultFromActivity(float floatResult,String prompt){
-        mPointsAdapter.alter_YValue(3,(double)floatResult);
-
         mViewModel.setToast(prompt+"："+floatResult);
+        mViewModel.addYValuePoint((double)floatResult);
     }
 
     @Nullable
@@ -162,12 +168,12 @@ public class StandardCurveFragment extends Fragment {
 
         // 设置初始值
         mViewModel.set_curve_yUnit(getResources().getString(R.string.unit_mA));
-
+        mBinding.edtXValue.setText(getString(R.string.default_float_number_0));
         // 更新样本列表
         mViewModel.updateSampleList();
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     private void initUI() {
         /**mSpinner_TypeAdapter**/
         String[] typeList = getResources().getStringArray(R.array.standardCurve_type);
@@ -186,31 +192,30 @@ public class StandardCurveFragment extends Fragment {
         mBinding.ccChart.setData(mCombinedData);
 
         /**RecycleView**/
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext,2,GridLayoutManager.HORIZONTAL, false);
-        mPointsAdapter = new PointsAdapter(mContext, mViewModel,2);
-        mBinding.rvPoints.setLayoutManager(gridLayoutManager);
+        mPointsAdapter = new PointsAdapter();
+        mBinding.rvPoints.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         mBinding.rvPoints.setAdapter(mPointsAdapter);
+        DividerItemDecoration decoration1 = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
+        mBinding.rvPointList.addItemDecoration(decoration1);
 
-        GridLayoutManager gridLayoutManager_2 = new GridLayoutManager(mContext,1,GridLayoutManager.HORIZONTAL, false);
-        mPointListAdapter = new PointListAdapter(mContext, mViewModel);
-        mBinding.rvPointList.setLayoutManager(gridLayoutManager_2);
+        mPointListAdapter = new PointListAdapter();
+        mBinding.rvPointList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         mBinding.rvPointList.setAdapter(mPointListAdapter);
-        DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
-        mBinding.rvPointList.addItemDecoration(decoration);
+        DividerItemDecoration decoration2 = new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL);
+        mBinding.rvPointList.addItemDecoration(decoration2);
 
         /**Listener**/
-        mBinding.edtYNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
-                String str_yNumber = s.toString();
-                if (!str_yNumber.isEmpty()) {
-                    mPointsAdapter.alter_YNum(Integer.parseInt(str_yNumber));
-                }
+        mPointsAdapter.setOnDeleteValueListener((position) -> {
+            mViewModel.removeYValueByPosition(position);
+        });
+        mPointsAdapter.setOnAlterValueListener((position) -> {
+            List<Double> yList = mViewModel.getLiveData_YValues().getValue();
+            if (yList!=null && position < yList.size()){
+                showYValueDialog(getString(R.string.curve_alter_yNumber),yList.get(position), result -> mViewModel.alterYValueByPosition(position,result));
             }
+        });
+        mPointListAdapter.setOnDeletePointListener((position) -> {
+            mViewModel.removePoint(position);
         });
         mBinding.edtDescription.addTextChangedListener(new TextWatcher() {
             @Override
@@ -223,8 +228,8 @@ public class StandardCurveFragment extends Fragment {
                 mViewModel.setDescription(description);
             }
         });
+        mBinding.llMain.setOnClickListener(this::onClick);
         mBinding.edtName.setOnFocusChangeListener(focusListener);
-        mBinding.edtYNumber.setOnFocusChangeListener(focusListener);
         mBinding.edtXUnit.setOnFocusChangeListener(focusListener);
         mBinding.edtYUnit.setOnFocusChangeListener(focusListener);
         mBinding.edtMinX.setOnFocusChangeListener(focusListener);
@@ -233,7 +238,28 @@ public class StandardCurveFragment extends Fragment {
         mBinding.btnPointAdd.setOnClickListener(this::onClick);
         mBinding.btnSampleAdd.setOnClickListener(this::onClick);
         mBinding.btnVerifyStandardSample.setOnClickListener(this::onClick);
+        mBinding.btnAddPoints.setOnClickListener(this::onClick);
         mBinding.ivNoticeCorr.setOnClickListener(this::onClick);
+        mBinding.edtXValue.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String inputText = editable.toString();
+                if (!inputText.isEmpty() && inputText.matches("[+-]?\\d+(\\.\\d+)?")) {
+                    mViewModel.set_point_x(Double.parseDouble(inputText));
+                }
+                else mViewModel.set_point_x(null);
+            }
+        });
         mBinding.edtY.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -409,6 +435,19 @@ public class StandardCurveFragment extends Fragment {
             else
                 mBinding.tvExpression.setText(expression.toString());//显示曲线方程
         });
+        mViewModel.getLiveData_YValues().observe(getViewLifecycleOwner(), yValues -> {
+            if (yValues == null) return;
+            if (yValues.isEmpty()){
+                mBinding.rvPoints.setVisibility(View.GONE);
+                mBinding.tvNoYValuePrompt.setVisibility(View.VISIBLE);
+            }
+            else {
+                mBinding.rvPoints.setVisibility(View.VISIBLE);
+                mBinding.tvNoYValuePrompt.setVisibility(View.GONE);
+                mPointsAdapter.submitList(yValues);
+                mPointsAdapter.notifyDataSetChanged();
+            }
+        });
         mViewModel.getLiveData_CORR().observe(getViewLifecycleOwner(), corr ->{
             if(corr == null)
                 mBinding.tvCorr.setText("");
@@ -418,6 +457,11 @@ public class StandardCurveFragment extends Fragment {
             }
         });
         mViewModel.getLiveData_pointList().observe(getViewLifecycleOwner(), pointList -> {
+            if (pointList==null || pointList.isEmpty()) {
+                mBinding.tvNoPointsPrompt.setVisibility(View.VISIBLE);
+                mBinding.rvPointList.setVisibility(View.GONE);
+                return;
+            }
             String x_unit = getString(R.string.unit_lg_c) + mViewModel.getLiveData_xUnit().getValue();//x轴单位
             mRegressionResult = CombinedChartUtils.buildChart(mContext, mBinding.ccChart,pointList, mViewModel.getCurveType(), x_unit);
             Log.d(TAG, "regressionResult:"+mRegressionResult.toString());
@@ -427,12 +471,25 @@ public class StandardCurveFragment extends Fragment {
                 mViewModel.setExpression(new Expression(NumberUtils.roundCurve_k_b_r(mRegressionResult.getK()),
                         NumberUtils.roundCurve_k_b_r(mRegressionResult.getB())));//设置曲线方程
             }
-            mPointListAdapter.update(pointList);
+            mBinding.tvNoPointsPrompt.setVisibility(View.GONE);
+            mBinding.rvPointList.setVisibility(View.VISIBLE);
+            mPointListAdapter.submitList(pointList);
+            mPointListAdapter.notifyDataSetChanged();
         });
         mViewModel.getLiveData_entry().observe(getViewLifecycleOwner(), point -> {
-            if (point == null) return;
-            mBinding.tvXAverage.setText(String.valueOf(point.getX_value()));
-            mBinding.tvYAverage.setText(String.valueOf(point.getY_value()));
+            if (point == null) {
+                mBinding.tvXAverage.setText("");
+                mBinding.tvYAverage.setText("");
+                return;
+            }
+            Float x = point.getX_value();
+            Float y = point.getY_value();
+            if (x != null && !x.isInfinite())
+                mBinding.tvXAverage.setText(String.valueOf(x));
+            else mBinding.tvXAverage.setText("");
+            if (y != null && !y.isInfinite())
+                mBinding.tvYAverage.setText(String.valueOf(y));
+            else mBinding.tvYAverage.setText("");
         });
         mViewModel.getLiveData_description().observe(getViewLifecycleOwner(), description -> {
             if (description == null) return;
@@ -460,7 +517,6 @@ public class StandardCurveFragment extends Fragment {
                 mBinding.tvMse.setText(String.valueOf(mse));
         });
     }
-
     //focusListener
     View.OnFocusChangeListener focusListener = new View.OnFocusChangeListener() {
         @Override
@@ -509,44 +565,38 @@ public class StandardCurveFragment extends Fragment {
                             mViewModel.set_curve_minCORR( Float.valueOf(str_text));
                         else mViewModel.set_curve_minCORR(null);
                     }
-                    else if(view.getId() == mBinding.edtYNumber.getId()){
-                        if (str_text.isEmpty())
-                            ((EditText) view).setText(getString(R.string.default_point_number));
-                        else {
-                            float yNum = Float.parseFloat(str_text);
-                            if (yNum < 1){
-                                mViewModel.setToast(getString(R.string.toast_curve_cant_lessOne));
-                                ((EditText) view).setText(getString(R.string.default_point_number));
-                            }
-
-                        }
-                    }
                 }
             }
         }
     };
+    @SuppressLint({"RestrictedApi", "StringFormatInvalid"})
     private void onClick(View view){
-        if (view.getId() == mBinding.btnPointAdd.getId()){
+        int id = view.getId();
+        if (id == mBinding.llMain.getId()){
+            View focusView = getActivity().getCurrentFocus();
+            if (focusView != null) {
+                hideKeyboard(focusView);
+            }
+        }
+        else if (id == mBinding.btnPointAdd.getId()){
             mViewModel.addPoint();
             //收起键盘
             InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0,null);// 隐藏键盘
         }
-        else if (view.getId() == mBinding.btnSampleAdd.getId()){
+        else if (id == mBinding.btnSampleAdd.getId()){
             Intent intent = new Intent(mContext, SamplesManageActivity.class);
             startActivity(intent);
         }
-        else if (view.getId() ==mBinding.ivNoticeCorr.getId()){
+        else if (id ==mBinding.ivNoticeCorr.getId()){
             String noticeCorr = mViewModel.getNoticeCorr();
             if (noticeCorr != null){
                 mViewModel.setToast(noticeCorr);
             }
         }
-        else if (view.getId() == mBinding.btnVerifyStandardSample.getId()){
+        else if (id == mBinding.btnVerifyStandardSample.getId()){
             /* 验证标准样品 */
             if (mViewModel.getCurveType() == null) return;
-            // 将y值数量设为1
-            mBinding.edtYNumber.setText("1");
             //保存当前直线信息
             StandardCurve standardCurve = mViewModel.getCurve();
             DataRepository.getInstance().setStandardCurve(standardCurve);
@@ -628,6 +678,9 @@ public class StandardCurveFragment extends Fragment {
             }
             else return;
         }
+        else if (id == mBinding.btnAddPoints.getId()){
+           showYValueDialog(getString(R.string.curve_add_yNumber),null, result -> mViewModel.addYValuePoint(result));
+        }
     }
     /**
      * 对用户从拍照/图库取得的图片进行处理，即获取标准样品B值
@@ -664,5 +717,39 @@ public class StandardCurveFragment extends Fragment {
    public StandardCurve getCurve(){
         StandardCurve curve = mViewModel.getCurve();
        return new StandardCurve(curve);
+   }
+   public interface OnResultFromDialogListener{
+       void onResultFromDialog(Double result);
+   }
+   public void showYValueDialog(String title,Double defaultValue, OnResultFromDialogListener listener){
+       // 弹出弹框输入Y值
+       AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+       builder.setTitle(title);
+
+       // 创建一个 EditText 并添加到对话框中
+       final EditText input = new EditText(mContext);
+       input.setInputType(InputType.TYPE_CLASS_NUMBER
+               | InputType.TYPE_NUMBER_FLAG_DECIMAL
+               | InputType.TYPE_NUMBER_FLAG_SIGNED);// 允许输入正负小数
+       if (defaultValue != null){
+           input.setText(String.valueOf(defaultValue));
+       }
+       builder.setView(input);
+
+       builder.setPositiveButton(getString(R.string.dialog_positive), (dialogInterface, i) -> {
+           // 获取编辑框中的文本
+           String inputText = input.getText().toString();
+           if (inputText.isEmpty() || !inputText.matches("[+-]?\\d+(\\.\\d+)?")) {
+               mViewModel.setToast(getString(R.string.toast_curve_inputEmpty));
+           }
+           else {
+               listener.onResultFromDialog(Double.valueOf(inputText));
+           }
+       });
+
+       builder.setNegativeButton(getString(R.string.dialog_negative), (dialog, which) -> dialog.cancel());
+
+       Dialog dialog = builder.create();
+       dialog.show();
    }
 }

@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(tableName = "point_table")
 public class Point implements Parcelable {
@@ -143,4 +144,17 @@ public class Point implements Parcelable {
             return new Point[size];
         }
     };
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) return false;
+
+        if (obj.getClass() != this.getClass()) return false;
+        else {
+            Point point = (Point) obj;
+            return Objects.equals(this.id, point.getId()) &&
+                    Objects.equals(this.x_value, point.getX_value()) &&
+                    Objects.equals(this.y_value, point.getY_value());
+        }
+    }
 }

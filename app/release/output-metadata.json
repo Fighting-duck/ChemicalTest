@@ -13,7 +13,7 @@
       "attributes": [],
       "versionCode": 2,
       "versionName": "2.4.1",
-      "outputFile": "MyApplication_release_v2.4.1_2025_09_01_17_44_22.apk"
+      "outputFile": "MyApplication_release_v2.4.1_2025_10_09_19_21_16.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/MyApplication_release_v2.4.1_2025_09_01_17_44_22.dm"
+        "baselineProfiles/1/MyApplication_release_v2.4.1_2025_10_09_19_21_16.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/MyApplication_release_v2.4.1_2025_09_01_17_44_22.dm"
+        "baselineProfiles/0/MyApplication_release_v2.4.1_2025_10_09_19_21_16.dm"
       ]
     }
   ],

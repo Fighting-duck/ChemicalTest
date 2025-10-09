@@ -29,6 +29,8 @@ public interface StandardCurveDao {
     void deleteById(Integer id);
     @Query("SELECT * FROM standard_curve_table WHERE id = :id")
     StandardCurve findById(long id);
+    @Query("SELECT * FROM standard_curve_table WHERE sample_id = :sampleId")
+    List<StandardCurve> findBySampleId(int sampleId);
 
     /***
      * 使曲线不可用

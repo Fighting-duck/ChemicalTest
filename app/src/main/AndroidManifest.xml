@@ -72,10 +72,12 @@
             android:exported="false" />
         <activity
             android:name=".activitys.smpleTest.manage.AlterCurveActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".activitys.smpleTest.manage.AddCurveActivity"
-            android:exported="false" /> <!-- 屏幕竖向锁定 -->
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|stateHidden" /> <!-- 屏幕竖向锁定 -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.lsy.chemicaltest_new.file.provider"

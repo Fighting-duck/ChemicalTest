@@ -43,6 +43,7 @@ public class SampleAdapter extends ListAdapter<Sample, SampleAdapter.SampleViewH
     private OnEditClickListener onEditClickListener;
     private OnDeleteClickListener onDeleteClickListener;
     private OnImageClickListener onImageClickListener;
+    private OnRelationshipClickListener onRelationshipClickListener;
 
     public SampleAdapter() {
         super(DIFF_CALLBACK);
@@ -57,6 +58,9 @@ public class SampleAdapter extends ListAdapter<Sample, SampleAdapter.SampleViewH
     }
     public void setOnImageClickListener(OnImageClickListener listener) {
         this.onImageClickListener = listener;
+    }
+    public void setOnRelationshipClickListener(OnRelationshipClickListener listener) {
+        this.onRelationshipClickListener = listener;
     }
 
     @NonNull
@@ -102,14 +106,16 @@ public class SampleAdapter extends ListAdapter<Sample, SampleAdapter.SampleViewH
                 onImageClickListener.onImageClick(position);
             }
         });
+        holder.tv_relationship.setOnClickListener(v -> {
+            if (onRelationshipClickListener != null) {
+                onRelationshipClickListener.onRelationshipClick(position);
+            }
+        });
     }
 
     static class SampleViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_name;
+        TextView tv_name,tv_description, tv_edit,tv_delete,tv_relationship;
         ImageView iv_image;
-        TextView tv_description;
-        TextView tv_edit;
-        TextView tv_delete;
 
         SampleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -118,6 +124,7 @@ public class SampleAdapter extends ListAdapter<Sample, SampleAdapter.SampleViewH
             tv_description = itemView.findViewById(R.id.tv_description);
             tv_edit = itemView.findViewById(R.id.tv_edit);
             tv_delete = itemView.findViewById(R.id.tv_delete);
+            tv_relationship = itemView.findViewById(R.id.tv_relationship);
         }
     }
 
@@ -148,5 +155,8 @@ public class SampleAdapter extends ListAdapter<Sample, SampleAdapter.SampleViewH
 
     public interface OnImageClickListener {
         void onImageClick(int position);
+    }
+    public interface OnRelationshipClickListener {
+        void onRelationshipClick(int position);
     }
 }

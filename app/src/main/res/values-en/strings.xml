@@ -19,6 +19,7 @@
     <string name="text_center_temperature">Center Temp.:</string>
     <string name="text_disease_analysis">Disease Analysis:</string>
     <string name="text_disease_analysis_2">Disease Analysis</string>
+    <string name="text_confidenceInterval_predicted">Confidence-PredictedCO(95%):</string>
     <string name="text_selectCurve">Select Curve</string>
     <string name="elec">Elec. Test</string>
     <string name="colo">Colo. Test</string>
@@ -73,6 +74,7 @@
     <string name="title_add_standard_curve">Import Standard Curve</string>
     <string name="curve_import">Import</string>
     <string name="curve_type">Type:</string>
+    <string name="curve_correct">Correct</string>
     <string name="curve_type_prompt">Select Curve Type</string>
     <string name="curve_sample">Sample:</string>
     <string name="curve_sample_prompt">Select Sample</string>
@@ -86,6 +88,8 @@
     <string name="curve_input_point">Enter Data Points (At least 2)</string>
     <string name="curve_y_number">Y-Values Count:</string>
     <string name="curve_GetCurrent">Get Current Value</string>
+    <string name="curve_add_yNumber">Add Y:</string>
+    <string name="curve_alter_yNumber">Alter Y:</string>
     <string name="curve_GetTemperature">Get Temperature</string>
     <string name="curve_GetB">Get Blue Value</string>
     <string name="curve_point_add">Add</string>
@@ -96,11 +100,30 @@
     <string name="curve_calculate">Calculate</string>
     <string name="curve_lgX">lg X:</string>
     <string name="curve_avgY">avg Y:</string>
-    <string name="curve_X">X:</string>
+    <string name="curve_X">X(CO):</string>
+    <string name="curve_Y">Y:</string>
+    <string name="curve_ConfidenceInterval">Confidence-LgX(95%)：</string>
     <!--修改标准曲线-->
     <string name="title_alter_standard_curve">Edit Standard Curve</string>
     <string name="curve_delete">Delete</string>
     <string name="curve_export">Export</string>
+    <!--校准标准曲线-->
+    <string name="title_correct_standard_curve">Correct Standard Curve</string>
+    <string name="correctCurve_sequenceNumber">NO</string>
+    <string name="correctCurve_CO">X(CO)</string>
+    <string name="correctCurve_Y">Y</string>
+    <string name="correctCurve_TestY">Test-Y</string>
+    <string name="correctCurve_Test">Test</string>
+    <string name="correctCurve_oldChart">oldChart</string>
+    <string name="correctCurve_newChart">newChart</string>
+    <string name="correctCurve_Chart">Chart</string>
+    <string name="correctCurve_K">K</string>
+    <string name="correctCurve_B">B</string>
+    <string name="correctCurve_R">R</string>
+    <string name="correctCurve_R_2">R²</string>
+    <string name="correctCurve_MSE">MSE</string>
+    <string name="correctCurve_Expression">Formula</string>
+
     <!--添加样品-->
     <string name="title_add_sample">Add Sample</string>
     <string name="addSample_name_hint">Enter Sample Name</string>
@@ -117,6 +140,9 @@
     <string name="sample_editing">Editing...</string>
     <string name="sample_totalNum">Total Samples:</string>
     <string name="sample_deleteDialog_title">>Do you delete the image?</string>
+    <string name="sample_relationship_mlr">Tri-modal MLR</string>
+    <!--三模式关系-->
+    <string name="title_threeModeRelationship">Tri-modal Relationship</string>
     <!---标准曲线管理-->
     <string name="title_standardCurve">Standard Curves</string>
     <string name="curveManage_noText">No Curves Available</string>
@@ -292,6 +318,9 @@
         <!-- 删除直线 -->
     <string name="dialog_deleteCurve_title">Delete Curve</string>
     <string name="dialog_deleteCurve_message">Are you sure delete this curve?</string>
+    <!-- 删除点 -->
+    <string name="dialog_deletePoint_title">Delete Point</string>
+    <string name="dialog_deletePoint_message">Are you sure delete this point?</string>
         <!-- 保存实验 -->
     <string name="dialog_save_title">Prompt</string>
     <string name="dialog_save_message">Confirm saving?</string>

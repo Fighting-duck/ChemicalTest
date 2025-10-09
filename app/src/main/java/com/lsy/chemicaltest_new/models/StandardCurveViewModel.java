@@ -38,6 +38,7 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     MutableLiveData<Float> mLiveData_x_max = new MutableLiveData<>();
     MutableLiveData<Float> mLiveData_minCORR = new MutableLiveData<>();
     MutableLiveData<Point> mLiveData_Point = new MutableLiveData<>();
+    MutableLiveData<List<Double>> mLiveData_YValues = new MutableLiveData<>();
     MutableLiveData<List<Point>> mLiveData_PointList = new MutableLiveData<>();
     MutableLiveData<Expression> mLiveData_Expression = new MutableLiveData<>();
     MutableLiveData<Float> mLiveData_CORR = new MutableLiveData<>();
@@ -46,7 +47,6 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     MediatorLiveData<StandardCurve> mLiveData_Curve = new MediatorLiveData<>();
     MutableLiveData<String> mLiveData_toast = new MutableLiveData<>();
     MutableLiveData<String> mLiveData_CO_noticeCorr = new MutableLiveData<>();
-
 
     public MutableLiveData<List<Sample>> getLiveData_sampleList(){
         return mLiveData_sampleList;
@@ -62,6 +62,9 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
     }
     public MutableLiveData<Point> getLiveData_entry() {
         return mLiveData_Point;
+    }
+    public MutableLiveData<List<Double>> getLiveData_YValues() {
+        return mLiveData_YValues;
     }
     public MutableLiveData<String> getLiveData_xUnit(){
         return mLiveData_xUnit;
@@ -395,6 +398,59 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
             return xMax;
         }
     }
+    /***
+     * 设置y值列表
+     * @param yList 新的Y值列表
+     */
+    public void setYValues(List<Double> yList) {
+        mLiveData_YValues.setValue(yList);
+    }
+    /***
+     * 添加Y轴值
+     * @param y 添加的Y值
+     */
+    public void addYValuePoint(Double y) {
+        if (y == null) return;
+        List<Double> yValues = mLiveData_YValues.getValue();
+        if (yValues == null) {
+            yValues = new ArrayList<>();
+        }
+        yValues.add(y);
+        mLiveData_YValues.setValue(yValues);
+        calculateYAvg(yValues);// 计算Y平均值
+    }
+    /***
+     * 修改指定位置position的Y轴值
+     * @param position 修改的Y轴值的位置
+     * @param y 修改的Y值
+     */
+    public void alterYValueByPosition(int position, Double y) {
+        List<Double> yValues = mLiveData_YValues.getValue();
+        if (yValues == null || yValues.isEmpty()) return;
+        yValues.set(position, y);
+        mLiveData_YValues.setValue(yValues);
+        calculateYAvg(yValues);// 计算Y平均值
+    }
+    /***
+     * 通过索引来移除Y轴值
+     * @param position 移除的Y轴值的位置
+     */
+    public void removeYValueByPosition(int position) {
+        List<Double> yValues = mLiveData_YValues.getValue();
+        if (yValues == null || yValues.isEmpty()) return;
+        yValues.remove(position);
+        mLiveData_YValues.setValue(yValues);
+        calculateYAvg(yValues);
+    }
+    /***
+     * 计算Y平均值
+     */
+    public void calculateYAvg(List<Double> yValues) {
+        if (yValues == null || yValues.isEmpty()) return;
+        double sumY = 0.0;
+        for (double yValue : yValues) sumY += yValue;
+        set_point_y(sumY / yValues.size());
+    }
 
     /***
      * 设置直线最小相关系数
@@ -417,8 +473,11 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (point == null){
             point = new Point();
         }
-        float lgX = (float) Math.log10(x);//对x取对数
-        point.setX_value(NumberUtils.roundCurve_lgX_avgY(lgX));//对x取对数
+        if (x == null || x<0) point.setX_value(null);
+        else {
+            float lgX = (float) Math.log10(x);//对x取对数
+            point.setX_value(NumberUtils.roundCurve_lgX_avgY(lgX));//对x取对数
+        }
         mLiveData_Point.setValue(point);
     }
 
@@ -432,8 +491,11 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         if (point == null){
             point = new Point();
         }
-        float avgY = y.floatValue();
-        point.setY_value(NumberUtils.roundCurve_lgX_avgY(avgY));
+        if (y != null) {
+            float avgY = y.floatValue();
+            point.setY_value(NumberUtils.roundCurve_lgX_avgY(avgY));
+        }
+        else point.setY_value(null);
         mLiveData_Point.setValue(point);
     }
 
@@ -520,13 +582,22 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
             Log.d(TAG, "addPoint: pointList is null,初始化列表");
             pointList = new ArrayList<>();
         }
-        if (point == null) return;
+        if (point == null) {
+            setToast(getString(R.string.toast_add_fail));
+            return;
+        }
+        Float x = point.getX_value();
+        Float y = point.getY_value();
+        if (x==null || y==null) {
+            setToast(getString(R.string.toast_add_fail));
+            return;
+        }
         // 检验point x值、y值的有效性
-        if (point.getX_value().isInfinite() || point.getX_value().isNaN()){
+        if (x.isInfinite() || x.isNaN()){
             setToast(getString(R.string.toast_curve_XValue_invalid));
             return;
         }
-        if (point.getY_value().isInfinite() || point.getY_value().isNaN()){
+        if (y.isInfinite() || y.isNaN()){
             setToast(getString(R.string.toast_curve_YValue_invalid));
             return;
         }
@@ -579,6 +650,10 @@ public class StandardCurveViewModel extends ViewModel implements OperateCurve {
         Point deletedPoint = pointList.remove(position);
         if (deletedPoint != null)
             Log.d(TAG, "删除点："+deletedPoint.toString());
+        if (pointList.size()<2){
+            setToast(getString(R.string.toast_curve_atLeastTwoPoints));
+            return null;
+        }
         mLiveData_PointList.setValue(pointList);
         return deletedPoint;
     }
